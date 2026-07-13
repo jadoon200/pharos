@@ -1,0 +1,135 @@
+/** Typed client for the PHAROS read-only maritime-domain-awareness API. */
+
+// Same-origin in a production build (FastAPI serves this SPA and the API from one host);
+// localhost:8000 in dev (`make ui` on :5173 talks to `make api` on :8000). VITE_API_URL overrides.
+const BASE = import.meta.env.VITE_API_URL ?? (import.meta.env.PROD ? '' : 'http://localhost:8000')
+
+export interface Health {
+  status: string
+  version: string
+}
+
+export interface Stats {
+  vessels: number
+  positions: number
+  tracks: number
+  incidents: number
+  zones: number
+  incidents_by_detector: Record<string, number>
+}
+
+export interface Incident {
+  incident_id: string
+  mmsi: string
+  detector: string
+  incident_type: string
+  score: number
+  severity: string
+  reliability: string // NATO-Admiralty AIS-confidence grade A-F
+  ts_start: string
+  ts_end: string | null
+  lat: number | null
+  lon: number | null
+  zone_id: string | null
+  counterpart_mmsi: string | null
+  techniques: string[] | null
+  region: string | null
+  evidence?: Record<string, unknown>
+}
+
+/** A composite per-vessel maritime-threat rollup (the fusion unit). */
+export interface Threat {
+  mmsi: string
+  name: string | null
+  ship_type: string | null
+  flag: string | null
+  risk: number
+  severity: string
+  reliability: string
+  detectors: string[]
+  techniques: string[]
+  incident_count: number
+  incident_ids: string[]
+  counterparts: string[]
+  zones: string[]
+  lat: number | null
+  lon: number | null
+  first_ts: string | null
+  last_ts: string | null
+  components: {
+    max_score: number
+    detector_count: number
+    diversity: number
+    best_reliability: string
+    sensitive_zone: boolean
+  }
+}
+
+export interface Vessel {
+  mmsi: string
+  name: string | null
+  ship_type: string | null
+  flag: string | null
+  first_seen: string | null
+  last_seen: string | null
+}
+
+export interface GeoFeature {
+  type: 'Feature'
+  geometry: { type: string; coordinates: number[][] | number[][][] }
+  properties: Record<string, unknown>
+}
+
+export interface GeoJSON {
+  type: 'FeatureCollection'
+  features: GeoFeature[]
+}
+
+export interface ScoreResult {
+  anomaly_score: number
+  reconstruction_error: number
+  threshold: number
+  is_anomalous: boolean
+  points_scored: number
+  error?: string
+}
+
+async function get<T>(path: string): Promise<T> {
+  const res = await fetch(`${BASE}${path}`)
+  if (!res.ok) throw new Error(`${path} → ${res.status}`)
+  return res.json() as Promise<T>
+}
+
+export const api = {
+  health: () => get<Health>('/health'),
+  stats: () => get<Stats>('/stats'),
+  incidents: (params: { detector?: string; region?: string } = {}) => {
+    const q = new URLSearchParams(params as Record<string, string>).toString()
+    return get<Incident[]>(`/incidents${q ? `?${q}` : ''}`)
+  },
+  incident: (id: string) => get<Incident>(`/incidents/${id}`),
+  maritimePicture: (region?: string) =>
+    get<Threat[]>(`/maritime-picture${region ? `?region=${region}` : ''}`),
+  zones: () => get<GeoJSON>('/zones'),
+  tracks: (region?: string) => get<GeoJSON>(`/tracks${region ? `?region=${region}` : ''}`),
+  vessels: () => get<Vessel[]>('/vessels'),
+  vesselTrack: (mmsi: string) => get<GeoFeature>(`/vessels/${mmsi}/track`),
+  scoreTrack: async (points: Array<Record<string, number>>): Promise<ScoreResult> => {
+    const res = await fetch(`${BASE}/score-track`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ points }),
+    })
+    if (res.status === 429) throw new Error('rate limit exceeded — slow down')
+    if (res.status === 503) throw new Error('server busy — try again')
+    if (!res.ok) throw new Error(`score-track → ${res.status}`)
+    return res.json() as Promise<ScoreResult>
+  },
+}
+
+export const SEVERITY_CLASS: Record<string, string> = {
+  low: 'sev-low',
+  moderate: 'sev-moderate',
+  high: 'sev-high',
+  critical: 'sev-critical',
+}

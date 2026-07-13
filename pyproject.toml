@@ -1,0 +1,87 @@
+[project]
+name = "pharos"
+version = "0.1.0"
+description = "PHAROS — maritime domain awareness: free AIS collection, a detector ensemble, and source-rated maritime incidents"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+dependencies = [
+    "sqlalchemy>=2.0",
+    "alembic>=1.13",
+    "psycopg[binary]>=3.2",
+    "pydantic>=2.7",
+    "pydantic-settings>=2.3",
+    "httpx>=0.27",
+    "prefect>=3.0",
+    "structlog>=24.1",
+    "tenacity>=8.3",
+    "numpy>=1.26",
+    "scikit-learn>=1.5",
+    "fastapi>=0.115",
+    "uvicorn>=0.30",
+]
+
+[project.optional-dependencies]
+# Live AIS lane (AISStream.io WebSocket). The reproducible NOAA path needs nothing.
+live = ["websockets>=12.0"]
+# Torch trajectory-anomaly backend (the CPU fallback used on Linux/CI).
+torch = ["torch>=2.2"]
+# Apple-silicon-native trajectory-anomaly backend (optional, darwin-only).
+mlx = ["mlx>=0.18; sys_platform == 'darwin'"]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.6",
+    "mypy>=1.11",
+    "pytest>=8.2",
+    "pytest-cov>=5.0",
+    "respx>=0.21",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pharos"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+# FastAPI's Depends()/Query() in argument defaults are the framework idiom, not the
+# mutable-default bug B008 targets.
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["fastapi.Depends", "fastapi.Query"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+mypy_path = "src"
+files = ["src/pharos"]
+explicit_package_bases = true
+
+# Third-party libraries without type stubs — scoped, do not widen.
+[[tool.mypy.overrides]]
+module = [
+    "sklearn.*",
+    "prefect.*",
+    "websockets.*",
+    "mlx.*",
+    "torch.*",
+]
+ignore_missing_imports = true
+
+# Prefect's @flow/@task decorators are untyped under strict; scope the exception
+# to the flow module only — do not widen it.
+[[tool.mypy.overrides]]
+module = ["pharos.ingest.flows"]
+disallow_untyped_decorators = false
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

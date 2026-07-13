@@ -1,0 +1,246 @@
+:root {
+  /* PHAROS maritime teal identity (sibling to SENTINEL's cyber, ARGUS's amber). */
+  --bg: #07100f;
+  --bg-elev: #0d1a19;
+  --bg-card: #0f201e;
+  --border: #1c3330;
+  --text: #d6f0ec;
+  --text-dim: #7fa5a0;
+  --teal: #2dd4bf;
+  --teal-bright: #5eead4;
+  --amber: #fbbf24;
+  --orange: #fb923c;
+  --red: #f87171;
+  --sev-low: #64748b;
+  --sev-moderate: #fbbf24;
+  --sev-high: #fb923c;
+  --sev-critical: #f87171;
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--teal-bright);
+}
+
+.masthead {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 22px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, var(--bg-elev), var(--bg));
+  position: sticky;
+  top: 0;
+  z-index: 500;
+}
+
+.brand {
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  font-size: 20px;
+  color: var(--teal-bright);
+}
+
+.brand small {
+  display: block;
+  font-size: 10.5px;
+  letter-spacing: 0.05em;
+  color: var(--text-dim);
+  font-weight: 500;
+}
+
+.tabs {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.tab {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-dim);
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.tab:hover {
+  color: var(--text);
+}
+
+.tab.active {
+  background: var(--bg-card);
+  border-color: var(--border);
+  color: var(--teal-bright);
+}
+
+.status-pill {
+  font-size: 11px;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+.status-pill.ok {
+  color: var(--teal);
+}
+
+main {
+  padding: 18px 22px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.grid {
+  display: grid;
+  gap: 14px;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--text);
+}
+
+.muted {
+  color: var(--text-dim);
+}
+
+.pill {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  margin-right: 5px;
+}
+
+.pill.detector {
+  color: var(--teal-bright);
+  border-color: #1f4d47;
+  background: #0c2321;
+}
+
+.grade {
+  font-weight: 700;
+  font-family: ui-monospace, monospace;
+}
+
+.sev-low {
+  color: var(--sev-low);
+}
+.sev-moderate {
+  color: var(--sev-moderate);
+}
+.sev-high {
+  color: var(--sev-high);
+}
+.sev-critical {
+  color: var(--sev-critical);
+}
+
+.risk-bar {
+  height: 7px;
+  border-radius: 999px;
+  background: #0a1917;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.risk-bar > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--teal), var(--orange));
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  color: var(--text-dim);
+  font-weight: 600;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+tr.clickable {
+  cursor: pointer;
+}
+
+tr.clickable:hover td {
+  background: var(--bg-elev);
+}
+
+button.action {
+  background: var(--teal);
+  color: #032420;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button.action:hover {
+  background: var(--teal-bright);
+}
+
+textarea,
+input {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 8px;
+  font-family: ui-monospace, monospace;
+  font-size: 12px;
+  width: 100%;
+}
+
+.leaflet-container {
+  background: #071a18;
+  border-radius: 12px;
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 5px;
+  vertical-align: middle;
+}

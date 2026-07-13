@@ -1,0 +1,20 @@
+# Render blueprint — one free web service for the whole app (read-only API + dashboard).
+# Deploy: push to GitHub, then New → Blueprint on https://render.com and point it here.
+# The free plan spins the service down after ~15 min idle and cold-starts on the next hit
+# (~30-60s); fine for a public demo. Render injects $PORT and provides TLS + the URL.
+# .github/workflows/keep-alive.yml pings /health to beat the idle sleep once RENDER_URL is set.
+services:
+  - type: web
+    name: pharos
+    runtime: docker
+    dockerfilePath: ./Dockerfile.web
+    plan: free
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      # The demo ships as a baked SQLite seed (a precomputed maritime picture) — no managed DB.
+      - key: PHAROS_DATABASE_URL
+        value: sqlite:////app/data/demo.db
+      # Render terminates TLS and sets X-Forwarded-For, so rate-limit per real client IP.
+      - key: PHAROS_API_TRUST_FORWARDED_HEADER
+        value: "true"

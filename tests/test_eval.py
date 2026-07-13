@@ -1,0 +1,83 @@
+"""The eval must score the detectors correctly against ground truth, hold the calibration trap,
+and produce a cross-region anomaly AUC — the honest-evaluation discipline in code."""
+
+from __future__ import annotations
+
+from pharos.config import get_settings
+from pharos.detect.run import run_detectors
+from pharos.eval.gfw_check import corroborate
+from pharos.eval.metrics import (
+    roc_auc_anomaly_vs_normal,
+    scenario_features,
+    score_detector,
+    trap_breaches,
+)
+from pharos.eval.run import evaluate, render_markdown
+from pharos.ingest.gfw import GfwEvent
+from pharos.ingest.synthetic import generate_scenario
+
+
+def test_score_detector_matches_truth() -> None:
+    sc = generate_scenario("singapore", seed=0, n_normal=8)
+    incidents = run_detectors(sc.positions, get_settings())
+    for detector in ("gap", "rendezvous", "loiter", "spoof"):
+        r = score_detector(detector, sc.truth, incidents)
+        assert r.recall == 1.0, f"{detector} missed its injected event"
+        assert r.precision >= 0.5
+
+
+def test_spoof_is_perfect() -> None:
+    sc = generate_scenario("singapore", seed=1, n_normal=8)
+    incidents = run_detectors(sc.positions, get_settings())
+    r = score_detector("spoof", sc.truth, incidents)
+    assert r.precision == 1.0 and r.recall == 1.0  # deterministic ground truth
+
+
+def test_coverage_trap_is_not_flagged() -> None:
+    # The gap detector must NOT call the benign anchored-vessel coverage gap a dark ship.
+    sc = generate_scenario("singapore", seed=0, n_normal=8)
+    incidents = run_detectors(sc.positions, get_settings())
+    assert trap_breaches(sc.truth, incidents) == 0
+
+
+def test_cross_region_anomaly_auc() -> None:
+    settings = get_settings()
+    sg = generate_scenario("singapore", seed=0, n_normal=12)
+    us = generate_scenario("us-west", seed=0, n_normal=12)
+    x_sg, _ = scenario_features(sg, settings.anomaly_seq_len, settings.track_gap_split_minutes)
+    x_us, lab_us = scenario_features(us, settings.anomaly_seq_len, settings.track_gap_split_minutes)
+    from pharos.detect.anomaly import TrajectoryAnomalyModel
+
+    model = TrajectoryAnomalyModel(hidden=64, seed=0)
+    model.fit(x_sg, epochs=30)
+    assert roc_auc_anomaly_vs_normal(model.score(x_us), lab_us) >= 0.8
+
+
+def test_gfw_corroboration_counts() -> None:
+    sc = generate_scenario("singapore", seed=0, n_normal=6)
+    incidents = run_detectors(sc.positions, get_settings())
+    gap_inc = next(i for i in incidents if i.detector == "gap")
+    gfw = [
+        GfwEvent(
+            event_type="gap",
+            mmsi=gap_inc.mmsi,
+            start=gap_inc.ts_start,
+            end=gap_inc.ts_end,
+            lat=gap_inc.lat,
+            lon=gap_inc.lon,
+            raw={},
+        )
+    ]
+    agreements = {a.detector: a for a in corroborate(incidents, gfw)}
+    assert agreements["gap"].corroborated >= 1
+
+
+def test_evaluate_end_to_end() -> None:
+    results = evaluate()
+    per = results["per_detector"]
+    assert isinstance(per, dict)
+    assert per["spoof"]["recall"] == 1.0
+    # Cross-region AUC is the headline; on the shape-invariant features it transfers strongly.
+    assert float(results["anomaly_cross_region_auc"]) >= 0.8  # type: ignore[arg-type]
+    md = render_markdown(results)
+    assert "cross-region AUC" in md.lower() or "cross-region" in md.lower()

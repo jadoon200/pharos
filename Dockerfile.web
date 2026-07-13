@@ -1,0 +1,39 @@
+# Single free container: builds the dashboard, installs the slim API runtime, bakes a demo
+# SQLite seed (a precomputed maritime picture), and serves the read-only API + the SPA on $PORT.
+# No managed database, no live fetch at request time.
+
+# --- 1. build the React dashboard ---
+FROM node:22-alpine AS web
+WORKDIR /web
+COPY frontend/package.json frontend/package-lock.json* ./
+RUN npm install
+COPY frontend/ ./
+# Same-origin API in the production build (the API serves this SPA), so no baked hostname.
+RUN npm run build
+
+# --- 2. python runtime ---
+FROM python:3.12-slim AS app
+WORKDIR /app
+
+ENV PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PHAROS_DATABASE_URL=sqlite:////app/data/demo.db
+
+COPY requirements-api.txt ./
+RUN pip install --upgrade pip && pip install -r requirements-api.txt
+
+COPY pyproject.toml README.md ./
+COPY src/ ./src/
+COPY scripts/ ./scripts/
+RUN pip install -e . --no-deps
+
+# Bake the demo maritime picture into the image (deterministic synthetic gold scenario →
+# zones + tracks + the full detector ensemble + the anomaly model).
+RUN mkdir -p /app/data && PYTHONPATH=src python -m scripts.seed_demo singapore
+
+# Copy the built dashboard where app.py mounts it (frontend/dist).
+COPY --from=web /web/dist ./frontend/dist
+
+# Render injects $PORT; default 8000 for local `docker run`.
+ENV PORT=8000
+CMD ["sh", "-c", "uvicorn pharos.api.app:app --host 0.0.0.0 --port ${PORT}"]
