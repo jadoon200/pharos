@@ -128,3 +128,17 @@ def test_score_track_ranks_zigzag_higher(client: TestClient) -> None:
 def test_score_track_needs_enough_points(client: TestClient) -> None:
     r = client.post("/score-track", json={"points": [{"lat": 1.2, "lon": 103.8}]}).json()
     assert "error" in r
+
+
+def test_geoint_evidence(client: TestClient) -> None:
+    ev = client.get("/geoint/evidence").json()
+    assert ev  # non-empty
+    first = ev[0]
+    # ARGUS-compatible evidence shape, riskiest first.
+    for field in ("doc_id", "title", "source", "reliability", "credibility", "summary", "url"):
+        assert field in first
+    assert first["source"] == "PHAROS maritime domain awareness"
+    assert first["kind"] == "geoint"
+    # min_score filter narrows the set.
+    high = client.get("/geoint/evidence", params={"min_score": 0.9}).json()
+    assert len(high) <= len(ev)

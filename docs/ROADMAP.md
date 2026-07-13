@@ -16,16 +16,17 @@ story (M0–M8), with deploy (M9) last and the ARGUS bridge (M10) an explicit ex
 | M7 | API — hardened read-only FastAPI + GeoJSON endpoints + `POST /score-track` | ✅ done |
 | M8 | Dashboard — map-based React/Leaflet site (Maritime Picture / Incidents / Model Report), browser-verified | ✅ done |
 | M9 | Deploy — `Dockerfile.web` + `render.yaml` free plan, baked demo SQLite seed, keep-alive; demo-seed script | ✅ config landed |
-| M10 | **Extra** — ARGUS GEOINT bridge (expose incidents as citable GEOINT evidence); only if time | ⬜ |
+| M10 | **Extra** — ARGUS GEOINT bridge: `GET /geoint/evidence` exposes incidents as citable, ARGUS-`EvidenceItem`-shaped GEOINT evidence | ✅ done |
 
-**Status:** the full standalone system (M0–M9) is built and gating clean — the whole pipeline
+**Status:** the full system (M0–M10) is built and gating clean (79 tests). The whole pipeline
 (collect → tracks → 5 detectors → flagship anomaly model → composite ensemble → honest eval) runs
-end-to-end, a hardened read-only API serves it, and the React/Leaflet dashboard is browser-verified
-against the live API. The single-container free-deploy config is written; the ARGUS GEOINT bridge
-(M10) remains the one documented extra.
+end-to-end, a hardened read-only API serves it, the React/Leaflet dashboard is browser-verified
+against the live API, the single-container free-deploy path is verified, and the GEOINT bridge
+exposes incidents as evidence any all-source tool (the sibling ARGUS) can fuse — cyber + cognitive
++ geospatial on one analyst's desk.
 
-**Recommended floor to ship:** reached — M0–M8 is the full standalone system and M9 makes it
-deployable. M10 (the ARGUS bridge) is the optional stretch.
+**Recommended floor to ship:** exceeded — M0–M8 is the full standalone system, M9 makes it
+deployable, and the M10 bridge (originally optional) is done.
 
 ## Design decisions already locked
 

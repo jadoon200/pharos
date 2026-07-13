@@ -29,6 +29,7 @@ from pharos.db.models import Incident, Position, Track, Vessel, Zone
 from pharos.detect.anomaly import detect_anomalies
 from pharos.detect.ensemble import vessel_rollups
 from pharos.detect.run import DETERMINISTIC_DETECTORS
+from pharos.geoint import to_evidence
 
 
 @asynccontextmanager
@@ -229,6 +230,24 @@ def maritime_picture(
 ) -> list[dict[str, Any]]:
     """The composite: every at-risk vessel as a fused threat rollup, riskiest first."""
     return [t.to_dict() for t in vessel_rollups(db, region)]
+
+
+@app.get("/geoint/evidence")
+def geoint_evidence(
+    db: Session = Depends(get_db),
+    region: str | None = None,
+    min_score: float = Query(0.0, ge=0.0, le=1.0),
+    limit: int = Query(100, le=500),
+) -> list[dict[str, Any]]:
+    """Incidents as citable, source-rated GEOINT evidence (ARGUS-compatible `EvidenceItem` shape).
+
+    The composability bridge: an all-source analyst can fuse the maritime/geospatial lane with
+    cyber + open-source reporting. Read-only; every item is human-review decision support.
+    """
+    q = select(Incident).where(Incident.score >= min_score).order_by(Incident.score.desc())
+    if region:
+        q = q.where(Incident.region == region)
+    return [to_evidence(i) for i in db.scalars(q.limit(limit)).all()]
 
 
 @app.post("/detect")

@@ -106,10 +106,20 @@ PHAROS_DATABASE_URL=sqlite:///data/demo.db make api   # then `make ui` in anothe
 
 `/health`, `/stats`, `/vessels` (+ `/{mmsi}/track` as GeoJSON), `/incidents` (+ `/{id}` with
 evidence), `/zones` and `/tracks` (GeoJSON for the map), `/maritime-picture` (the composite
-per-vessel threat rollups), plus one stateless inference route `POST /score-track` (scores a
-pasted track's shape through the anomaly model — inspects only the supplied points, never fetches
-a URL, so the API stays effectively read-only). Public-deploy hardening (CORS, per-client rate
-limit → 429, request-size cap → 422, bounded concurrency → 503) is tuned via `PHAROS_API_*`.
+per-vessel threat rollups), `/geoint/evidence` (incidents as citable, source-rated GEOINT evidence
+— the bridge below), plus one stateless inference route `POST /score-track` (scores a pasted
+track's shape through the anomaly model — inspects only the supplied points, never fetches a URL,
+so the API stays effectively read-only). Public-deploy hardening (CORS, per-client rate limit →
+429, request-size cap → 422, bounded concurrency → 503) is tuned via `PHAROS_API_*`.
+
+### GEOINT bridge — cyber + cognitive + geospatial
+
+`GET /geoint/evidence` shapes each maritime incident into an evidence item whose fields match
+ARGUS's `EvidenceItem` (doc_id / title / source / NATO-Admiralty reliability A–F / credibility 1–6
+/ summary / resolvable url) plus geospatial extras. So the sibling **[ARGUS](../argus)** all-source
+analyst — which already fuses **[SENTINEL](../sentinel)**'s cyber campaigns the same read-only way —
+can cite PHAROS's maritime picture with no schema translation: one analyst reasoning across the
+cyber, cognitive, *and* geospatial lanes. PHAROS only serves; it never depends on the siblings.
 
 ### Dashboard
 
