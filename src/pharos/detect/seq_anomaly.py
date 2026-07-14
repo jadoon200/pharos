@@ -1,10 +1,11 @@
 """Sequence trajectory-anomaly model — a GRU autoencoder over the *ordered* track.
 
-The flagship anomaly model. Where the flattened-vector AE (`anomaly.TrajectoryAnomalyModel`) sees a
-bag of coordinates, this consumes the track as a **sequence** of per-step motion
-(`tracks.build.track_sequence`: `[dx, dy, step_len, turn]`) and reconstructs it with a recurrent
-encoder-decoder — so it models pattern-of-life as *dynamics* (a straight run, a bend, a detour that
-returns), which is what separates a subtle anomalous excursion from a legitimate single manoeuvre.
+The flagship anomaly model. Rather than a bag of coordinates, it consumes the track as a
+**sequence** of per-step motion (`tracks.build.track_sequence`: `[dx, dy, step_len, turn]`) and
+reconstructs it with a recurrent encoder-decoder — so it models pattern-of-life as *dynamics* (a
+straight run, a bend, a detour that returns), which is what separates a subtle anomalous excursion
+from a legitimate single manoeuvre. The eval keeps a linear PCA baseline (`anomaly.py`) for a fair
+comparison; the recurrent model beats it decisively under unsupervised training (`docs/EVAL.md`).
 
 Trained the honest way: a benign-only train set with a held-out **validation split**, **early
 stopping** on validation loss (best weights restored), and a recorded **learning curve** — not a

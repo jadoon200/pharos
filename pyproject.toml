@@ -24,10 +24,8 @@ dependencies = [
 [project.optional-dependencies]
 # Live AIS lane (AISStream.io WebSocket). The reproducible NOAA path needs nothing.
 live = ["websockets>=12.0"]
-# Torch trajectory-anomaly backend (the CPU fallback used on Linux/CI).
+# Torch — the GRU sequence-autoencoder anomaly model (CPU is plenty at this data scale).
 torch = ["torch>=2.2"]
-# Apple-silicon-native trajectory-anomaly backend (optional, darwin-only).
-mlx = ["mlx>=0.18; sys_platform == 'darwin'"]
 
 [dependency-groups]
 dev = [
@@ -71,7 +69,6 @@ module = [
     "sklearn.*",
     "prefect.*",
     "websockets.*",
-    "mlx.*",
     "torch.*",
 ]
 ignore_missing_imports = true

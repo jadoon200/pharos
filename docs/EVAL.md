@@ -44,20 +44,12 @@ features make transfer possible):
 | Model | Within-region AUC | Cross-region AUC |
 |---|---|---|
 | **GRU sequence-AE (flagship)** | **~0.96** | **~0.96** |
-| MLP flattened-AE (baseline) | ~0.26 | — |
 | PCA linear (baseline) | ~0.27 | — |
 
 The informative result is not the GRU's absolute number (a synthetic ceiling) but the **gap**: the
-flattened/linear baselines fall *below chance* under unsupervised training on the confounder-rich
+linear PCA baseline falls *below chance* under unsupervised training on the confounder-rich
 set, while the recurrent model holds up. The depth is necessary, not decorative. (Exact numbers in
 the auto-recorded block.)
-
-### 3. The AIS coverage confound (the honest limitation)
-An apparent "dark ship" is often a benign receiver-coverage gap, not evasive behaviour. The gap
-detector already requires displacement (a gap with ~0 movement is not flagged), the offline eval's
-**coverage-gap trap** exercises exactly this (held 5/5 seeds), every incident carries an AIS
-reliability grade (on real data, a 20 h gap graded **E**), and GFW's reception-modelled gap events
-are the real-world cross-check.
 
 ### 3. The AIS coverage confound (the honest limitation)
 An apparent "dark ship" is often a benign receiver-coverage gap, not evasive behaviour. The gap
@@ -83,7 +75,7 @@ AUC** (train one waterway, test another) survives the region change, which is th
 AIS and cross-checking against Global Fishing Watch event labels (`pharos.eval.gfw_check`).
 
 <!-- AUTO-EVAL:START -->
-_Auto-recorded by `make eval` on 2026-07-13 over 5 seeds (synthetic gold set)._
+_Auto-recorded by `make eval` on 2026-07-14 over 5 seeds (synthetic gold set)._
 
 | Detector | Precision | Recall |
 |---|---|---|
@@ -99,10 +91,9 @@ _Auto-recorded by `make eval` on 2026-07-13 over 5 seeds (synthetic gold set)._
 | Model | Within-region AUC | Cross-region AUC |
 |---|---|---|
 | **GRU sequence-AE (flagship)** | **0.962** | **0.964** |
-| MLP flattened-AE (baseline) | 0.264 | — |
 | PCA linear (baseline) | 0.273 | — |
 
-Cross-region = train singapore, score us-west. The recurrent model that captures ordered dynamics is the only one that survives unsupervised training on the confounder-rich set — the flattened/linear baselines fall below chance, so the depth is necessary, not decorative.
+Cross-region = train singapore, score us-west. The recurrent model that captures ordered dynamics survives unsupervised training on the confounder-rich set while the linear baseline falls below chance — the depth is necessary, not decorative.
 
 _Synthetic gold set (a known ceiling — see the note above). The real result is the false-positive reduction on real NOAA AIS in **Real-data validation** below._
 <!-- AUTO-EVAL:END -->
@@ -143,7 +134,7 @@ data; the quantitative real result is the false-positive reduction above.
 
 - **Synthetic-eval ceiling.** On the gold set every detector scores ~1.0 P/R and the GRU ~0.96 AUC,
   because I author both the anomaly and the detector. This is a *ceiling*, not a capability claim.
-  The MLP/PCA baselines collapsing below chance (0.26 / 0.27) under unsupervised training is the one
+  The linear PCA baseline collapsing below chance (~0.27) under unsupervised training is the one
   genuinely informative synthetic result — it shows the recurrent architecture is necessary.
 - **Congested-port false positives (found on real data, fixed).** Naive rendezvous/loiter over-fired
   2,999→ before the anchored-vessel / port-zone / partner-degree fixes. A residual: 36 loiter and 8
@@ -156,7 +147,3 @@ data; the quantitative real result is the false-positive reduction above.
   displacement requirement, the reliability grade (real example: the 20 h gap graded E), the
   coverage-gap trap (held 5/5), and the GFW gap-event cross-check — not assumed away.
 
-## Backend adoption (benchmark-gated)
-
-The trajectory-anomaly backend default (MLX vs torch) is chosen from a multi-seed comparison
-recorded here, mirroring SENTINEL's MLX adoption decision. TBD.

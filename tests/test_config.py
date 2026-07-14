@@ -6,7 +6,7 @@ def test_defaults_are_zero_cost() -> None:
     s = Settings()
     assert s.aisstream_key == ""  # live lane opt-in
     assert s.gfw_token == ""  # GFW cross-check opt-in
-    assert s.anomaly_backend == "auto"
+    assert s.anomaly_seq_len == 16  # the GRU sequence length
     assert "5434" in s.database_url  # coexists with SENTINEL (5432) / ARGUS (5433)
 
 

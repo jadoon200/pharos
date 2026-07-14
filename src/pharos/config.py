@@ -71,12 +71,9 @@ class Settings(BaseSettings):
     # impossible for a surface vessel → a certain-positive identity/kinematic anomaly.
     spoof_max_speed_kn: float = 60.0
 
-    # --- Flagship trajectory-anomaly model ---------------------------------------------
-    #   auto -> MLX on Apple silicon if importable, else torch. "mlx" | "torch" | "auto".
-    anomaly_backend: str = "auto"
+    # --- Flagship trajectory-anomaly model (GRU sequence autoencoder, torch) -----------
     anomaly_seq_len: int = 16  # resampled steps per windowed track sample
     anomaly_hidden: int = 64
-    anomaly_epochs: int = 20
     anomaly_model_dir: Path = Path("data/models")
     # Anomaly score percentile (over benign training tracks) above which a track is flagged.
     anomaly_threshold_pct: float = 99.0

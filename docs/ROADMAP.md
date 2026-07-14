@@ -10,7 +10,7 @@ story (M0–M8), with deploy (M9) last and the ARGUS bridge (M10) an explicit ex
 | M1 | Collection — NOAA bulk AIS loader, synthetic labelled generator, AISStream live client, GFW label client, zone/reference seed, Prefect flows | ✅ done |
 | M2 | Track building — per-MMSI segmentation (gap-split voyages), resampling, heading-invariant shape features, kinematics | ✅ done |
 | M3 | Deterministic detectors — dark-ship/gap, STS rendezvous, loiter/incursion, spoofing → incidents | ✅ done |
-| M4 | Flagship model — trajectory-anomaly autoencoder (torch + MLX port, benchmark-gated); cross-region generalization (the headline) | ✅ done |
+| M4 | Flagship model — GRU sequence autoencoder (torch; train/val + early stopping) vs a PCA baseline; cross-region generalization | ✅ done |
 | M5 | Composite ensemble — fuse detectors into per-vessel maritime-threat rollups (transparent risk + reliability) | ✅ done |
 | M6 | Eval harness — gold set + calibration trap, per-type P/R, cross-region AUC, GFW cross-check → docs/EVAL.md | ✅ done |
 | M7 | API — hardened read-only FastAPI + GeoJSON endpoints + `POST /score-track` | ✅ done |
