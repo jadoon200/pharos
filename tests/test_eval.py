@@ -79,8 +79,8 @@ def test_evaluate_end_to_end() -> None:
     per = results["per_detector"]
     assert isinstance(per, dict)
     assert per["spoof"]["recall"] == 1.0
-    # The flagship GRU transfers cross-region; and it beats the collapsing baselines.
+    # The flagship GRU transfers cross-region; and it beats the collapsing PCA baseline.
     assert float(results["anomaly_gru_cross_auc"]) >= 0.8  # type: ignore[arg-type]
-    assert float(results["anomaly_gru_within_auc"]) > float(results["anomaly_mlp_within_auc"])  # type: ignore[arg-type]
+    assert float(results["anomaly_gru_within_auc"]) > float(results["anomaly_pca_within_auc"])  # type: ignore[arg-type]
     md = render_markdown(results)
     assert "cross-region" in md.lower() and "gru" in md.lower()

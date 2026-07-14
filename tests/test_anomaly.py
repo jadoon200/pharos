@@ -11,13 +11,7 @@ from sqlalchemy.orm import Session
 
 from pharos.config import get_settings
 from pharos.db.models import Incident
-from pharos.detect.anomaly import (
-    PCAAnomalyBaseline,
-    TrajectoryAnomalyModel,
-    detect_anomalies,
-    normalized_scores,
-)
-from pharos.detect.backends import resolve_backend
+from pharos.detect.anomaly import PCAAnomalyBaseline, detect_anomalies, normalized_scores
 from pharos.detect.seq_anomaly import SequenceAnomalyModel
 from pharos.ingest.persist import persist_scenario_or_positions
 from pharos.ingest.synthetic import generate_scenario
@@ -72,20 +66,17 @@ def test_gru_cross_region_transfer() -> None:
     assert _auc(g.score(s_us), lab_us) >= 0.8
 
 
-def test_gru_beats_baselines_unsupervised() -> None:
-    # The honest depth-matters finding: under unsupervised training on the hard set, the flattened
-    # MLP-AE and linear PCA fall APART (below chance), while the GRU holds up.
+def test_gru_beats_pca_baseline_unsupervised() -> None:
+    # The honest depth-matters finding: under unsupervised training on the hard set, the linear
+    # PCA baseline falls APART (below chance), while the GRU holds up.
     s, f, lab = _voyages("singapore", seed=2)
     gru = SequenceAnomalyModel(hidden=64, seed=0)
     gru.fit(s)
-    mlp = TrajectoryAnomalyModel(hidden=64, seed=0)
-    mlp.fit(f, epochs=80)
     pca = PCAAnomalyBaseline(n_components=6)
     pca.fit(f)
     gru_auc = _auc(gru.score(s), lab)
     assert gru_auc >= 0.85
-    assert gru_auc > _auc(mlp.score(f), lab)  # GRU beats the flattened baseline
-    assert gru_auc > _auc(pca.score(f), lab)  # GRU beats the linear baseline
+    assert gru_auc > _auc(pca.score(f), lab)  # the deep model beats the linear baseline
 
 
 def test_normalized_scores_semantics() -> None:
@@ -105,11 +96,6 @@ def test_gru_save_load_roundtrip(tmp_path) -> None:  # type: ignore[no-untyped-d
     loaded = SequenceAnomalyModel.load(path)
     assert np.allclose(g.score(s), loaded.score(s), atol=1e-4)
     assert loaded.threshold == g.threshold
-
-
-def test_resolve_backend_defaults_to_torch_without_mlx() -> None:
-    assert resolve_backend("torch") == "torch"
-    assert resolve_backend("auto") in {"torch", "mlx"}
 
 
 def test_detect_anomalies_writes_incidents(session: Session) -> None:

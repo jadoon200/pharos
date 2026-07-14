@@ -7,12 +7,11 @@ env:
 # Run inside the activated pharos env. MLX is a darwin-only extra (torch fallback elsewhere).
 install:
 	pip install -r requirements-dev.txt && pip install -e .
-	@if [ "$$(uname)" = "Darwin" ]; then pip install -r requirements-mlx.txt; fi
 
-# Refreeze the pinned lock (CI and Docker install from it). Excludes the darwin-only mlx wheel.
+# Refreeze the pinned lock (CI and Docker install from it).
 lock:
 	printf -- '--extra-index-url https://download.pytorch.org/whl/cpu\n\n' > requirements.lock
-	pip freeze --exclude-editable | grep -iv '^mlx' >> requirements.lock
+	pip freeze --exclude-editable >> requirements.lock
 
 lint:
 	ruff check . && ruff format --check .

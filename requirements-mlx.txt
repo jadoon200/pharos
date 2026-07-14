@@ -1,4 +1,0 @@
-# Apple-silicon-native trajectory-anomaly backend (darwin-only optional extra).
-# Installed by `make install` on macOS; excluded from requirements.lock so Linux CI /
-# Docker use the torch fallback. The MLX-vs-torch default is benchmark-gated (docs/EVAL.md).
-mlx>=0.18; sys_platform == "darwin"

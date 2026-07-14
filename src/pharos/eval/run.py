@@ -21,7 +21,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from pharos.config import get_settings
 from pharos.db.base import Base
 from pharos.db.models import Incident
-from pharos.detect.anomaly import PCAAnomalyBaseline, TrajectoryAnomalyModel
+from pharos.detect.anomaly import PCAAnomalyBaseline
 from pharos.detect.run import DETERMINISTIC_DETECTORS, run_detectors
 from pharos.detect.seq_anomaly import SequenceAnomalyModel
 from pharos.eval.goldset import GOLD_SEEDS, TEST_REGION, TRAIN_REGION, build_gold
@@ -76,7 +76,6 @@ def evaluate() -> dict[str, object]:
     trap_ok = 0
     gru_w: list[float] = []
     gru_x: list[float] = []
-    mlp_w: list[float] = []
     pca_w: list[float] = []
 
     for seed in GOLD_SEEDS:
@@ -89,8 +88,8 @@ def evaluate() -> dict[str, object]:
 
         # Anomaly detection, the honest UNSUPERVISED way: train on ALL of a region's tracks (no
         # labels — what an operator actually has), score, and AUC the injected anomalies vs benign
-        # transits. Flagship GRU sequence-AE vs the flattened-MLP and linear-PCA baselines; plus the
-        # cross-region transfer (train Singapore, score US west coast) for the GRU.
+        # transits. Flagship GRU sequence-AE vs a linear-PCA baseline; plus the cross-region
+        # transfer (train Singapore, score US west coast) for the GRU.
         sg = build_gold(seed, TRAIN_REGION)
         us = build_gold(seed, TEST_REGION)
         s_sg, l_sg = scenario_sequences(sg, seq, gap)
@@ -101,10 +100,6 @@ def evaluate() -> dict[str, object]:
         gru.fit(s_sg)
         gru_w.append(roc_auc_anomaly_vs_normal(gru.score(s_sg), l_sg))
         gru_x.append(roc_auc_anomaly_vs_normal(gru.score(s_us), l_us))
-
-        mlp = TrajectoryAnomalyModel(hidden=settings.anomaly_hidden, seed=0)
-        mlp.fit(f_sg, epochs=80)
-        mlp_w.append(roc_auc_anomaly_vs_normal(mlp.score(f_sg), lf_sg))
 
         pca = PCAAnomalyBaseline(n_components=6)
         pca.fit(f_sg)
@@ -126,7 +121,6 @@ def evaluate() -> dict[str, object]:
         "trap_held": f"{trap_ok}/{len(GOLD_SEEDS)}",
         "anomaly_gru_within_auc": _mean(gru_w),
         "anomaly_gru_cross_auc": _mean(gru_x),
-        "anomaly_mlp_within_auc": _mean(mlp_w),
         "anomaly_pca_within_auc": _mean(pca_w),
     }
     return results
@@ -155,13 +149,11 @@ def render_markdown(results: dict[str, object]) -> str:
         "|---|---|---|",
         f"| **GRU sequence-AE (flagship)** | **{results['anomaly_gru_within_auc']}** | "
         f"**{results['anomaly_gru_cross_auc']}** |",
-        f"| MLP flattened-AE (baseline) | {results['anomaly_mlp_within_auc']} | — |",
         f"| PCA linear (baseline) | {results['anomaly_pca_within_auc']} | — |",
         "",
         f"Cross-region = train {TRAIN_REGION}, score {TEST_REGION}. The recurrent model that "
-        "captures ordered dynamics is the only one that survives unsupervised training on the "
-        "confounder-rich set — the flattened/linear baselines fall below chance, so the depth is "
-        "necessary, not decorative.",
+        "captures ordered dynamics survives unsupervised training on the confounder-rich set while "
+        "the linear baseline falls below chance — the depth is necessary, not decorative.",
         "",
         "_Synthetic gold set (a known ceiling — see the note above). The real result is the "
         "false-positive reduction on real NOAA AIS in **Real-data validation** below._",

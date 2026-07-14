@@ -59,8 +59,8 @@ Two evaluations, and [`docs/EVAL.md`](docs/EVAL.md) leads with the second:
   ferries) as the top anomalies — interpretable, real outliers.
 - **The flagship model beats fair baselines — the depth is necessary.** Under the realistic
   *unsupervised* setup (train on all tracks, no labels), the GRU sequence-AE holds **~0.96 AUC**
-  (within *and* cross-region) while the flattened-MLP and linear-PCA baselines **fall below chance
-  (~0.26 / 0.27)**. The recurrent architecture that models ordered dynamics is what survives.
+  (within *and* cross-region) while the linear-PCA baseline **falls below chance
+  (~0.27)**. The recurrent architecture that models ordered dynamics is what survives.
 - **Honest about the synthetic ceiling.** The labelled offline gold set can't ship hundreds of MB
   of NOAA CSVs, so it uses a deterministic simulator (noise, benign confounders, graded anomalies).
   But self-generated anomalies are separable *by construction* — so the near-perfect detector P/R
@@ -83,7 +83,7 @@ Earth / EEZ reference geometry.
 
 Python 3.12 (conda) · SQLAlchemy 2.0 / Alembic · PostgreSQL (SQLite for tests — no PostGIS
 dependency; spatial math in pure numpy) · Prefect · httpx · scikit-learn · **torch GRU sequence
-autoencoder** (flagship anomaly model; MLP + PCA baselines) · FastAPI · React 19 + TypeScript +
+autoencoder** (flagship anomaly model; **PCA baseline**) · FastAPI · React 19 + TypeScript +
 Leaflet · Docker Compose · GitHub Actions. Mirrors SENTINEL/ARGUS conventions so the three read as
 one body of work. ruff + mypy (strict) + pytest gate every change.
 

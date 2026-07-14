@@ -29,8 +29,8 @@ picture for **human review**. It is analytical and defensive.
 ## Evaluation & known limitations
 
 **Trajectory anomaly flagship:** A GRU sequence autoencoder over ordered per-step tracks.
-Under unsupervised training (no labels), it achieves ~0.96 AUC while MLP/PCA baselines fall
-below chance (~0.26 / ~0.27 AUC). The recurrent depth is necessary, not decorative.
+Under unsupervised training (no labels), it achieves ~0.96 AUC while the linear PCA baseline falls
+below chance (~0.27 AUC). The recurrent depth is necessary, not decorative.
 
 **Synthetic evaluation ceiling:** The offline gold set's near-perfect detector precision/recall
 (~1.0 for rendezvous, loiter, gaps) is a *known ceiling* — self-generated anomalies are separable
