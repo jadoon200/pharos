@@ -17,6 +17,7 @@ dependencies = [
     "tenacity>=8.3",
     "numpy>=1.26",
     "scikit-learn>=1.5",
+    "torch>=2.2",
     "fastapi>=0.115",
     "uvicorn>=0.30",
 ]
@@ -24,8 +25,6 @@ dependencies = [
 [project.optional-dependencies]
 # Live AIS lane (AISStream.io WebSocket). The reproducible NOAA path needs nothing.
 live = ["websockets>=12.0"]
-# Torch — the GRU sequence-autoencoder anomaly model (CPU is plenty at this data scale).
-torch = ["torch>=2.2"]
 
 [dependency-groups]
 dev = [
