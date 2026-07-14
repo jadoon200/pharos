@@ -1,8 +1,9 @@
 # CPU-only torch wheels on Linux (CI/Docker); harmless no-op on macOS.
-# The trajectory-anomaly model uses torch as its portable backend; we never need CUDA.
+# The flagship GRU trajectory-anomaly model needs torch; we never need CUDA.
 --extra-index-url https://download.pytorch.org/whl/cpu
 
 sqlalchemy>=2.0
+torch>=2.2
 alembic>=1.13
 psycopg[binary]>=3.2
 pydantic>=2.7
