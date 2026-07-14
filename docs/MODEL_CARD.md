@@ -28,9 +28,23 @@ picture for **human review**. It is analytical and defensive.
 
 ## Evaluation & known limitations
 
-See [`EVAL.md`](EVAL.md). The headline is cross-region generalization; the headline *limitation* is
-the AIS coverage confound, measured against Global Fishing Watch reception-modelled gap events
-rather than assumed away. Recorded negatives are kept, not buried.
+**Trajectory anomaly flagship:** A GRU sequence autoencoder over ordered per-step tracks.
+Under unsupervised training (no labels), it achieves ~0.96 AUC while MLP/PCA baselines fall
+below chance (~0.26 / ~0.27 AUC). The recurrent depth is necessary, not decorative.
+
+**Synthetic evaluation ceiling:** The offline gold set's near-perfect detector precision/recall
+(~1.0 for rendezvous, loiter, gaps) is a *known ceiling* — self-generated anomalies are separable
+by construction. That is not a capability claim; it validates the harness and trap methodology.
+
+**Real-data validation:** The honest test is NOAA Marine Cadastre AIS. Real data exposed
+catastrophic false positives in congested ports (naive rendezvous / loiter: 2,999 incidents);
+three domain-correct fixes reduced them ~98% (rendezvous 2,892 → 8, total 2,999 → 51). The GRU
+trained on real pattern-of-life surfaces interpretable outliers (e.g., Catalina Island high-speed
+ferries). Real AIS carries no anomaly labels — that lane is qualitative. See [`EVAL.md`](EVAL.md).
+
+**Known limitation:** The AIS coverage confound is dominant behind "dark ship" false positives
+(dense coverage near shore vs. sparse offshore). Measured against Global Fishing Watch
+reception-modelled gap events rather than assumed away. Recorded negatives are kept, not buried.
 
 ## Provenance
 

@@ -1,8 +1,9 @@
 """Lazy anomaly scorer behind POST /score-track.
 
-Builds (once, cached) a `TrajectoryAnomalyModel` from whatever tracks the database holds, falling
-back to a synthetic Singapore scenario so the endpoint works out of the box on a fresh deploy. The
-route is read-only: it scores the pasted track's shape and never fetches a URL or writes to the DB.
+Builds (once, cached) the flagship `SequenceAnomalyModel` (GRU autoencoder) from whatever tracks
+the database holds, falling back to a synthetic Singapore scenario so the endpoint works out of the
+box on a fresh deploy. The route is read-only: it scores the pasted track's shape and never fetches
+a URL or writes to the DB.
 """
 
 from __future__ import annotations
@@ -16,35 +17,45 @@ from sqlalchemy.orm import Session
 
 from pharos.config import get_settings
 from pharos.db.models import Position, Track
-from pharos.detect.anomaly import TrajectoryAnomalyModel, normalized_scores
-from pharos.tracks.build import track_features
+from pharos.detect.anomaly import normalized_scores
+from pharos.detect.seq_anomaly import SequenceAnomalyModel
+from pharos.tracks.build import track_sequence
 
-_MODEL: TrajectoryAnomalyModel | None = None
+_MODEL: SequenceAnomalyModel | None = None
 
 
-def _training_features(session: Session) -> np.ndarray:
+def _training_sequences(session: Session) -> np.ndarray:
     settings = get_settings()
     tracks = [
-        t for t in session.scalars(select(Track).where(Track.features.isnot(None))) if t.features
+        t for t in session.scalars(select(Track).where(Track.sequence.isnot(None))) if t.sequence
     ]
     if len(tracks) >= 4:
-        return np.array([t.features for t in tracks], dtype=np.float64)
+        return np.array([t.sequence for t in tracks], dtype=np.float64)
     # Fallback: a synthetic scenario so a fresh deploy still scores.
-    from pharos.eval.metrics import scenario_features
     from pharos.ingest.synthetic import generate_scenario
+    from pharos.tracks.build import segment
 
     sc = generate_scenario("singapore", seed=0, n_normal=14)
-    x, _ = scenario_features(sc, settings.anomaly_seq_len, settings.track_gap_split_minutes)
-    return x
+    by_vessel: dict[str, list[Position]] = {}
+    for p in sc.positions:
+        by_vessel.setdefault(p.mmsi, []).append(p)
+    seqs = []
+    for pts in by_vessel.values():
+        for voyage in segment(pts, settings.track_gap_split_minutes):
+            if len(voyage) >= 6:
+                seqs.append(
+                    track_sequence(sorted(voyage, key=lambda p: p.ts), settings.anomaly_seq_len)
+                )
+    return np.array(seqs, dtype=np.float64)
 
 
-def get_scorer(session: Session) -> TrajectoryAnomalyModel:
+def get_scorer(session: Session) -> SequenceAnomalyModel:
     global _MODEL
     if _MODEL is None:
         settings = get_settings()
-        x = _training_features(session)
-        model = TrajectoryAnomalyModel(hidden=settings.anomaly_hidden, seed=0)
-        model.fit(x, epochs=settings.anomaly_epochs)
+        x = _training_sequences(session)
+        model = SequenceAnomalyModel(hidden=settings.anomaly_hidden, seed=0)
+        model.fit(x)
         model.calibrate(x, settings.anomaly_threshold_pct)
         _MODEL = model
     return _MODEL
@@ -78,9 +89,9 @@ def score_track_points(session: Session, points: list[dict[str, Any]]) -> dict[s
         for i, p in enumerate(points)
     ]
     positions.sort(key=lambda p: p.ts)
-    feats = np.array([track_features(positions, settings.anomaly_seq_len)], dtype=np.float64)
+    seq = np.array([track_sequence(positions, settings.anomaly_seq_len)], dtype=np.float64)
     model = get_scorer(session)
-    raw = float(model.score(feats)[0])
+    raw = float(model.score(seq)[0])
     threshold = model.threshold or 0.0
     norm = float(normalized_scores(np.array([raw]), threshold)[0])
     return {

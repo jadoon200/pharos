@@ -81,12 +81,17 @@ def _mmsi(region: str, n: int) -> str:
 
 
 class _Builder:
-    def __init__(self, region: str, seed: int, start: datetime, interval_s: float) -> None:
+    def __init__(
+        self, region: str, seed: int, start: datetime, interval_s: float, noise_km: float = 0.03
+    ) -> None:
         self.region = region
         self.spec = REGIONS[region]
         self.rng = np.random.default_rng(seed)
         self.start = start
         self.interval = timedelta(seconds=interval_s)
+        # GPS/report jitter added to every position — real AIS is noisy, and without it the
+        # anomaly detection is trivially separable (perfectly straight lines).
+        self.noise_km = noise_km
         self.vessels: list[Vessel] = []
         self.positions: list[Position] = []
         self.truth: list[GroundTruthEvent] = []
@@ -101,7 +106,15 @@ class _Builder:
             Vessel(mmsi=mmsi, name=name, ship_type=ship_type, flag=flag_for_mmsi(mmsi))
         )
 
-    def _emit(self, mmsi: str, ts: datetime, lat: float, lon: float, sog: float) -> None:
+    def _emit(
+        self, mmsi: str, ts: datetime, lat: float, lon: float, sog: float, *, noisy: bool = True
+    ) -> None:
+        if noisy and self.noise_km > 0:
+            lat = lat + float(self.rng.normal(0, self.noise_km / KM_PER_DEG_LAT))
+            lon = lon + float(
+                self.rng.normal(0, self.noise_km / (KM_PER_DEG_LAT * math.cos(math.radians(lat))))
+            )
+            sog = max(0.0, sog + float(self.rng.normal(0, 0.3)))
         self.positions.append(
             Position(
                 mmsi=mmsi,
@@ -125,17 +138,54 @@ class _Builder:
 
     # --- track templates -----------------------------------------------------------------
     def normal_transit(self, steps: int = 40, speed: float = 12.0) -> str:
-        """A benign straight-line transit along the lane (pattern-of-life for training)."""
+        """A benign lane transit — gently curving (a real lane isn't a ruler), for training."""
         mmsi = self._new_mmsi()
         self._vessel(mmsi, "cargo", f"TRANSIT {self._n}")
         # Start offset around the region center, jitter the exact lane.
         lat, lon = self.spec.center
         lat += float(self.rng.normal(0, 0.02))
         lon += float(self.rng.normal(0, 0.05))
-        heading = self.spec.lane_heading_deg + float(self.rng.normal(0, 4))
+        heading = self.spec.lane_heading_deg + float(self.rng.normal(0, 6))
+        # Slow heading random-walk → gentle, realistic lane curvature (not a straight line).
+        drift = float(self.rng.normal(0, 0.4))
         ts = self.start + timedelta(minutes=float(self.rng.integers(0, 30)))
         for _ in range(steps):
             self._emit(mmsi, ts, lat, lon, speed + float(self.rng.normal(0, 0.5)))
+            dist = speed * KN_TO_KMH * (self.interval.total_seconds() / 3600.0)
+            lat, lon = _step(lat, lon, heading, dist)
+            heading += drift + float(self.rng.normal(0, 0.8))  # meander
+            drift *= 0.9
+            ts += self.interval
+        self._set_seen(mmsi)
+        self.truth.append(GroundTruthEvent(mmsi, "normal", self.positions[-1].ts, ts, lat, lon))
+        return mmsi
+
+    def benign_maneuver(self, speed: float = 12.0) -> str:
+        """A LEGITIMATE manoeuvre — a single sustained course change, OR a gentle deviate-and-return
+        reroute (avoiding weather/traffic). Labelled 'normal': the anomaly model's HARD NEGATIVE.
+
+        The reroute case shares the deviate-then-rejoin *shape* of a covert detour, only gentler on
+        average — so the subtlest anomalies overlap with legitimate manoeuvring and the AUC stays
+        (context, not shape alone, ultimately separates them; PHAROS has only shape)."""
+        mmsi = self._new_mmsi()
+        self._vessel(mmsi, "cargo", f"MANEUVER {self._n}")
+        lat, lon = self.spec.center
+        lat += float(self.rng.normal(0, 0.02))
+        lon += float(self.rng.normal(0, 0.05))
+        heading = self.spec.lane_heading_deg + float(self.rng.normal(0, 6))
+        ts = self.start
+        reroute = bool(self.rng.random() < 0.5)
+        turn = float(self.rng.choice([-1, 1])) * float(self.rng.uniform(30, 50))
+        bend = float(self.rng.uniform(4.0, 6.5))  # gentle deviate-return, < the anomaly's bend
+        for i in range(40):
+            self._emit(mmsi, ts, lat, lon, speed + float(self.rng.normal(0, 0.5)))
+            if reroute:
+                if 14 <= i < 21:
+                    heading += bend
+                elif 21 <= i < 28:
+                    heading -= bend
+            elif i == 20:  # one clean sustained turn
+                heading += turn
             dist = speed * KN_TO_KMH * (self.interval.total_seconds() / 3600.0)
             lat, lon = _step(lat, lon, heading, dist)
             ts += self.interval
@@ -258,17 +308,31 @@ class _Builder:
         self._set_seen(mmsi)
         return mmsi
 
-    def anomaly_event(self, speed: float = 10.0) -> str:
-        """A zig-zagging route unlike the straight lane — a trajectory anomaly."""
+    def anomaly_event(self, speed: float = 12.0, magnitude: float = 1.0) -> str:
+        """A SUBTLE trajectory anomaly — a smooth detour/loop off the lane, then a rejoin.
+
+        Deliberately not a wild zig-zag: it deviates and comes back (a survey box, a covert
+        diversion), which overlaps in shape space with a legitimate manoeuvre (`benign_maneuver`)
+        so the model faces real ambiguity and the AUC is honest, not a trivial 1.0. `magnitude`
+        scales how far it strays (used to build a spectrum of easy→hard anomalies).
+        """
         mmsi = self._new_mmsi()
         self._vessel(mmsi, "cargo", f"ANOMALY {self._n}")
         lat, lon = self.spec.center
+        lat += float(self.rng.normal(0, 0.02))
+        lon += float(self.rng.normal(0, 0.05))
         ts = self.start
         start = ts
-        heading = self.spec.lane_heading_deg
-        for i in range(40):
-            self._emit(mmsi, ts, lat, lon, speed)
-            heading += 55.0 if i % 2 == 0 else -50.0  # sharp alternating turns
+        base = self.spec.lane_heading_deg + float(self.rng.normal(0, 6))
+        heading = base
+        # A smooth excursion: bend away over the middle third, then bend back (a rounded loop).
+        turn = 9.0 * magnitude
+        for i in range(42):
+            self._emit(mmsi, ts, lat, lon, speed + float(self.rng.normal(0, 0.5)))
+            if 12 <= i < 21:
+                heading += turn  # bend off the lane
+            elif 21 <= i < 30:
+                heading -= turn  # bend back toward it
             dist = speed * KN_TO_KMH * (self.interval.total_seconds() / 3600.0)
             lat, lon = _step(lat, lon, heading, dist)
             ts += self.interval
@@ -277,6 +341,49 @@ class _Builder:
             GroundTruthEvent(mmsi, "anomaly", start, ts, self.spec.center[0], self.spec.center[1])
         )
         return mmsi
+
+    def benign_anchorage(self, dwell_minutes: float = 120.0, speed: float = 0.3) -> str:
+        """A vessel legitimately anchored inside a PORT anchorage — must NOT be flagged as
+        loitering-with-intent. A HARD NEGATIVE for the loiter detector (zone-aware: anchoring in a
+        designated anchorage is expected)."""
+        mmsi = self._new_mmsi()
+        self._vessel(mmsi, "cargo", f"ANCHORED {self._n}")
+        # Singapore Port Anchorages centre (inside the 'singapore-anchorages' port zone).
+        clat, clon = (1.23, 103.85) if self.region == "singapore" else (33.68, -118.18)
+        ts = self.start
+        start = ts
+        n = max(1, int(dwell_minutes * 60 / self.interval.total_seconds()))
+        for _ in range(n):  # swinging gently at anchor
+            r = float(self.rng.uniform(0, 0.003))
+            ang = float(self.rng.uniform(0, 2 * math.pi))
+            self._emit(mmsi, ts, clat + r * math.cos(ang), clon + r * math.sin(ang), speed)
+            ts += self.interval
+        self._set_seen(mmsi)
+        self.truth.append(GroundTruthEvent(mmsi, "benign_anchorage", start, ts, clat, clon))
+        return mmsi
+
+    def benign_slow_pass(self) -> tuple[str, str]:
+        """Two vessels pass close and slow-ish but only briefly (< the rendezvous window) — a HARD
+        NEGATIVE for the STS detector, which must require a sustained co-located dwell."""
+        a, b = self._new_mmsi(), self._new_mmsi()
+        self._vessel(a, "cargo", f"PASS-A {self._n - 1}")
+        self._vessel(b, "cargo", f"PASS-B {self._n}")
+        clat, clon = self.spec.center
+        ts = self.start
+        start = ts
+        for i in range(16):  # cross paths, momentarily near, never a sustained slow dwell
+            self._emit(a, ts, clat + 0.03 * (8 - i) / 8, clon, 6.0)
+            self._emit(b, ts, clat, clon + 0.03 * (8 - i) / 8, 6.0)
+            ts += self.interval
+        self._set_seen(a)
+        self._set_seen(b)
+        self.truth.append(
+            GroundTruthEvent(a, "benign_pass", start, ts, clat, clon, counterpart_mmsi=b)
+        )
+        self.truth.append(
+            GroundTruthEvent(b, "benign_pass", start, ts, clat, clon, counterpart_mmsi=a)
+        )
+        return a, b
 
     def coverage_gap_trap(self, silence_minutes: float = 200.0, speed: float = 11.0) -> str:
         """A calibration TRAP: a benign vessel that loses AIS reception while barely moving.
@@ -320,19 +427,38 @@ def generate_scenario(
     interval_s: float = 300.0,
     start: datetime | None = None,
     with_events: bool = True,
+    noise_km: float = 0.03,
 ) -> Scenario:
-    """Build a labelled scenario: `n_normal` benign transits + one of each injected event."""
+    """Build a realistic, labelled scenario for training + evaluation.
+
+    Composition (all noisy, gently-curving tracks — no rulers):
+    - `n_normal` benign lane transits (the pattern-of-life the anomaly model trains on);
+    - `n_normal // 4` **benign course-changes** — legitimate single manoeuvres, hard negatives
+      that must NOT rank with the anomalies;
+    - graded **subtle anomalies** (detours of increasing magnitude) — the anomaly positives;
+    - one of each deterministic event (gap / rendezvous / loiter / spoof);
+    - **confounders that must not be flagged**: a coverage-gap trap, a port-anchorage dwell, and a
+      brief slow pass. These give the deterministic detectors realistic false-alarm pressure.
+    """
     if region not in REGIONS:
         raise ValueError(f"unknown region {region!r}; choose from {sorted(REGIONS)}")
     start = start or datetime(2023, 1, 1, 0, 0, tzinfo=UTC)
-    b = _Builder(region, seed, start, interval_s)
+    b = _Builder(region, seed, start, interval_s, noise_km=noise_km)
     for _ in range(n_normal):
         b.normal_transit()
+    for _ in range(max(2, n_normal // 3)):
+        b.benign_maneuver()  # legitimate turns + reroutes — the anomaly model's hard negatives
     if with_events:
         b.gap_event()
         b.rendezvous_event()
         b.loiter_event()
         b.spoof_event()
-        b.anomaly_event()
+        # A spectrum from obvious anomalies down to subtle detours that overlap benign reroutes,
+        # so recall degrades on the subtle end (see docs/EVAL.md on the synthetic-eval ceiling).
+        for mag in (1.5, 1.1, 0.8, 0.55, 0.45):
+            b.anomaly_event(magnitude=mag)
+        # Confounders — benign behaviours that superficially resemble threats.
         b.coverage_gap_trap()  # a benign coverage gap the gap detector must NOT flag
+        b.benign_anchorage()  # legitimate anchoring in a port — the loiter detector's negative
+        b.benign_slow_pass()  # a brief close pass — the STS detector's negative
     return Scenario(region=region, vessels=b.vessels, positions=b.positions, truth=b.truth)

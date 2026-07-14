@@ -17,7 +17,7 @@ from numpy.typing import NDArray
 
 from pharos.db.models import Incident, Position
 from pharos.ingest.synthetic import GroundTruthEvent, Scenario
-from pharos.tracks.build import segment, track_features
+from pharos.tracks.build import segment, track_features, track_sequence
 
 # detector name → the ground-truth event type it should find.
 DETECTOR_TRUTH = {
@@ -97,6 +97,24 @@ def scenario_features(
                 feats.append(track_features(sorted(voyage, key=lambda p: p.ts), seq_len))
                 labels.append(truth.get(mmsi, "normal"))
     return np.array(feats, dtype=np.float64), labels
+
+
+def scenario_sequences(
+    scenario: Scenario, seq_len: int, gap_minutes: float
+) -> tuple[NDArray[np.float64], list[str]]:
+    """Per-voyage *sequence* tensor (N, seq_len-1, 4) + event label, for the GRU model."""
+    by_vessel: dict[str, list[Position]] = {}
+    for p in scenario.positions:
+        by_vessel.setdefault(p.mmsi, []).append(p)
+    truth = {e.mmsi: e.event_type for e in scenario.truth}
+    seqs: list[NDArray[np.float64]] = []
+    labels: list[str] = []
+    for mmsi, pts in by_vessel.items():
+        for voyage in segment(pts, gap_minutes):
+            if len(voyage) >= 6:
+                seqs.append(track_sequence(sorted(voyage, key=lambda p: p.ts), seq_len))
+                labels.append(truth.get(mmsi, "normal"))
+    return np.array(seqs, dtype=np.float64), labels
 
 
 def roc_auc_anomaly_vs_normal(scores: NDArray[np.float64], labels: list[str]) -> float:

@@ -15,7 +15,7 @@ from pharos.config import Settings
 from pharos.db.models import Incident, Position
 from pharos.detect.base import make_incident, positions_by_vessel
 from pharos.geo import haversine_km
-from pharos.zones import zone_for
+from pharos.zones import in_kind, zone_for
 
 
 def _mean_speed(pts: list[Position]) -> float:
@@ -40,13 +40,21 @@ def detect_loitering(positions: list[Position], settings: Settings) -> list[Inci
                 j += 1
             span = pts[i : j + 1]
             duration_min = (span[-1].ts - span[0].ts).total_seconds() / 60.0
+            mean_speed = _mean_speed(span)
             if (
                 len(span) >= 2
                 and duration_min >= settings.loiter_min_minutes
-                and _mean_speed(span) <= settings.loiter_max_speed_kn
+                # Loitering is slow-but-moving (holding/patrolling); a vessel at ~0 kn is anchored,
+                # not loitering-with-intent — the real-data fix for congested-port anchored fleets.
+                and settings.loiter_min_speed_kn <= mean_speed <= settings.loiter_max_speed_kn
             ):
                 clat = float(np.mean([p.lat for p in span]))
                 clon = float(np.mean([p.lon for p in span]))
+                # Anchoring inside a designated port/anchorage is expected, not a threat —
+                # skip it (the honest handling of the anchorage confounder, not a false alarm).
+                if in_kind(clat, clon, "port"):
+                    i = j + 1
+                    continue
                 zone = zone_for(clat, clon)
                 dur_factor = min(1.0, duration_min / (settings.loiter_min_minutes * 3))
                 score = round(0.4 + 0.3 * dur_factor + (0.2 if zone and zone.sensitive else 0.0), 4)

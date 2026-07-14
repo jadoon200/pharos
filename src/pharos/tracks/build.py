@@ -96,6 +96,36 @@ def track_features(points: list[Position], seq_len: int) -> list[float]:
     return feats
 
 
+def track_sequence(points: list[Position], seq_len: int) -> NDArray[np.float64]:
+    """A per-step *sequence* descriptor for the GRU autoencoder, shape (seq_len-1, 4).
+
+    Resample to `seq_len` points, rotate the whole path to a canonical heading (as in
+    `track_features`), then describe each step by `[dx_km, dy_km, step_len_km, turn_rad]` — the
+    local motion. Heading-invariant and region-agnostic, but it preserves the *ordered* geometry a
+    recurrent model can exploit (a straight run vs a bend vs a detour), which the flattened
+    descriptor blurs.
+    """
+    lats = np.array([p.lat for p in points], dtype=np.float64)
+    lons = np.array([p.lon for p in points], dtype=np.float64)
+    times = np.array([p.ts.timestamp() for p in points], dtype=np.float64)
+    rlats, rlons = _resample_xy(lats, lons, times, seq_len)
+
+    lat0 = float(rlats[0])
+    x = (rlons - rlons[0]) * 111.19 * np.cos(np.radians(lat0))
+    y = (rlats - rlats[0]) * 111.19
+    theta = np.arctan2(y[-1], x[-1]) if (x[-1] or y[-1]) else 0.0
+    c, s = np.cos(-theta), np.sin(-theta)
+    xr = c * x - s * y
+    yr = s * x + c * y
+
+    dx = np.diff(xr)
+    dy = np.diff(yr)
+    step_len = np.hypot(dx, dy)
+    ang = np.arctan2(dy, dx)
+    turn = np.diff(ang, prepend=ang[0])  # heading change per step (0 at the first step)
+    return np.stack([dx, dy, step_len, turn], axis=1).astype(np.float64)
+
+
 def kinematics(points: list[Position]) -> dict[str, float]:
     """Voyage distance (km) and the largest implied speed (knots) between consecutive reports."""
     if len(points) < 2:
@@ -130,6 +160,7 @@ def build_track(points: list[Position], seq_len: int) -> Track | None:
         end_lat=end.lat,
         end_lon=end.lon,
         features=track_features(pts, seq_len),
+        sequence=track_sequence(pts, seq_len).tolist(),
     )
 
 

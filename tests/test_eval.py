@@ -8,7 +8,7 @@ from pharos.detect.run import run_detectors
 from pharos.eval.gfw_check import corroborate
 from pharos.eval.metrics import (
     roc_auc_anomaly_vs_normal,
-    scenario_features,
+    scenario_sequences,
     score_detector,
     trap_breaches,
 )
@@ -42,15 +42,17 @@ def test_coverage_trap_is_not_flagged() -> None:
 
 def test_cross_region_anomaly_auc() -> None:
     settings = get_settings()
-    sg = generate_scenario("singapore", seed=0, n_normal=12)
-    us = generate_scenario("us-west", seed=0, n_normal=12)
-    x_sg, _ = scenario_features(sg, settings.anomaly_seq_len, settings.track_gap_split_minutes)
-    x_us, lab_us = scenario_features(us, settings.anomaly_seq_len, settings.track_gap_split_minutes)
-    from pharos.detect.anomaly import TrajectoryAnomalyModel
+    sg = generate_scenario("singapore", seed=0, n_normal=14)
+    us = generate_scenario("us-west", seed=0, n_normal=14)
+    s_sg, _ = scenario_sequences(sg, settings.anomaly_seq_len, settings.track_gap_split_minutes)
+    s_us, lab_us = scenario_sequences(
+        us, settings.anomaly_seq_len, settings.track_gap_split_minutes
+    )
+    from pharos.detect.seq_anomaly import SequenceAnomalyModel
 
-    model = TrajectoryAnomalyModel(hidden=64, seed=0)
-    model.fit(x_sg, epochs=30)
-    assert roc_auc_anomaly_vs_normal(model.score(x_us), lab_us) >= 0.8
+    model = SequenceAnomalyModel(hidden=64, seed=0)
+    model.fit(s_sg)  # unsupervised: train Singapore, score US west coast
+    assert roc_auc_anomaly_vs_normal(model.score(s_us), lab_us) >= 0.8
 
 
 def test_gfw_corroboration_counts() -> None:
@@ -77,7 +79,8 @@ def test_evaluate_end_to_end() -> None:
     per = results["per_detector"]
     assert isinstance(per, dict)
     assert per["spoof"]["recall"] == 1.0
-    # Cross-region AUC is the headline; on the shape-invariant features it transfers strongly.
-    assert float(results["anomaly_cross_region_auc"]) >= 0.8  # type: ignore[arg-type]
+    # The flagship GRU transfers cross-region; and it beats the collapsing baselines.
+    assert float(results["anomaly_gru_cross_auc"]) >= 0.8  # type: ignore[arg-type]
+    assert float(results["anomaly_gru_within_auc"]) > float(results["anomaly_mlp_within_auc"])  # type: ignore[arg-type]
     md = render_markdown(results)
-    assert "cross-region AUC" in md.lower() or "cross-region" in md.lower()
+    assert "cross-region" in md.lower() and "gru" in md.lower()

@@ -65,6 +65,12 @@ ensemble:
 eval:
 	python -m pharos.eval.run
 
+# Real-data validation on a downloaded NOAA Marine Cadastre AIS slice (see scripts/eval_real.py
+# for the download + filter one-liners). The honest test the synthetic gold set can't be.
+#   make eval-real FILE=data/ais/la_2020_01_01.csv REGION=us-la
+eval-real:
+	python -m scripts.eval_real "$(FILE)" "$(REGION)"
+
 # Serve the read-only FastAPI + GeoJSON endpoints on :8000
 api:
 	uvicorn pharos.api.app:app --reload

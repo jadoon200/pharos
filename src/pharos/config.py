@@ -50,10 +50,23 @@ class Settings(BaseSettings):
     rendezvous_max_km: float = 0.5
     rendezvous_max_speed_kn: float = 1.0
     rendezvous_min_minutes: float = 30.0
+    # An STS is between *transiting* vessels that converge then separate — not an anchored
+    # fleet sitting near each other. A participant must reach at least this speed somewhere on
+    # its track (proof it was under way), else it's treated as anchored and excluded. This is
+    # the fix for catastrophic rendezvous over-firing in congested ports (real-data-driven).
+    rendezvous_min_transit_speed_kn: float = 3.0
+    # A genuine STS is a *discrete* pairing. A vessel co-located with many others is an
+    # anchorage cluster or a GPS-glitchy track that teleports near everyone — drop pairings
+    # touching any vessel with more than this many distinct partners.
+    rendezvous_max_partners: int = 2
     # Loitering: dwelling within a small radius (or inside a zone) for this long at low speed.
     loiter_radius_km: float = 2.0
     loiter_min_minutes: float = 60.0
     loiter_max_speed_kn: float = 2.0
+    # ...but a vessel sitting at ~0 kn is *anchored*, not loitering-with-intent. Require some
+    # motion (the vessel is holding/patrolling, not moored). Real-data-driven: LA/LB anchored
+    # fleets otherwise flood the loiter detector.
+    loiter_min_speed_kn: float = 0.5
     # Spoofing: an implied speed above this (from consecutive reports) is physically
     # impossible for a surface vessel → a certain-positive identity/kinematic anomaly.
     spoof_max_speed_kn: float = 60.0

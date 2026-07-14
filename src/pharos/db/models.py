@@ -84,9 +84,11 @@ class Track(Base):
     start_lon: Mapped[float | None] = mapped_column(Float())
     end_lat: Mapped[float | None] = mapped_column(Float())
     end_lon: Mapped[float | None] = mapped_column(Float())
-    # Cached fixed-length resampled feature vector for the anomaly model (list[float]);
-    # stored in-DB so the SQLite path needs no vector extension.
+    # Cached fixed-length resampled feature vector for the flattened-AE / PCA baselines.
     features: Mapped[list[float] | None] = mapped_column(JsonType)
+    # Cached per-step sequence descriptor (seq_len-1 x 4) for the flagship GRU autoencoder;
+    # stored in-DB so the SQLite path needs no vector extension.
+    sequence: Mapped[list[list[float]] | None] = mapped_column(JsonType)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
 
 

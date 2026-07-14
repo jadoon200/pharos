@@ -107,6 +107,16 @@ def zone_by_id(zone_id: str) -> ZoneInfo | None:
     return _BY_ID.get(zone_id)
 
 
+def zones_containing(lat: float, lon: float) -> list[ZoneInfo]:
+    """Every registry zone that contains (lat, lon) — zones can overlap (a port inside a strait)."""
+    return [z for z in REGISTRY if point_in_polygon(lat, lon, [(p[0], p[1]) for p in z.polygon])]
+
+
+def in_kind(lat: float, lon: float, kind: str) -> bool:
+    """True if (lat, lon) falls inside any zone of the given kind (e.g. a port/anchorage)."""
+    return any(z.kind == kind for z in zones_containing(lat, lon))
+
+
 def zone_for(lat: float, lon: float, *, sensitive_only: bool = False) -> ZoneInfo | None:
     """The first registry zone containing (lat, lon), or None.
 

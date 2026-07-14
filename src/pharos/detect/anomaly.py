@@ -1,23 +1,18 @@
-"""Flagship trajectory-anomaly model — learned pattern-of-life over route shape.
+"""Flattened-vector trajectory-anomaly autoencoder + PCA baseline (the eval's comparison points).
 
-The four deterministic detectors catch *specified* behaviours; this model catches the
-*unspecified* one — a track whose shape doesn't look like the normal traffic. It is a small
-autoencoder trained on benign track-shape descriptors (`tracks.build.track_features`: resampled,
-translated, rotated-to-canonical, region-agnostic); a voyage the model reconstructs poorly is
-anomalous.
+The flagship pipeline model is the GRU sequence autoencoder in `seq_anomaly.py`; this module is its
+honest **baselines** — a small MLP autoencoder over the flattened, heading-invariant descriptor
+(`tracks.build.track_features`), and a linear PCA reconstruction. The eval reports all three so the
+GRU's value is measured against fair, simpler alternatives, not asserted.
 
-Two properties make this the honest-eval centrepiece:
+`detect_anomalies` here is the DB driver used by the whole pipeline; it now trains the flagship GRU
+(imported from `seq_anomaly.py`) over the stored per-step `Track.sequence` and rebuilds the
+`detector="anomaly"` incidents. Anomalies are unsupervised (no labels): a voyage the model
+reconstructs worst is flagged for human review. Torch backend (the MLX port in `anomaly_mlx.py` is
+the Apple-silicon path for the MLP baseline; benchmark-gated in `docs/EVAL.md`, pending).
 
-- **Cross-region generalization.** Because the features encode *shape* not *place* (a straight
-  transit looks the same in the Singapore Strait and off California), a model trained on one
-  waterway can be scored on another. That train-A / test-B AUC — the number that survives the
-  region change — is the maritime analogue of SENTINEL's cross-network transfer result. The eval
-  (`pharos.eval`) reports it against a within-region baseline.
-- **Threshold-free headline.** AUC needs no operating point; the pipeline's incident flagging uses
-  a benign-calibrated percentile threshold, kept separate from the metric.
-
-Backend: torch (the portable default, used on Linux/CI). An MLX port (`anomaly_mlx.py`) is the
-Apple-silicon path; the default is benchmark-gated in `docs/EVAL.md` (MLX benchmark pending).
+On the honest-eval story and why a labelled synthetic AUC is a *ceiling*, not a capability claim
+(and the real-data false-positive reduction that is the actual result), see `docs/EVAL.md`.
 """
 
 from __future__ import annotations
@@ -35,7 +30,6 @@ from torch import nn
 from pharos.config import get_settings
 from pharos.db.base import session_scope
 from pharos.db.models import Incident, Track
-from pharos.detect.backends import resolve_backend
 from pharos.detect.base import make_incident
 from pharos.logging import configure_logging, get_logger
 
@@ -195,43 +189,38 @@ class PCAAnomalyBaseline:
         return self.score(features) > self.threshold
 
 
-def _build_model(backend: str, hidden: int, seed: int) -> Any:
-    if backend == "mlx":
-        from pharos.detect.anomaly_mlx import MLXTrajectoryAnomalyModel
-
-        return MLXTrajectoryAnomalyModel(hidden=hidden, seed=seed)
-    return TrajectoryAnomalyModel(hidden=hidden, seed=seed)
-
-
 def detect_anomalies(
     session: Session, region: str | None = None, train_region: str | None = None
 ) -> dict[str, int | str]:
-    """Train the anomaly model and rebuild its incidents for `region`.
+    """Train the flagship GRU sequence autoencoder and rebuild its incidents for `region`.
 
-    Trains on `train_region` (or `region` itself) and flags voyages the model reconstructs
-    worst. Rebuilds only the `detector="anomaly"` incidents, leaving the deterministic
+    Trains on `train_region` (or `region` itself) pattern-of-life and flags the voyages the model
+    reconstructs worst. Rebuilds only the `detector="anomaly"` incidents, leaving the deterministic
     detectors' rows intact (they are fused by the ensemble). Skips gracefully with too few tracks.
+    The `SequenceAnomalyModel` (`detect/seq_anomaly.py`) consumes the ordered per-step track; the
+    flattened `TrajectoryAnomalyModel` + PCA remain eval baselines only.
     """
+    from pharos.detect.seq_anomaly import SequenceAnomalyModel
+
     settings = get_settings()
-    backend = resolve_backend(settings.anomaly_backend)
 
     def _load(reg: str | None) -> list[Track]:
-        q = select(Track).where(Track.features.isnot(None))
+        q = select(Track).where(Track.sequence.isnot(None))
         if reg is not None:
             q = q.where(Track.region == reg)
-        return [t for t in session.scalars(q) if t.features]
+        return [t for t in session.scalars(q) if t.sequence]
 
     train_tracks = _load(train_region or region)
     score_tracks = _load(region)
     if len(train_tracks) < 4 or not score_tracks:
         log.info("anomaly_skip", reason="too few tracks", train=len(train_tracks))
-        return {"total": 0, "flagged": 0, "backend": backend, "scored": len(score_tracks)}
+        return {"total": 0, "flagged": 0, "model": "gru-seq-ae", "scored": len(score_tracks)}
 
-    x_train = np.array([t.features for t in train_tracks], dtype=np.float64)
-    x_score = np.array([t.features for t in score_tracks], dtype=np.float64)
+    x_train = np.array([t.sequence for t in train_tracks], dtype=np.float64)
+    x_score = np.array([t.sequence for t in score_tracks], dtype=np.float64)
 
-    model = _build_model(backend, settings.anomaly_hidden, seed=0)
-    model.fit(x_train, epochs=settings.anomaly_epochs)
+    model = SequenceAnomalyModel(hidden=settings.anomaly_hidden, seed=0)
+    history = model.fit(x_train)  # train/val split + early stopping (its own defaults)
     threshold = model.calibrate(x_train, settings.anomaly_threshold_pct)
     scores = model.score(x_score)
     norm = normalized_scores(scores, threshold)
@@ -263,12 +252,18 @@ def detect_anomalies(
                 evidence={
                     "reconstruction_error": round(float(raw), 5),
                     "threshold": round(threshold, 5),
-                    "backend": backend,
+                    "model": "gru-seq-ae",
+                    "val_loss": round(model.history.val_loss[history.best_epoch], 5),
                 },
             )
         )
-    log.info("anomaly_complete", region=region, backend=backend, flagged=flagged)
-    return {"total": flagged, "flagged": flagged, "backend": backend, "scored": len(score_tracks)}
+    log.info("anomaly_complete", region=region, model="gru-seq-ae", flagged=flagged)
+    return {
+        "total": flagged,
+        "flagged": flagged,
+        "model": "gru-seq-ae",
+        "scored": len(score_tracks),
+    }
 
 
 def main() -> None:

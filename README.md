@@ -41,28 +41,35 @@ Admiralty-style reliability grade for AIS confidence):
    window (dark-fleet oil transfers).
 3. **Loitering / zone incursion** — dwelling in or entering a geofenced watch area.
 4. **AIS spoofing / identity anomaly** — physically impossible kinematics or duplicate identity.
-5. **Trajectory anomaly** — a learned pattern-of-life model that flags deviations from normal
-   routes (the flagship model, evaluated on cross-region generalization).
+5. **Trajectory anomaly** — the flagship model: a **GRU sequence autoencoder** that learns
+   pattern-of-life from the ordered track and flags deviations (trained the honest way — benign
+   train/val split, early stopping, a recorded learning curve).
 
 ## Honest evaluation (the discipline)
 
-- **Cross-region generalization (the headline)** — the trajectory-anomaly model learns *route
-  shape* from heading-invariant, region-agnostic features, so a model trained on one waterway
-  still separates anomalies off a different coast. That train-A / test-B AUC is the maritime
-  analogue of SENTINEL's cross-network transfer result. `make eval` records the number.
-- **Per-incident-type coverage** — each detector covers a different threat; the composite
-  covers what no single detector does.
-- **The AIS coverage confound is handled, not hidden** — an apparent "dark ship" is often a
-  benign receiver-coverage gap. A calibration *trap* (a long benign silence with near-zero
-  displacement) must not be flagged, PHAROS grades every incident's reliability accordingly, and
-  it cross-checks against Global Fishing Watch event labels. Incidents are **human-review
-  decision support, never automated verdicts**.
-- **Honest about the synthetic path** — the repo can't ship hundreds of MB of NOAA CSVs, so the
-  reproducible offline eval runs on a deterministic *labelled synthetic generator* whose events
-  are separable by construction; near-perfect offline precision/recall is therefore expected and
-  is *not* the claim. The claim is the methodology and the cross-region transfer; real-magnitude
-  numbers come from the same detectors on downloaded NOAA AIS + GFW labels. See
-  [`docs/EVAL.md`](docs/EVAL.md).
+Two evaluations, and [`docs/EVAL.md`](docs/EVAL.md) leads with the second:
+
+- **Real NOAA AIS is the test that counts.** On one real day of LA/Long Beach traffic (352 vessels,
+  145k reports) the detectors immediately exposed a real weakness — a congested port is full of
+  anchored vessels sitting slow-and-near each other, which naive detectors call ship-to-ship
+  transfers and loitering. Three domain-correct fixes (anchored-vessel exclusion, port-zone
+  awareness, a partner-degree cap) cut false positives **~98% (rendezvous 2,892 → 8, total
+  2,999 → 51)**. That measured before/after is the actual result. The flagship GRU, trained on the
+  real pattern-of-life, surfaces the genuinely-distinctive tracks (the Catalina Island high-speed
+  ferries) as the top anomalies — interpretable, real outliers.
+- **The flagship model beats fair baselines — the depth is necessary.** Under the realistic
+  *unsupervised* setup (train on all tracks, no labels), the GRU sequence-AE holds **~0.96 AUC**
+  (within *and* cross-region) while the flattened-MLP and linear-PCA baselines **fall below chance
+  (~0.26 / 0.27)**. The recurrent architecture that models ordered dynamics is what survives.
+- **Honest about the synthetic ceiling.** The labelled offline gold set can't ship hundreds of MB
+  of NOAA CSVs, so it uses a deterministic simulator (noise, benign confounders, graded anomalies).
+  But self-generated anomalies are separable *by construction* — so the near-perfect detector P/R
+  and high synthetic AUC are a **ceiling, not a capability claim**. The one informative synthetic
+  number is the baseline gap above.
+- **The AIS coverage confound is handled, not hidden.** A "dark ship" is often a receiver-coverage
+  gap — handled via a displacement requirement, an AIS reliability grade (on real data a 20 h gap
+  was graded **E**), a calibration trap (held 5/5), and the GFW cross-check. Incidents are
+  **human-review decision support, never automated verdicts**.
 
 ## Data sources (all free)
 
@@ -75,10 +82,10 @@ Earth / EEZ reference geometry.
 ## Stack
 
 Python 3.12 (conda) · SQLAlchemy 2.0 / Alembic · PostgreSQL (SQLite for tests — no PostGIS
-dependency; spatial math in pure numpy) · Prefect · httpx · scikit-learn · torch / MLX
-(trajectory model, benchmark-gated) · FastAPI · React 19 + TypeScript + Leaflet · Docker
-Compose · GitHub Actions. Mirrors SENTINEL/ARGUS conventions so the three read as one body of
-work. ruff + mypy (strict) + pytest gate every change.
+dependency; spatial math in pure numpy) · Prefect · httpx · scikit-learn · **torch GRU sequence
+autoencoder** (flagship anomaly model; MLP + PCA baselines) · FastAPI · React 19 + TypeScript +
+Leaflet · Docker Compose · GitHub Actions. Mirrors SENTINEL/ARGUS conventions so the three read as
+one body of work. ruff + mypy (strict) + pytest gate every change.
 
 ## Quickstart
 
@@ -89,6 +96,7 @@ make ingest FILE=data/ais/<slice>.csv REGION=us-west  # load a free NOAA AIS sli
 make tracks                                         # build per-vessel voyages
 make detect                                         # run the detector ensemble → incidents
 make eval                                           # score detectors on the gold set → docs/EVAL.md
+make eval-real FILE=data/ais/<slice>.csv REGION=us-la  # the honest test on real AIS
 make api                                            # read-only API + GeoJSON on :8000
 make ui                                             # React map dashboard on :5173
 ```

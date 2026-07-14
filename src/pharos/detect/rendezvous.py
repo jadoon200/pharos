@@ -12,6 +12,8 @@ of real AIS, where two vessels rarely transmit at the same instant.
 
 from __future__ import annotations
 
+from collections import Counter
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from itertools import combinations
 
@@ -22,6 +24,21 @@ from pharos.config import Settings
 from pharos.db.models import Incident, Position
 from pharos.detect.base import make_incident, positions_by_vessel
 from pharos.geo import haversine_km
+from pharos.zones import in_kind
+
+
+@dataclass
+class _Candidate:
+    a_mmsi: str
+    b_mmsi: str
+    score: float
+    ts_start: datetime
+    ts_end: datetime
+    lat: float
+    lon: float
+    region: str | None
+    duration_min: float
+    min_range_km: float
 
 
 def _interp(
@@ -53,12 +70,27 @@ def _longest_run(mask: NDArray[np.bool_]) -> tuple[int, int]:
     return best_start, best_len
 
 
+def _is_transiting(points: list[Position], min_speed_kn: float) -> bool:
+    """True if the vessel was under way somewhere on its track (not permanently anchored).
+
+    An STS transfer is between vessels that approach and depart; an anchored vessel that merely
+    sits near others is not one. Congested-port anchorages otherwise produce a combinatorial
+    explosion of false rendezvous — this is the real-data fix.
+    """
+    return any((p.sog or 0.0) >= min_speed_kn for p in points)
+
+
 def detect_rendezvous(positions: list[Position], settings: Settings) -> list[Incident]:
     by_vessel = positions_by_vessel(positions)
-    # Only pair vessels with enough points and a plausible spatial overlap (cheap bbox reject).
-    usable = {m: p for m, p in by_vessel.items() if len(p) >= 2}
+    # Only pair vessels with enough points, and only *transiting* vessels (exclude anchored ones).
+    usable = {
+        m: p
+        for m, p in by_vessel.items()
+        if len(p) >= 2 and _is_transiting(p, settings.rendezvous_min_transit_speed_kn)
+    }
     step_s = settings.track_resample_minutes * 60.0
     incidents: list[Incident] = []
+    candidates: list[_Candidate] = []
 
     for a_mmsi, b_mmsi in combinations(sorted(usable), 2):
         a, b = usable[a_mmsi], usable[b_mmsi]
@@ -93,29 +125,54 @@ def detect_rendezvous(positions: list[Position], settings: Settings) -> list[Inc
         seg = slice(idx, idx + length)
         clat = float(np.mean(alat[seg]))
         clon = float(np.mean(alon[seg]))
-        ts_start = datetime.fromtimestamp(float(grid[idx]), tz=UTC)
-        ts_end = datetime.fromtimestamp(float(grid[idx + length - 1]), tz=UTC)
+        # Co-location inside a designated port/anchorage is expected congestion, not an STS.
+        if in_kind(clat, clon, "port"):
+            continue
         dur_factor = min(1.0, duration_min / (settings.rendezvous_min_minutes * 3))
-        score = round(0.55 + 0.35 * dur_factor, 4)
-        region = a[0].region
-        for mmsi, counterpart in ((a_mmsi, b_mmsi), (b_mmsi, a_mmsi)):
+        candidates.append(
+            _Candidate(
+                a_mmsi=a_mmsi,
+                b_mmsi=b_mmsi,
+                score=round(0.55 + 0.35 * dur_factor, 4),
+                ts_start=datetime.fromtimestamp(float(grid[idx]), tz=UTC),
+                ts_end=datetime.fromtimestamp(float(grid[idx + length - 1]), tz=UTC),
+                lat=clat,
+                lon=clon,
+                region=a[0].region,
+                duration_min=duration_min,
+                min_range_km=round(float(dist[seg].min()), 3),
+            )
+        )
+
+    # A genuine STS is a discrete pairing; drop pairs touching any vessel that "meets" many
+    # others (an anchorage cluster or a GPS-glitchy track). Real-data-driven post-filter.
+    degree: Counter[str] = Counter()
+    for c in candidates:
+        degree[c.a_mmsi] += 1
+        degree[c.b_mmsi] += 1
+    for c in candidates:
+        if degree[c.a_mmsi] > settings.rendezvous_max_partners:
+            continue
+        if degree[c.b_mmsi] > settings.rendezvous_max_partners:
+            continue
+        for mmsi, counterpart in ((c.a_mmsi, c.b_mmsi), (c.b_mmsi, c.a_mmsi)):
             incidents.append(
                 make_incident(
                     detector="rendezvous",
                     incident_type="ship-to-ship transfer",
                     mmsi=mmsi,
-                    score=score,
+                    score=c.score,
                     confidence=0.6,
-                    ts_start=ts_start,
-                    ts_end=ts_end,
-                    lat=clat,
-                    lon=clon,
-                    region=region,
+                    ts_start=c.ts_start,
+                    ts_end=c.ts_end,
+                    lat=c.lat,
+                    lon=c.lon,
+                    region=c.region,
                     counterpart_mmsi=counterpart,
                     techniques=["sts-transfer", "rendezvous"],
                     evidence={
-                        "duration_minutes": round(duration_min, 1),
-                        "min_range_km": round(float(dist[seg].min()), 3),
+                        "duration_minutes": round(c.duration_min, 1),
+                        "min_range_km": c.min_range_km,
                         "counterpart": counterpart,
                     },
                 )
