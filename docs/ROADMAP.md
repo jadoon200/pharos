@@ -45,8 +45,10 @@ deployable, and the M10 bridge (originally optional) is done.
   recorded real-data validation corpus. The raw slice stays out of Git because AIS data is large.
 - **Trajectory model:** an 8-unit GRU sequence autoencoder over ordered track dynamics is the
   flagship. A 25-run capacity sweep selected it over the 64-unit version (804 vs 38,660
-  parameters); Isolation Forest and linear PCA are retained as fair baselines. The operating
-  comparison is recorded in [`EVAL.md`](EVAL.md).
+  parameters); Isolation Forest and linear PCA are retained as fair baselines. A model audit fixed
+  validation leakage by fitting normalization on the train partition only. Batch detection now
+  persists a versioned artifact that API inference loads directly, with any runtime fallback
+  exposed in the response. The operating comparison is recorded in [`EVAL.md`](EVAL.md).
 - **Cross-region split:** train on Singapore and score US west-coast traffic. Heading-invariant
   track-shape descriptors make this a meaningful transfer test.
 - **External-label window:** east Gulf, 2023-07-25 (`27.0–30.5°N, 93.0–88.0°W`). A deterministic

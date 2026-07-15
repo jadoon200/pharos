@@ -1,8 +1,9 @@
 """Anomaly-detection driver + nonlinear Isolation Forest and linear PCA baselines.
 
 The flagship model is the GRU sequence autoencoder in `seq_anomaly.py`. This module holds the
-pieces around it: `detect_anomalies` (the DB driver the whole pipeline calls — it trains the GRU
-over the stored per-step `Track.sequence` and rebuilds the `detector="anomaly"` incidents),
+pieces around it: `detect_anomalies` (the DB driver the whole pipeline calls — it trains and
+persists the GRU over the stored per-step `Track.sequence`, then rebuilds the
+`detector="anomaly"` incidents),
 `normalized_scores` (reconstruction error → a [0,1] incident score), plus nonlinear
 `IsolationForestAnomalyBaseline` over the ordered sequence and `PCAAnomalyBaseline` over the
 hand-engineered vector. The eval uses both to show whether the recurrent model earns its keep
@@ -15,6 +16,8 @@ false-positive reduction that is the actual result — see `docs/EVAL.md`.
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -107,16 +110,21 @@ class IsolationForestAnomalyBaseline:
 
 
 def detect_anomalies(
-    session: Session, region: str | None = None, train_region: str | None = None
+    session: Session,
+    region: str | None = None,
+    train_region: str | None = None,
+    *,
+    model_path: str | Path | None = None,
 ) -> dict[str, int | str]:
     """Train the flagship GRU sequence autoencoder and rebuild its incidents for `region`.
 
     Trains on `train_region` (or `region` itself) pattern-of-life and flags the voyages the model
-    reconstructs worst. Rebuilds only the `detector="anomaly"` incidents, leaving the deterministic
+    reconstructs worst. Persists the fitted weights, scaler, threshold, and provenance for API
+    inference. Rebuilds only the `detector="anomaly"` incidents, leaving the deterministic
     detectors' rows intact (they are fused by the ensemble). Skips gracefully with too few tracks.
     The `SequenceAnomalyModel` (`detect/seq_anomaly.py`) consumes the ordered per-step track.
     """
-    from pharos.detect.seq_anomaly import SequenceAnomalyModel
+    from pharos.detect.seq_anomaly import SequenceAnomalyModel, model_artifact_path
 
     settings = get_settings()
 
@@ -138,6 +146,24 @@ def detect_anomalies(
     model = SequenceAnomalyModel(hidden=settings.anomaly_hidden, seed=0)
     history = model.fit(x_train)  # train/val split + early stopping (its own defaults)
     threshold = model.calibrate(x_train, settings.anomaly_threshold_pct)
+    artifact = (
+        Path(model_path)
+        if model_path is not None
+        else model_artifact_path(settings.anomaly_model_dir)
+    )
+    model.save(
+        artifact,
+        metadata={
+            "trained_at": datetime.now(UTC).isoformat(),
+            "train_region": train_region or region or "all",
+            "score_region": region or "all",
+            "training_tracks": len(train_tracks),
+            "sequence_length": int(x_train.shape[1]),
+            "features": int(x_train.shape[2]),
+            "normalization": "train-partition-only",
+            "threshold_percentile": settings.anomaly_threshold_pct,
+        },
+    )
     scores = model.score(x_score)
     norm = normalized_scores(scores, threshold)
 
@@ -169,15 +195,23 @@ def detect_anomalies(
                     "reconstruction_error": round(float(raw), 5),
                     "threshold": round(threshold, 5),
                     "model": "gru-seq-ae",
+                    "model_parameters": model.parameter_count,
                     "val_loss": round(model.history.val_loss[history.best_epoch], 5),
                 },
             )
         )
-    log.info("anomaly_complete", region=region, model="gru-seq-ae", flagged=flagged)
+    log.info(
+        "anomaly_complete",
+        region=region,
+        model="gru-seq-ae",
+        artifact=str(artifact),
+        flagged=flagged,
+    )
     return {
         "total": flagged,
         "flagged": flagged,
         "model": "gru-seq-ae",
+        "artifact": str(artifact),
         "scored": len(score_tracks),
     }
 

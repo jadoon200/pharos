@@ -68,14 +68,14 @@ def test_fuse_exposes_components_and_reliability() -> None:
     assert set(t.detectors) == {"spoof", "gap"}
 
 
-def test_end_to_end_rollups(session: Session) -> None:
+def test_end_to_end_rollups(session: Session, tmp_path) -> None:  # type: ignore[no-untyped-def]
     sc = generate_scenario("singapore", seed=0, n_normal=12)
     seed_zones(session)
     persist_scenario_or_positions(session, sc.vessels, sc.positions)
     session.commit()
     build_tracks(session, region="singapore")
     session.commit()
-    stats = run_all(session, region="singapore")
+    stats = run_all(session, region="singapore", model_path=tmp_path / "gru.pt")
     session.commit()
     assert stats["deterministic"]["total"] >= 4
 

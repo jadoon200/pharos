@@ -9,6 +9,7 @@ import pytest
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from pharos.api.scoring import get_scorer, reset_scorer
 from pharos.config import get_settings
 from pharos.db.models import Incident
 from pharos.detect.anomaly import (
@@ -72,6 +73,18 @@ def test_gru_cross_region_transfer() -> None:
     assert _auc(g.score(s_us), lab_us) >= 0.8
 
 
+def test_gru_normalization_excludes_validation_partition() -> None:
+    x = np.full((4, 3, 1), 2.0)
+    validation_index = np.random.default_rng(0).permutation(len(x))[0]
+    x[validation_index] = 100.0
+    model = SequenceAnomalyModel(hidden=2, seed=0)
+
+    model.fit(x, epochs=1)
+
+    assert model._mean is not None  # regression check for validation leakage
+    assert model._mean[0] == pytest.approx(2.0)
+
+
 def test_gru_beats_pca_baseline_unsupervised() -> None:
     # The honest depth-matters finding: under unsupervised training on the hard set, the linear
     # PCA baseline falls APART (below chance), while the GRU holds up.
@@ -101,28 +114,40 @@ def test_normalized_scores_semantics() -> None:
     assert norm[2] == pytest.approx(1.0)
 
 
-def test_gru_save_load_roundtrip(tmp_path) -> None:  # type: ignore[no-untyped-def]
+def test_gru_save_load_roundtrip(session: Session, tmp_path) -> None:  # type: ignore[no-untyped-def]
     s, _f, _l = _voyages("singapore", seed=0)
     g = SequenceAnomalyModel(hidden=32, seed=0)
     g.fit(s)
     g.calibrate(s, pct=95)
     path = tmp_path / "gru.pt"
-    g.save(path)
+    g.save(path, metadata={"source": "unit-test"})
     loaded = SequenceAnomalyModel.load(path)
     assert np.allclose(g.score(s), loaded.score(s), atol=1e-4)
     assert loaded.threshold == g.threshold
+    assert loaded.metadata == {"source": "unit-test"}
+    assert not list(tmp_path.glob(".gru.pt.*.tmp"))
+    reset_scorer()
+    try:
+        scorer = get_scorer(session, artifact_path=path)
+        assert np.allclose(g.score(s), scorer.score(s), atol=1e-4)
+    finally:
+        reset_scorer()
 
 
-def test_detect_anomalies_writes_incidents(session: Session) -> None:
+def test_detect_anomalies_writes_incidents(session: Session, tmp_path) -> None:  # type: ignore[no-untyped-def]
     sc = generate_scenario("singapore", seed=0, n_normal=16)
     persist_scenario_or_positions(session, sc.vessels, sc.positions)
     session.commit()
     build_tracks(session, region="singapore")
     session.commit()
-    stats = detect_anomalies(session, region="singapore")
+    artifact = tmp_path / "gru.pt"
+    stats = detect_anomalies(session, region="singapore", model_path=artifact)
     session.commit()
     assert stats["flagged"] >= 1
     assert stats["model"] == "gru-seq-ae"
+    assert stats["artifact"] == str(artifact)
+    loaded = SequenceAnomalyModel.load(artifact)
+    assert loaded.metadata["normalization"] == "train-partition-only"
     n = session.scalar(
         select(func.count()).select_from(Incident).where(Incident.detector == "anomaly")
     )

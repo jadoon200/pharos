@@ -16,6 +16,7 @@ human-review decision support, never an automated verdict.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
+from pathlib import Path
 from typing import Any
 
 from sqlalchemy import select
@@ -137,10 +138,15 @@ def vessel_rollups(session: Session, region: str | None = None) -> list[VesselTh
     return rollups
 
 
-def run_all(session: Session, region: str | None = None) -> dict[str, Any]:
+def run_all(
+    session: Session,
+    region: str | None = None,
+    *,
+    model_path: str | Path | None = None,
+) -> dict[str, Any]:
     """Run the whole detection stack: deterministic detectors + the anomaly model."""
     det = detect(session, region)
-    anom = detect_anomalies(session, region)
+    anom = detect_anomalies(session, region, model_path=model_path)
     return {"deterministic": det, "anomaly": anom}
 
 

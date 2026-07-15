@@ -23,7 +23,7 @@ from pharos.tracks.build import build_tracks
 
 
 @pytest.fixture
-def client() -> Iterator[TestClient]:
+def client(tmp_path) -> Iterator[TestClient]:  # type: ignore[no-untyped-def]
     # StaticPool + check_same_thread=False: TestClient runs sync endpoints in a threadpool,
     # so the in-memory DB must be a single connection shared across threads.
     engine = create_engine(
@@ -45,11 +45,15 @@ def client() -> Iterator[TestClient]:
         yield db
 
     app.dependency_overrides[get_db] = _override
+    settings = get_settings()
+    original_model_dir = settings.anomaly_model_dir
+    settings.anomaly_model_dir = tmp_path / "models"
     reset_scorer()
     try:
         yield TestClient(app)
     finally:
         app.dependency_overrides.clear()
+        settings.anomaly_model_dir = original_model_dir
         reset_scorer()
         db.close()
         engine.dispose()
@@ -123,6 +127,19 @@ def test_score_track_ranks_zigzag_higher(client: TestClient) -> None:
     zig = client.post("/score-track", json={"points": _points(zigzag=True)}).json()
     assert zig["anomaly_score"] > straight["anomaly_score"]
     assert "reconstruction_error" in zig
+    assert zig["model_source"] in {"trained-artifact", "runtime-fallback"}
+
+
+def test_detect_persists_incidents_and_serves_exact_artifact(client: TestClient) -> None:
+    result = client.post("/detect", params={"region": "singapore"})
+    assert result.status_code == 200
+    anomaly = result.json()["anomaly"]
+    assert anomaly["flagged"] >= 1
+    assert get_settings().anomaly_model_dir.joinpath("gru-sequence-anomaly.pt").is_file()
+    assert client.get("/stats").json()["incidents_by_detector"]["anomaly"] == anomaly["flagged"]
+
+    scored = client.post("/score-track", json={"points": _points(zigzag=False)}).json()
+    assert scored["model_source"] == "trained-artifact"
 
 
 def test_score_track_needs_enough_points(client: TestClient) -> None:

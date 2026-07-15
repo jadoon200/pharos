@@ -1,14 +1,16 @@
 """Lazy anomaly scorer behind POST /score-track.
 
-Builds (once, cached) the flagship `SequenceAnomalyModel` (GRU autoencoder) from whatever tracks
-the database holds, falling back to a synthetic Singapore scenario so the endpoint works out of the
-box on a fresh deploy. The route is read-only: it scores the pasted track's shape and never fetches
-a URL or writes to the DB.
+Loads (once, cached) the exact `SequenceAnomalyModel` artifact written by the detector. If no valid
+artifact exists, it explicitly reports a runtime fallback trained from stored tracks or a synthetic
+Singapore scenario so the endpoint still works on a fresh deploy. The route is read-only: it
+scores the pasted track's shape and never fetches a URL or writes to the DB.
 """
 
 from __future__ import annotations
 
+import pickle
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -18,10 +20,13 @@ from sqlalchemy.orm import Session
 from pharos.config import get_settings
 from pharos.db.models import Position, Track
 from pharos.detect.anomaly import normalized_scores
-from pharos.detect.seq_anomaly import SequenceAnomalyModel
+from pharos.detect.seq_anomaly import SequenceAnomalyModel, model_artifact_path
+from pharos.logging import get_logger
 from pharos.tracks.build import track_sequence
 
+log = get_logger(__name__)
 _MODEL: SequenceAnomalyModel | None = None
+_MODEL_SOURCE = "uninitialized"
 
 
 def _training_sequences(session: Session) -> np.ndarray:
@@ -49,15 +54,38 @@ def _training_sequences(session: Session) -> np.ndarray:
     return np.array(seqs, dtype=np.float64)
 
 
-def get_scorer(session: Session) -> SequenceAnomalyModel:
-    global _MODEL
+def get_scorer(session: Session, artifact_path: str | Path | None = None) -> SequenceAnomalyModel:
+    global _MODEL, _MODEL_SOURCE
     if _MODEL is None:
         settings = get_settings()
+        artifact = (
+            Path(artifact_path)
+            if artifact_path is not None
+            else model_artifact_path(settings.anomaly_model_dir)
+        )
+        if artifact.is_file():
+            try:
+                _MODEL = SequenceAnomalyModel.load(artifact)
+                _MODEL_SOURCE = "trained-artifact"
+                log.info("anomaly_artifact_loaded", path=str(artifact))
+                return _MODEL
+            except (
+                EOFError,
+                KeyError,
+                OSError,
+                RuntimeError,
+                TypeError,
+                ValueError,
+                pickle.UnpicklingError,
+            ) as exc:
+                log.warning("anomaly_artifact_invalid", path=str(artifact), error=str(exc))
         x = _training_sequences(session)
         model = SequenceAnomalyModel(hidden=settings.anomaly_hidden, seed=0)
         model.fit(x)
         model.calibrate(x, settings.anomaly_threshold_pct)
+        model.metadata = {"source": "runtime-fallback", "training_tracks": len(x)}
         _MODEL = model
+        _MODEL_SOURCE = "runtime-fallback"
     return _MODEL
 
 
@@ -99,11 +127,13 @@ def score_track_points(session: Session, points: list[dict[str, Any]]) -> dict[s
         "reconstruction_error": round(raw, 6),
         "threshold": round(threshold, 6),
         "is_anomalous": bool(raw > threshold),
+        "model_source": _MODEL_SOURCE,
         "points_scored": len(positions),
     }
 
 
 def reset_scorer() -> None:
     """Drop the cached model (tests / after a re-ingest)."""
-    global _MODEL
+    global _MODEL, _MODEL_SOURCE
     _MODEL = None
+    _MODEL_SOURCE = "uninitialized"

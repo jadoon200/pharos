@@ -44,7 +44,9 @@ Admiralty-style reliability grade for AIS confidence):
 4. **AIS spoofing / identity anomaly** — physically impossible kinematics or duplicate identity.
 5. **Trajectory anomaly** — the flagship model: a **GRU sequence autoencoder** that learns
    pattern-of-life from the ordered track and flags deviations (trained on the unlabeled
-   population with a train/val split, early stopping, and a recorded learning curve).
+   population with a train/val split, train-only normalization, early stopping, and a recorded
+   learning curve). Training writes a versioned artifact so batch detection and API inference use
+   the same weights, scaler, and threshold.
 
 ## Honest evaluation (the discipline)
 
@@ -60,9 +62,11 @@ Two evaluations, and [`docs/EVAL.md`](docs/EVAL.md) leads with the second:
   ferries) as the top anomalies — interpretable, real outliers.
 - **The flagship model beats fair baselines — the depth is necessary.** Under the realistic
   *unsupervised* setup (train on all tracks, no labels), the compact GRU sequence-AE reaches
-  **0.971 within-region / 0.967 cross-region AUC**, ahead of a nonlinear Isolation Forest
+  **0.962 within-region / 0.962 cross-region AUC**, ahead of a nonlinear Isolation Forest
   (**0.940 / 0.942**) while linear PCA falls below chance (**0.273**). A 25-run capacity sweep
-  selected 8 hidden units: slightly stronger transfer with 804 rather than 38,660 parameters.
+  selected 8 hidden units (**0.963 / 0.964 mean AUC**): slightly stronger transfer with 804 rather
+  than 38,660 parameters. These corrected numbers fit normalization only on the training
+  partition; the earlier optimistic result was discarded after the leakage audit.
 - **Honest about the synthetic ceiling.** The labelled offline gold set can't ship hundreds of MB
   of NOAA CSVs, so it uses a deterministic simulator (noise, benign confounders, graded anomalies).
   But self-generated anomalies are separable *by construction* — so the near-perfect detector P/R
@@ -130,8 +134,10 @@ PHAROS_DATABASE_URL=sqlite:///data/demo.db make api   # then `make ui` in anothe
 evidence), `/zones` and `/tracks` (GeoJSON for the map), `/maritime-picture` (the composite
 per-vessel threat rollups), `/geoint/evidence` (incidents as citable, source-rated GEOINT evidence
 — the bridge below), plus one stateless inference route `POST /score-track` (scores a pasted
-track's shape through the anomaly model — inspects only the supplied points, never fetches a URL,
-so the API stays effectively read-only). Public-deploy hardening (CORS, per-client rate limit →
+track's shape through the persisted detector artifact — inspects only the supplied points, never
+fetches a URL, so the API stays effectively read-only). Its response reports
+`model_source=trained-artifact`, or `runtime-fallback` when no valid artifact is available, so
+model drift is visible rather than silent. Public-deploy hardening (CORS, per-client rate limit →
 429, request-size cap → 422, bounded concurrency → 503) is tuned via `PHAROS_API_*`.
 
 ### GEOINT bridge — cyber + cognitive + geospatial

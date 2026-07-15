@@ -29,11 +29,19 @@ picture for **human review**. It is analytical and defensive.
 ## Evaluation & known limitations
 
 **Trajectory anomaly flagship:** An 8-unit GRU sequence autoencoder over ordered per-step tracks.
-Under unsupervised training (no labels), it achieves 0.971 within-region / 0.967 cross-region AUC,
+Under unsupervised training (no labels), it achieves 0.962 within-region / 0.962 cross-region AUC,
 ahead of Isolation Forest (0.940 / 0.942), while linear PCA falls below chance (0.273). A 25-run
-capacity sweep selected 8 over 64 hidden units, reducing 38,660 parameters to 804. This is the best
-measured fit for PHAROS's small whole-track corpus, not a universal state-of-the-art claim; real
-trajectory-anomaly labels are still unavailable.
+capacity sweep selected 8 over 64 hidden units (0.963 / 0.964 mean AUC), reducing 38,660 parameters
+to 804. Normalization is fitted on the training partition only; the earlier 0.971 / 0.967 result
+was retired after a validation-leakage audit. This is the best measured fit for PHAROS's small
+whole-track corpus, not a universal state-of-the-art claim; real trajectory-anomaly labels are
+still unavailable.
+
+**Training/inference integrity:** Batch training atomically persists versioned weights,
+train-partition normalization, the calibrated threshold, and provenance. `POST /score-track` loads
+that exact artifact. If it is absent or invalid, the endpoint uses an explicit runtime fallback and
+returns its `model_source`, avoiding silent training/inference drift. Artifacts load through
+PyTorch's restricted `weights_only` path and contain tensors and primitive metadata only.
 
 **Synthetic evaluation ceiling:** The offline gold set's near-perfect detector precision/recall
 (~1.0 for rendezvous, loiter, gaps) is a *known ceiling* — self-generated anomalies are separable

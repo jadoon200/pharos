@@ -9,11 +9,11 @@ baselines (`anomaly.py`) for a fair comparison; the recurrent model beats both u
 training (`docs/EVAL.md`).
 
 Trained the honest way for the operational setting: an unlabeled track population (which can
-contain anomalies) with a held-out **validation split**, **early stopping** on validation loss
-(best weights restored), and a recorded **learning curve** — not a fixed epoch count on the whole
-set. Anomaly score = per-track reconstruction error. Torch backend (CPU is plenty at this data
-scale; fast training here is expected, not a shortcut — the honest signal is the val-loss curve
-and a sub-1.0 AUC, both reported).
+contain anomalies) with a held-out **validation split**, train-partition-only normalization,
+**early stopping** on validation loss (best weights restored), and a recorded **learning curve** —
+not a fixed epoch count on the whole set. Anomaly score = per-track reconstruction error. Torch
+backend (CPU is plenty at this data scale; fast training here is expected, not a shortcut — the
+honest signal is the val-loss curve and a sub-1.0 AUC, both reported).
 """
 
 from __future__ import annotations
@@ -21,11 +21,19 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+from uuid import uuid4
 
 import numpy as np
 import torch
 from numpy.typing import NDArray
 from torch import nn
+
+MODEL_ARTIFACT_NAME = "gru-sequence-anomaly.pt"
+
+
+def model_artifact_path(model_dir: str | Path) -> Path:
+    """Stable path shared by training and API inference for the latest flagship artifact."""
+    return Path(model_dir) / MODEL_ARTIFACT_NAME
 
 
 @dataclass
@@ -64,6 +72,7 @@ class SequenceAnomalyModel:
         self.threshold: float | None = None
         self.n_features: int | None = None
         self.history = TrainHistory()
+        self.metadata: dict[str, Any] = {}
 
     def _standardize(self, x: NDArray[np.float64]) -> NDArray[np.float64]:
         assert self._mean is not None and self._std is not None
@@ -88,16 +97,18 @@ class SequenceAnomalyModel:
         rng = np.random.default_rng(self.seed)
         x = np.asarray(sequences, dtype=np.float64)
         n, _length, self.n_features = x.shape
-        # Per-channel standardization over all steps.
-        flat = x.reshape(-1, self.n_features)
-        self._mean = flat.mean(axis=0)
-        self._std = flat.std(axis=0) + 1e-6
-        xs = torch.tensor(self._standardize(x), dtype=torch.float32)
-
         idx = rng.permutation(n)
         n_val = max(1, int(n * val_frac)) if n >= 4 else 0
+        train_indices = idx[n_val:] if n_val else idx
+        # Fit normalization on the training partition only. Letting held-out validation tracks
+        # influence these statistics leaks information into the early-stopping signal.
+        flat_train = x[train_indices].reshape(-1, self.n_features)
+        self._mean = flat_train.mean(axis=0)
+        self._std = flat_train.std(axis=0) + 1e-6
+        xs = torch.tensor(self._standardize(x), dtype=torch.float32)
+
         val_idx = torch.tensor(idx[:n_val])
-        train_idx = torch.tensor(idx[n_val:]) if n_val else torch.tensor(idx)
+        train_idx = torch.tensor(train_indices)
         x_train = xs[train_idx]
         x_val = xs[val_idx] if n_val else xs[train_idx]
 
@@ -149,39 +160,54 @@ class SequenceAnomalyModel:
         out: NDArray[np.float64] = err.astype(np.float64)
         return out
 
-    def calibrate(self, benign_sequences: NDArray[np.float64], pct: float) -> float:
-        self.threshold = float(np.percentile(self.score(benign_sequences), pct))
+    def calibrate(self, calibration_sequences: NDArray[np.float64], pct: float) -> float:
+        self.threshold = float(np.percentile(self.score(calibration_sequences), pct))
         return self.threshold
 
     def flag(self, sequences: NDArray[np.float64]) -> NDArray[np.bool_]:
         assert self.threshold is not None, "calibrate() first"
         return self.score(sequences) > self.threshold
 
-    def save(self, path: str | Path) -> None:
+    def save(self, path: str | Path, metadata: dict[str, Any] | None = None) -> None:
+        """Atomically save a weights-only-compatible model artifact."""
         assert self._model is not None
+        assert self._mean is not None and self._std is not None
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
-        torch.save(
-            {
-                "state_dict": self._model.state_dict(),
-                "mean": self._mean,
-                "std": self._std,
-                "threshold": self.threshold,
-                "n_features": self.n_features,
-                "hidden": self.hidden,
-                "seed": self.seed,
-            },
-            path,
-        )
+        if metadata is not None:
+            self.metadata = dict(metadata)
+        temporary = path.with_name(f".{path.name}.{uuid4().hex}.tmp")
+        try:
+            torch.save(
+                {
+                    "format_version": 1,
+                    "state_dict": self._model.state_dict(),
+                    "mean": torch.as_tensor(self._mean, dtype=torch.float64),
+                    "std": torch.as_tensor(self._std, dtype=torch.float64),
+                    "threshold": self.threshold,
+                    "n_features": self.n_features,
+                    "hidden": self.hidden,
+                    "seed": self.seed,
+                    "metadata": self.metadata,
+                },
+                temporary,
+            )
+            temporary.replace(path)
+        finally:
+            temporary.unlink(missing_ok=True)
 
     @classmethod
     def load(cls, path: str | Path) -> SequenceAnomalyModel:
-        payload = torch.load(path, weights_only=False)
+        """Load a trusted PHAROS tensor/primitives artifact without arbitrary pickle objects."""
+        payload = torch.load(path, map_location="cpu", weights_only=True)
+        if payload.get("format_version") != 1:
+            raise ValueError("unsupported PHAROS anomaly model artifact version")
         m = cls(hidden=payload["hidden"], seed=payload["seed"])
         m.n_features = payload["n_features"]
-        m._mean = payload["mean"]
-        m._std = payload["std"]
+        m._mean = payload["mean"].cpu().numpy().astype(np.float64)
+        m._std = payload["std"].cpu().numpy().astype(np.float64)
         m.threshold = payload["threshold"]
+        m.metadata = dict(payload.get("metadata") or {})
         m._model = _SeqAE(m.n_features, m.hidden)
         m._model.load_state_dict(payload["state_dict"])
         return m
