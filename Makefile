@@ -4,7 +4,7 @@
 env:
 	conda create -y -n pharos python=3.12
 
-# Run inside the activated pharos env. MLX is a darwin-only extra (torch fallback elsewhere).
+# Run inside the activated pharos env. Torch powers the flagship GRU on every platform.
 install:
 	pip install -r requirements-dev.txt && pip install -e .
 
@@ -51,7 +51,7 @@ tracks:
 detect:
 	python -m pharos.detect.run
 
-# Train the flagship trajectory-anomaly model (MLX on Apple silicon, torch fallback).
+# Train the flagship torch GRU trajectory-anomaly model.
 train-anomaly:
 	python -m pharos.detect.anomaly
 
@@ -59,8 +59,8 @@ train-anomaly:
 ensemble:
 	python -m pharos.detect.ensemble
 
-# Score the detector ensemble on the gold set (per-type P/R, cross-region, GFW cross-check)
-# -> docs/EVAL.md.
+# Score the detector ensemble on the synthetic gold set (per-type P/R, cross-region) ->
+# docs/EVAL.md. The independent GFW corroboration runs as part of eval-real.
 eval:
 	python -m pharos.eval.run
 

@@ -14,9 +14,10 @@ per-vessel threat picture, the way a maritime fusion cell actually works.
 > AISStream live client + Global Fishing Watch labels + a deterministic labelled synthetic
 > generator), track building, the five-detector ensemble, the flagship trajectory-anomaly model,
 > the composite maritime-threat rollup, the honest eval harness, a hardened read-only API, and a
-> React/Leaflet map dashboard are all in place and browser-verified. Remaining polish: the free
-> cloud deploy config is written (see [`docs/DEPLOY.md`](docs/DEPLOY.md)) and the optional ARGUS
-> GEOINT bridge is a documented extra. Progress is tracked honestly in
+> React/Leaflet map dashboard are all in place and browser-verified. The ARGUS-shaped GEOINT
+> evidence bridge is also implemented. The remaining release step is operational: connect the
+> checked-in free-cloud blueprint to Render and record the public URL (see
+> [`docs/DEPLOY.md`](docs/DEPLOY.md)). Progress is tracked honestly in
 > [`docs/ROADMAP.md`](docs/ROADMAP.md); every model/detector claim lands in
 > [`docs/EVAL.md`](docs/EVAL.md) with the number that survives scrutiny.
 
@@ -68,8 +69,15 @@ Two evaluations, and [`docs/EVAL.md`](docs/EVAL.md) leads with the second:
   number is the baseline gap above.
 - **The AIS coverage confound is handled, not hidden.** A "dark ship" is often a receiver-coverage
   gap — handled via a displacement requirement, an AIS reliability grade (on real data a 20 h gap
-  was graded **E**), a calibration trap (held 5/5), and the GFW cross-check. Incidents are
-  **human-review decision support, never automated verdicts**.
+  was graded **E**), a calibration trap (held 5/5), and an operational GFW cross-check. The first
+  LA/LB GFW query returned no candidate events, so external-label precision remains unestimable on
+  that slice; the negative is recorded rather than buried. Incidents are **human-review decision
+  support, never automated verdicts**.
+- **External labels now overlap real NOAA traffic.** A selected east-Gulf cohort (2023-07-25;
+  337 vessels, 173k reports) produced vessel/type/time/place agreement with GFW for **4/34
+  rendezvous** and **65/298 loiter** calls. These are corroboration rates, not precision: the cohort
+  is label-enriched and GFW is an incomplete silver label. Its one gap label was offshore beyond
+  NOAA receiver coverage, a useful limitation recorded in [`docs/EVAL.md`](docs/EVAL.md).
 
 ## Data sources (all free)
 

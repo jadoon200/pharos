@@ -1,5 +1,6 @@
 import csv
 import io
+from datetime import UTC
 
 from pharos.ingest.noaa import flag_for_mmsi, parse_rows, ship_type_label
 
@@ -29,6 +30,8 @@ def test_parse_rows_skips_bad_and_builds_vessels() -> None:
     assert v.ship_type == "cargo"
     assert v.flag == "US"
     assert v.first_seen is not None and v.last_seen is not None
+    assert positions[0].ts.hour == 0
+    assert positions[0].ts.tzinfo is UTC
     assert all(p.region == "us-west" and p.source == "noaa" for p in positions)
 
 

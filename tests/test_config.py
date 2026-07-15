@@ -3,7 +3,9 @@ from pharos.config import Settings, get_settings
 
 def test_defaults_are_zero_cost() -> None:
     """Out of the box PHAROS needs no keys — NOAA bulk + demo seed only."""
-    s = Settings()
+    # Defaults must be tested independently of a developer's gitignored .env, which may
+    # legitimately contain the optional live-lane credentials documented in CLAUDE.md.
+    s = Settings(_env_file=None)
     assert s.aisstream_key == ""  # live lane opt-in
     assert s.gfw_token == ""  # GFW cross-check opt-in
     assert s.anomaly_seq_len == 16  # the GRU sequence length

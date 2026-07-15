@@ -44,7 +44,12 @@ ferries). Real AIS carries no anomaly labels — that lane is qualitative. See [
 
 **Known limitation:** The AIS coverage confound is dominant behind "dark ship" false positives
 (dense coverage near shore vs. sparse offshore). Measured against Global Fishing Watch
-reception-modelled gap events rather than assumed away. Recorded negatives are kept, not buried.
+reception-modelled gap events rather than assumed away. The first real LA/LB cross-check returned
+no candidates. A selected east-Gulf cohort subsequently corroborated 4/34 PHAROS rendezvous and
+65/298 loiter calls at vessel/type/time/place level, but these are not precision estimates because
+the cohort is label-enriched and GFW is incomplete. Its gap label was 169–209 km offshore and had
+no NOAA reappearance report, so gap calibration remains unestimable. Recorded negatives are kept,
+not buried.
 
 ## Provenance
 

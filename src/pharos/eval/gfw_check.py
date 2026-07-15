@@ -5,14 +5,15 @@ is whether the detectors fire on *real* AIS. GFW independently derives encounter
 loitering, and gap events from real AIS; this cross-check counts how many PHAROS incidents of each
 type fall near a GFW event of the corresponding type (same rough time + place).
 
-Opt-in and non-fatal: with no `PHAROS_GFW_TOKEN` it reports "skipped" so `make eval` still runs
-end-to-end offline. This is a corroboration signal, not ground truth — GFW has its own models.
+Opt-in and non-fatal: `make eval-real` reports "skipped" without `PHAROS_GFW_TOKEN` and continues
+if the API is unavailable. This is a corroboration signal, not ground truth — GFW has its own
+models and a narrower event vocabulary.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta
 
 from pharos.db.models import Incident
 from pharos.geo import haversine_km
@@ -31,6 +32,13 @@ class GfwAgreement:
     @property
     def rate(self) -> float:
         return self.corroborated / self.incidents if self.incidents else float("nan")
+
+
+def _utc(value: datetime) -> datetime:
+    """Normalize timestamps across SQLite (naive) and API (offset-aware) boundaries."""
+    if value.tzinfo is None:
+        return value.replace(tzinfo=UTC)
+    return value.astimezone(UTC)
 
 
 def corroborate(
@@ -52,8 +60,14 @@ def corroborate(
             for g in gfw:
                 if g.lat is None or g.lon is None or g.start is None:
                     continue
+                vessel_ids = {g.mmsi} if g.mmsi else set()
+                counterpart = g.raw.get("encounter", {}).get("vessel", {}).get("ssvid")
+                if counterpart:
+                    vessel_ids.add(str(counterpart))
+                if vessel_ids and inc.mmsi not in vessel_ids:
+                    continue
                 near = haversine_km(inc.lat, inc.lon, g.lat, g.lon) <= match_km
-                timely = abs(inc.ts_start - g.start) <= tol
+                timely = abs(_utc(inc.ts_start) - _utc(g.start)) <= tol
                 if near and timely:
                     corroborated += 1
                     break

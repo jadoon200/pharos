@@ -60,8 +60,10 @@ reliability grade, and GFW's reception-modelled gap events are the real-world cr
 | Metric | Definition | Result |
 |---|---|---|
 | Coverage-gap trap held | benign anchored-vessel gaps not called dark-ship | 5/5 seeds |
-| Gap FP rate vs coverage (real data) | share of "dark" calls attributable to reception gaps | needs NOAA + GFW |
-| Reliability calibration (real data) | do low-reliability incidents concentrate the false alarms? | needs NOAA + GFW |
+| GFW rendezvous corroboration (east-Gulf cohort) | vessel + type + 25 km + 24 h agreement | 4/34 PHAROS calls (11.8%) |
+| GFW loiter corroboration (east-Gulf cohort) | vessel + type + 25 km + 24 h agreement | 65/298 PHAROS calls (21.8%) |
+| GFW gap corroboration (east-Gulf cohort) | same agreement rule | 0/47; GFW endpoint outside NOAA receiver coverage |
+| Reliability calibration (real data) | do low-reliability incidents concentrate the false alarms? | still needs compatible independent gap labels |
 
 ## Auto-recorded results
 
@@ -72,7 +74,7 @@ on the right vessels/windows and stay silent on benign traffic, (2) the coverage
 not over-called — the miniature of the real limitation, and (3) the anomaly model's **cross-region
 AUC** (train one waterway, test another) survives the region change, which is the transferable
 *methodology*. The real-magnitude numbers come from running the same detectors on downloaded NOAA
-AIS and cross-checking against Global Fishing Watch event labels (`pharos.eval.gfw_check`).
+AIS and cross-checking against Global Fishing Watch event labels (`make eval-real`).
 
 <!-- AUTO-EVAL:START -->
 _Auto-recorded by `make eval` on 2026-07-14 over 5 seeds (synthetic gold set)._
@@ -126,9 +128,78 @@ result; the synthetic gold set could not have produced it because it has no real
 (real train/val split, early-stopped ~epoch 100), the most-anomalous tracks it surfaces are the
 **Catalina Island high-speed ferries** ("SUPER EXPRESS", "CATALINA JET", "STARSHIP EXPRESS":
 130–143 km high-speed shuttle runs) — genuinely the most distinctive pattern-of-life against the
-anchor-and-berth cargo majority. Interpretable, real outliers. Raw AIS carries no anomaly *labels*
-(GFW would provide silver labels via `pharos.eval.gfw_check`), so this lane is qualitative on real
-data; the quantitative real result is the false-positive reduction above.
+anchor-and-berth cargo majority. Interpretable, real outliers. Raw AIS carries no anomaly *labels*;
+GFW supplies event-level silver labels for three deterministic detectors, not trajectory-anomaly
+labels. The anomaly lane therefore remains qualitative on real data; the quantitative real result
+is the false-positive reduction above.
+
+**Global Fishing Watch cross-check (recorded negative):** `make eval-real` queried the current GFW
+v3 gap, encounter, and loitering datasets for the same 2020-01-01 LA/LB time and geographic window.
+The API returned **0 candidate events**, so the resulting agreement was gap **0/2**, rendezvous
+**0/8**, and loiter **0/36**. This is not evidence that all 46 PHAROS calls are false: the silver
+label denominator is empty, GFW encounters cover a narrower set of vessel-type pairings, and its
+loitering definition is offshore-oriented. It does mean this NOAA slice cannot support the planned
+external-label precision estimate. A richer date/region must be selected before GFW calibration is
+claimable; zero coverage is kept here rather than silently omitted. See the
+[GFW Events API definitions](https://globalfishingwatch.org/our-apis/documentation).
+
+### Externally labelled east-Gulf cohort — selected
+
+The richer cross-check window is **2023-07-25, east Gulf of Mexico**, bounded to
+`27.0–30.5°N, 93.0–88.0°W`. The exact GFW v3 query returned **1 gap, 4 encounter, and 283 loiter
+events**. The full NOAA box is real but too broad for pairwise rendezvous evaluation: 1,394,820
+reports across 1,982 vessels. A transparent label-enriched cohort keeps every GFW-named vessel
+present in NOAA (including both sides of an encounter) plus 150 deterministically selected
+background vessels: **337 vessels, 173,204 reports, 493 tracks**. This supports calibration and
+matching, not population prevalence or an unbiased precision estimate.
+
+`make eval-real` produced **379 PHAROS incidents**: gap 47, rendezvous 34, loiter 298, spoof 0.
+Matching now requires the same public vessel identifier, incident type, ≤25 km, and ≤24 h:
+
+| Detector | GFW events in selection query | PHAROS incidents | Corroborated | Agreement rate |
+|---|---:|---:|---:|---:|
+| gap | 1 | 47 | 0 | 0.0% |
+| rendezvous | 4 | 34 | 4 | 11.8% |
+| loiter | 283 | 298 | 65 | 21.8% |
+
+The denominator is PHAROS calls, but these rates are **not precision**: GFW is an incomplete silver
+label with different event definitions, and the corpus is label-enriched. The useful result is that
+69 real PHAROS calls independently agree at vessel/type/time/place level—unlike the LA/LB window,
+which had no GFW labels at all.
+
+The gap miss is a measured source-coverage incompatibility. GFW's labelled vessel stopped at
+2023-07-25 18:36 UTC and reappeared on 2023-08-10, 169–209 km offshore. NOAA's national archives
+contain its 680 reports up to two minutes before the gap, but no reappearance report—even on the
+GFW endpoint day—because Marine Cadastre's terrestrial feed does not cover that offshore signal.
+A search of all 38 Gulf GFW gaps in 2023 found no clean near-shore substitute: even the closest
+candidate had at least one endpoint 94 km offshore. Gap precision therefore remains uncalibrated;
+the failed overlap is recorded rather than converted into a false negative.
+
+#### Reproduce the selected corpus
+
+```bash
+curl -fL --output data/ais/AIS_2023_07_25.zip \
+  https://coast.noaa.gov/htdata/CMSP/AISDataHandler/2023/AIS_2023_07_25.zip
+python -m scripts.filter_noaa data/ais/AIS_2023_07_25.zip \
+  data/ais/gulf_2023_07_25.csv 27.0 -93.0 30.5 -88.0
+python -m scripts.select_gfw_cohort data/ais/gulf_2023_07_25.csv \
+  data/ais/gulf_gfw_cohort_2023_07_25.csv 2023-07-25 2023-07-26 \
+  27.0 -93.0 30.5 -88.0 --background-vessels 150
+PHAROS_HTTP_TIMEOUT_SECONDS=90 PHAROS_DATABASE_URL=sqlite:///data/gulf-eval.db \
+  python -m scripts.eval_real \
+  data/ais/gulf_gfw_cohort_2023_07_25.csv us-gulf \
+  --gfw-bbox 27.0 -93.0 30.5 -88.0
+```
+
+Recorded SHA-256 checksums:
+
+- NOAA ZIP: `7d413dac6a56954b0af78821c84ea45b3ca3f149464b68d4c9b7f0780605b1b1`
+- Bounding-box CSV: `661c39b6f0f7311135849c87fdb902b2dd6b61bc1dcee77769f94def003dde0a`
+- Label-enriched cohort: `8a55c2053871301f6188c64a70b165f4eb21585a438cb350f4e2ca72815f991e`
+
+The NOAA artifacts remain gitignored. The cohort checksum is recorded against GFW's `latest`
+aliases as resolved on 2026-07-15; a future upstream dataset revision may intentionally change the
+labelled-vessel selection.
 
 ## Recorded negatives
 
@@ -146,4 +217,7 @@ data; the quantitative real result is the false-positive reduction above.
 - **AIS coverage confound.** An apparent dark ship is often a receiver-coverage gap; handled via the
   displacement requirement, the reliability grade (real example: the 20 h gap graded E), the
   coverage-gap trap (held 5/5), and the GFW gap-event cross-check — not assumed away.
-
+- **Empty external-label window.** The GFW cross-check is now integrated and exercised, but returned
+  no gap, encounter, or loitering events for the recorded LA/LB day. The east-Gulf cohort fixes
+  rendezvous/loiter label availability, while gap labels remain incompatible with NOAA's offshore
+  receiver coverage.

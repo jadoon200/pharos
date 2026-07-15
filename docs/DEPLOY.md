@@ -13,8 +13,8 @@ for a public demo. Mirrors SENTINEL/ARGUS.
 2. On [render.com](https://render.com): **New → Blueprint**, point it at the repo. Render reads
    `render.yaml`, builds `Dockerfile.web`, and deploys on the free plan with TLS + a public URL.
 3. (Optional) set the repo **variable** `RENDER_URL` to the deployed base URL so
-   `.github/workflows/keep-alive.yml` pings `/health` every ~10 min and the free service never
-   cold-starts.
+   `.github/workflows/keep-alive.yml` pings `/health` every ~10 min and reduces free-tier
+   cold-starts. Scheduled workflows can be delayed, so this is not an uptime guarantee.
 
 What the image does (`Dockerfile.web`):
 

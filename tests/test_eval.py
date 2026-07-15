@@ -59,6 +59,8 @@ def test_gfw_corroboration_counts() -> None:
     sc = generate_scenario("singapore", seed=0, n_normal=6)
     incidents = run_detectors(sc.positions, get_settings())
     gap_inc = next(i for i in incidents if i.detector == "gap")
+    # SQLite can return timezone-naive datetimes even though the model declares timezone=True.
+    gap_inc.ts_start = gap_inc.ts_start.replace(tzinfo=None)
     gfw = [
         GfwEvent(
             event_type="gap",
@@ -72,6 +74,40 @@ def test_gfw_corroboration_counts() -> None:
     ]
     agreements = {a.detector: a for a in corroborate(incidents, gfw)}
     assert agreements["gap"].corroborated >= 1
+
+
+def test_gfw_corroboration_requires_matching_vessel() -> None:
+    sc = generate_scenario("singapore", seed=0, n_normal=6)
+    incidents = run_detectors(sc.positions, get_settings())
+    gap_inc = next(i for i in incidents if i.detector == "gap")
+    mismatched = GfwEvent(
+        event_type="gap",
+        mmsi="unrelated-vessel",
+        start=gap_inc.ts_start,
+        end=gap_inc.ts_end,
+        lat=gap_inc.lat,
+        lon=gap_inc.lon,
+        raw={},
+    )
+    agreements = {a.detector: a for a in corroborate(incidents, [mismatched])}
+    assert agreements["gap"].corroborated == 0
+
+
+def test_gfw_encounter_matches_either_vessel() -> None:
+    sc = generate_scenario("singapore", seed=0, n_normal=6)
+    incidents = run_detectors(sc.positions, get_settings())
+    rendezvous = next(i for i in incidents if i.detector == "rendezvous")
+    event = GfwEvent(
+        event_type="rendezvous",
+        mmsi="other-primary",
+        start=rendezvous.ts_start,
+        end=rendezvous.ts_end,
+        lat=rendezvous.lat,
+        lon=rendezvous.lon,
+        raw={"encounter": {"vessel": {"ssvid": rendezvous.mmsi}}},
+    )
+    agreements = {a.detector: a for a in corroborate(incidents, [event])}
+    assert agreements["rendezvous"].corroborated >= 1
 
 
 def test_evaluate_end_to_end() -> None:

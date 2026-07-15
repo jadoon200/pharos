@@ -4,7 +4,8 @@ Runs the full pipeline (persist → tracks → detectors) on each gold scenario 
 in-memory database, scores per-detector precision/recall and the calibration trap, and scores the
 anomaly model threshold-free by AUC both within-region and cross-region (the headline). Results are
 averaged over seeds, printed, and written into `docs/EVAL.md` between the AUTO-EVAL markers. The
-optional Global Fishing Watch cross-check runs when `PHAROS_GFW_TOKEN` is set.
+real Global Fishing Watch corroboration belongs to `make eval-real`, where the time and geographic
+window come from observed NOAA AIS rather than synthetic events.
 
     python -m pharos.eval.run
 """

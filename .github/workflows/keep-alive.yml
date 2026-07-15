@@ -1,4 +1,4 @@
-# Keep the free Render web service warm so it never cold-starts.
+# Best-effort keep-alive for the free Render web service to reduce cold starts.
 #
 # Render's free plan sleeps a service after ~15 min idle (a ~30-60s cold start on the next
 # hit). This pings /health every ~10 min so the demo stays warm — for free, on GitHub's
