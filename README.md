@@ -43,8 +43,8 @@ Admiralty-style reliability grade for AIS confidence):
 3. **Loitering / zone incursion** — dwelling in or entering a geofenced watch area.
 4. **AIS spoofing / identity anomaly** — physically impossible kinematics or duplicate identity.
 5. **Trajectory anomaly** — the flagship model: a **GRU sequence autoencoder** that learns
-   pattern-of-life from the ordered track and flags deviations (trained the honest way — benign
-   train/val split, early stopping, a recorded learning curve).
+   pattern-of-life from the ordered track and flags deviations (trained on the unlabeled
+   population with a train/val split, early stopping, and a recorded learning curve).
 
 ## Honest evaluation (the discipline)
 
@@ -59,9 +59,10 @@ Two evaluations, and [`docs/EVAL.md`](docs/EVAL.md) leads with the second:
   real pattern-of-life, surfaces the genuinely-distinctive tracks (the Catalina Island high-speed
   ferries) as the top anomalies — interpretable, real outliers.
 - **The flagship model beats fair baselines — the depth is necessary.** Under the realistic
-  *unsupervised* setup (train on all tracks, no labels), the GRU sequence-AE holds **~0.96 AUC**
-  (within *and* cross-region) while the linear-PCA baseline **falls below chance
-  (~0.27)**. The recurrent architecture that models ordered dynamics is what survives.
+  *unsupervised* setup (train on all tracks, no labels), the compact GRU sequence-AE reaches
+  **0.971 within-region / 0.967 cross-region AUC**, ahead of a nonlinear Isolation Forest
+  (**0.940 / 0.942**) while linear PCA falls below chance (**0.273**). A 25-run capacity sweep
+  selected 8 hidden units: slightly stronger transfer with 804 rather than 38,660 parameters.
 - **Honest about the synthetic ceiling.** The labelled offline gold set can't ship hundreds of MB
   of NOAA CSVs, so it uses a deterministic simulator (noise, benign confounders, graded anomalies).
   But self-generated anomalies are separable *by construction* — so the near-perfect detector P/R
@@ -78,6 +79,10 @@ Two evaluations, and [`docs/EVAL.md`](docs/EVAL.md) leads with the second:
   rendezvous** and **65/298 loiter** calls. These are corroboration rates, not precision: the cohort
   is label-enriched and GFW is an incomplete silver label. Its one gap label was offshore beyond
   NOAA receiver coverage, a useful limitation recorded in [`docs/EVAL.md`](docs/EVAL.md).
+- **The full Gulf population now runs.** A conservative slow-motion space/time index reduces
+  937,765 possible rendezvous pairs to 51,570 exact candidates (5.50%). The 1.39M-report,
+  1,982-vessel detector run completes in 7.12s after loading and returns 93 unique pairs; 3 of 186
+  symmetric calls match the four GFW encounter labels under the same agreement rule.
 
 ## Data sources (all free)
 
@@ -91,7 +96,7 @@ Earth / EEZ reference geometry.
 
 Python 3.12 (conda) · SQLAlchemy 2.0 / Alembic · PostgreSQL (SQLite for tests — no PostGIS
 dependency; spatial math in pure numpy) · Prefect · httpx · scikit-learn · **torch GRU sequence
-autoencoder** (flagship anomaly model; **PCA baseline**) · FastAPI · React 19 + TypeScript +
+autoencoder** (flagship anomaly model; **Isolation Forest + PCA baselines**) · FastAPI · React 19 + TypeScript +
 Leaflet · Docker Compose · GitHub Actions. Mirrors SENTINEL/ARGUS conventions so the three read as
 one body of work. ruff + mypy (strict) + pytest gate every change.
 
@@ -104,6 +109,7 @@ make ingest FILE=data/ais/<slice>.csv REGION=us-west  # load a free NOAA AIS sli
 make tracks                                         # build per-vessel voyages
 make detect                                         # run the detector ensemble → incidents
 make eval                                           # score detectors on the gold set → docs/EVAL.md
+make benchmark-anomaly                              # reproduce GRU capacity selection (25 runs/size)
 make eval-real FILE=data/ais/<slice>.csv REGION=us-la  # the honest test on real AIS
 make api                                            # read-only API + GeoJSON on :8000
 make ui                                             # React map dashboard on :5173

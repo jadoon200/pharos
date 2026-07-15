@@ -50,7 +50,7 @@ def test_cross_region_anomaly_auc() -> None:
     )
     from pharos.detect.seq_anomaly import SequenceAnomalyModel
 
-    model = SequenceAnomalyModel(hidden=64, seed=0)
+    model = SequenceAnomalyModel(hidden=settings.anomaly_hidden, seed=0)
     model.fit(s_sg)  # unsupervised: train Singapore, score US west coast
     assert roc_auc_anomaly_vs_normal(model.score(s_us), lab_us) >= 0.8
 
@@ -118,5 +118,8 @@ def test_evaluate_end_to_end() -> None:
     # The flagship GRU transfers cross-region; and it beats the collapsing PCA baseline.
     assert float(results["anomaly_gru_cross_auc"]) >= 0.8  # type: ignore[arg-type]
     assert float(results["anomaly_gru_within_auc"]) > float(results["anomaly_pca_within_auc"])  # type: ignore[arg-type]
+    assert float(results["anomaly_gru_cross_auc"]) > float(  # type: ignore[arg-type]
+        results["anomaly_isolation_cross_auc"]
+    )
     md = render_markdown(results)
     assert "cross-region" in md.lower() and "gru" in md.lower()

@@ -10,7 +10,7 @@ story (M0–M8), with deploy (M9) last and the ARGUS bridge (M10) an explicit ex
 | M1 | Collection — NOAA bulk AIS loader, synthetic labelled generator, AISStream live client, GFW label client, zone/reference seed, Prefect flows | ✅ done |
 | M2 | Track building — per-MMSI segmentation (gap-split voyages), resampling, heading-invariant shape features, kinematics | ✅ done |
 | M3 | Deterministic detectors — dark-ship/gap, STS rendezvous, loiter/incursion, spoofing → incidents | ✅ done |
-| M4 | Flagship model — GRU sequence autoencoder (torch; train/val + early stopping) vs a PCA baseline; cross-region generalization | ✅ done |
+| M4 | Flagship model — compact GRU sequence autoencoder (torch; train/val + early stopping) vs Isolation Forest/PCA baselines; cross-region generalization | ✅ done |
 | M5 | Composite ensemble — fuse detectors into per-vessel maritime-threat rollups (transparent risk + reliability) | ✅ done |
 | M6 | Eval harness — gold set + calibration trap, per-type P/R, cross-region AUC, GFW cross-check → docs/EVAL.md | ✅ done |
 | M7 | API — hardened read-only FastAPI + GeoJSON endpoints + `POST /score-track` | ✅ done |
@@ -18,7 +18,7 @@ story (M0–M8), with deploy (M9) last and the ARGUS bridge (M10) an explicit ex
 | M9 | Deploy — `Dockerfile.web` + `render.yaml` free plan, baked demo SQLite seed, keep-alive; demo-seed script | ✅ config landed |
 | M10 | **Extra** — ARGUS GEOINT bridge: `GET /geoint/evidence` exposes incidents as citable, ARGUS-`EvidenceItem`-shaped GEOINT evidence | ✅ done |
 
-**Status:** the full system (M0–M10) is built and gating clean (87 tests). The whole pipeline
+**Status:** the full system (M0–M10) is built. The whole pipeline
 (collect → tracks → 5 detectors → flagship anomaly model → composite ensemble → honest eval) runs
 end-to-end, a hardened read-only API serves it, the React/Leaflet dashboard is browser-verified
 against the live API, the single-container free-deploy path is verified, and the GEOINT bridge
@@ -43,9 +43,10 @@ deployable, and the M10 bridge (originally optional) is done.
 
 - **NOAA slice:** LA / Long Beach, 2020-01-01 (352 vessels, 145,028 reports, 388 tracks) is the
   recorded real-data validation corpus. The raw slice stays out of Git because AIS data is large.
-- **Trajectory model:** a GRU sequence autoencoder over ordered track dynamics is the flagship;
-  the linear PCA model is retained as the fair baseline. The operating comparison is recorded in
-  [`EVAL.md`](EVAL.md).
+- **Trajectory model:** an 8-unit GRU sequence autoencoder over ordered track dynamics is the
+  flagship. A 25-run capacity sweep selected it over the 64-unit version (804 vs 38,660
+  parameters); Isolation Forest and linear PCA are retained as fair baselines. The operating
+  comparison is recorded in [`EVAL.md`](EVAL.md).
 - **Cross-region split:** train on Singapore and score US west-coast traffic. Heading-invariant
   track-shape descriptors make this a meaningful transfer test.
 - **External-label window:** east Gulf, 2023-07-25 (`27.0–30.5°N, 93.0–88.0°W`). A deterministic
@@ -54,6 +55,9 @@ deployable, and the M10 bridge (originally optional) is done.
 - **Reproducible real-data slicing:** `scripts.filter_noaa` streams national NOAA ZIPs by bbox/MMSI;
   `scripts.select_gfw_cohort` retains every matched labelled vessel plus deterministic background.
   Commands and checksums are recorded in [`EVAL.md`](EVAL.md).
+- **Rendezvous scaling:** a conservative slow-motion space/time index cuts the full east-Gulf
+  slice from 937,765 possible pairs to 51,570 exact candidates. The 1.39M-report detector run now
+  completes in 7.12s after loading; indexed/exhaustive cohort output is exactly identical.
 
 ## Next build priorities
 
@@ -63,7 +67,8 @@ deployable, and the M10 bridge (originally optional) is done.
 2. **Find a receiver-compatible gap corpus.** GFW's Gulf gap events are offshore satellite labels;
    the NOAA terrestrial feed does not observe both endpoints. Add a source/window with compatible
    reception before claiming real gap calibration.
-3. **Spatially prefilter rendezvous candidates.** The full 1,982-vessel Gulf box exposed the
-   detector's pairwise scaling limit; add a time/space candidate index before exact resampling.
-4. **Generate and commit the Linux dependency lock.** CI currently falls back to
+3. **Generate and commit the Linux dependency lock.** CI currently falls back to
    `requirements.txt` until the manual Lock workflow creates `requirements.lock`.
+4. **Acquire real trajectory-anomaly labels.** The compact GRU wins the current multi-seed
+   synthetic/cross-region comparison, but model-family promotion needs externally labelled real
+   route anomalies rather than reconstruction-error anecdotes.

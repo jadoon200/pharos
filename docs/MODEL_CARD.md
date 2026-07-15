@@ -28,9 +28,12 @@ picture for **human review**. It is analytical and defensive.
 
 ## Evaluation & known limitations
 
-**Trajectory anomaly flagship:** A GRU sequence autoencoder over ordered per-step tracks.
-Under unsupervised training (no labels), it achieves ~0.96 AUC while the linear PCA baseline falls
-below chance (~0.27 AUC). The recurrent depth is necessary, not decorative.
+**Trajectory anomaly flagship:** An 8-unit GRU sequence autoencoder over ordered per-step tracks.
+Under unsupervised training (no labels), it achieves 0.971 within-region / 0.967 cross-region AUC,
+ahead of Isolation Forest (0.940 / 0.942), while linear PCA falls below chance (0.273). A 25-run
+capacity sweep selected 8 over 64 hidden units, reducing 38,660 parameters to 804. This is the best
+measured fit for PHAROS's small whole-track corpus, not a universal state-of-the-art claim; real
+trajectory-anomaly labels are still unavailable.
 
 **Synthetic evaluation ceiling:** The offline gold set's near-perfect detector precision/recall
 (~1.0 for rendezvous, loiter, gaps) is a *known ceiling* — self-generated anomalies are separable
@@ -50,6 +53,12 @@ no candidates. A selected east-Gulf cohort subsequently corroborated 4/34 PHAROS
 the cohort is label-enriched and GFW is incomplete. Its gap label was 169–209 km offshore and had
 no NOAA reappearance report, so gap calibration remains unestimable. Recorded negatives are kept,
 not buried.
+
+**Scale validation:** The full 1,982-vessel east-Gulf slice is now tractable. A conservative
+slow-motion space/time index retains 51,570 of 937,765 possible rendezvous pairs (5.50%) before
+unchanged exact scoring; the detector completes in 7.12s after CSV loading. It returns 186
+symmetric calls (93 pairs), of which 3 agree with the four GFW encounter labels under the existing
+vessel/type/time/place rule. This 1.6% agreement is not precision because GFW is incomplete.
 
 ## Provenance
 

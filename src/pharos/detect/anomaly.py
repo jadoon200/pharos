@@ -1,11 +1,12 @@
-"""Anomaly-detection driver + the linear PCA baseline.
+"""Anomaly-detection driver + nonlinear Isolation Forest and linear PCA baselines.
 
 The flagship model is the GRU sequence autoencoder in `seq_anomaly.py`. This module holds the
 pieces around it: `detect_anomalies` (the DB driver the whole pipeline calls — it trains the GRU
 over the stored per-step `Track.sequence` and rebuilds the `detector="anomaly"` incidents),
-`normalized_scores` (reconstruction error → a [0,1] incident score), and `PCAAnomalyBaseline`, a
-linear PCA reconstruction kept as the single honest baseline so the eval can show the recurrent
-model actually earns its keep against a simple alternative.
+`normalized_scores` (reconstruction error → a [0,1] incident score), plus nonlinear
+`IsolationForestAnomalyBaseline` over the ordered sequence and `PCAAnomalyBaseline` over the
+hand-engineered vector. The eval uses both to show whether the recurrent model earns its keep
+against credible small-data alternatives.
 
 Anomalies are unsupervised (no labels): a voyage the model reconstructs worst is flagged for human
 review. On why a labelled synthetic AUC is a *ceiling*, not a capability claim — and the real-data
@@ -74,6 +75,35 @@ class PCAAnomalyBaseline:
     def flag(self, features: NDArray[np.float64]) -> NDArray[np.bool_]:
         assert self.threshold is not None
         return self.score(features) > self.threshold
+
+
+class IsolationForestAnomalyBaseline:
+    """Nonlinear small-data baseline over the same ordered sequence representation."""
+
+    def __init__(self, n_estimators: int = 300, seed: int = 0) -> None:
+        self.n_estimators = n_estimators
+        self.seed = seed
+        self._model: Any = None
+
+    @staticmethod
+    def _flatten(sequences: NDArray[np.float64]) -> NDArray[np.float64]:
+        x = np.asarray(sequences, dtype=np.float64)
+        return x.reshape(x.shape[0], -1)
+
+    def fit(self, sequences: NDArray[np.float64]) -> None:
+        from sklearn.ensemble import IsolationForest
+
+        self._model = IsolationForest(
+            n_estimators=self.n_estimators,
+            random_state=self.seed,
+            n_jobs=1,
+        ).fit(self._flatten(sequences))
+
+    def score(self, sequences: NDArray[np.float64]) -> NDArray[np.float64]:
+        assert self._model is not None, "fit() first"
+        # sklearn returns larger values for inliers; PHAROS consistently uses larger=anomalous.
+        scores = -self._model.score_samples(self._flatten(sequences))
+        return np.asarray(scores, dtype=np.float64)
 
 
 def detect_anomalies(

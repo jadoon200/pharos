@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+from datetime import UTC, datetime, timedelta
+
 from pharos.config import get_settings
+from pharos.db.models import Position
 from pharos.detect.base import grade_from_confidence, severity_from_score
 from pharos.detect.gaps import detect_gaps
 from pharos.detect.loiter import detect_loitering
-from pharos.detect.rendezvous import detect_rendezvous
+from pharos.detect.rendezvous import _spatial_candidate_pairs, detect_rendezvous
 from pharos.detect.run import run_detectors
 from pharos.detect.spoof import detect_spoofing
 from pharos.ingest.synthetic import generate_scenario
@@ -41,6 +44,47 @@ def test_rendezvous_detector_fires_on_sts() -> None:
     # It is symmetric: both vessels get an incident naming the other.
     counterpart_hits = [i for i in incidents if i.mmsi == inc.counterpart_mmsi]
     assert counterpart_hits and counterpart_hits[0].counterpart_mmsi == a
+
+
+def test_rendezvous_index_matches_exhaustive_detector() -> None:
+    settings = get_settings()
+    for seed in range(3):
+        sc = generate_scenario("singapore", seed=seed, n_normal=12)
+        indexed = detect_rendezvous(sc.positions, settings)
+        exhaustive = detect_rendezvous(sc.positions, settings, use_candidate_index=False)
+        indexed_result = [(i.incident_id, i.evidence) for i in indexed]
+        exhaustive_result = [(i.incident_id, i.evidence) for i in exhaustive]
+        assert indexed_result == exhaustive_result
+
+
+def test_rendezvous_index_handles_unaligned_reports_and_prunes_distance() -> None:
+    start = datetime(2023, 1, 1, tzinfo=UTC)
+
+    def _track(mmsi: str, lon: float, offset_min: int) -> list[Position]:
+        samples = ((0, 4.0), (5, 0.2), (45, 0.2), (50, 4.0))
+        return [
+            Position(
+                mmsi=mmsi,
+                ts=start + timedelta(minutes=offset_min + minute),
+                lat=5.0,
+                lon=lon,
+                sog=speed,
+                source="synthetic",
+            )
+            for minute, speed in samples
+        ]
+
+    usable = {"a": _track("a", 100.0, 2), "b": _track("b", 100.001, 4)}
+    # Add many simultaneously slow tracks far outside rendezvous range.
+    for i in range(40):
+        mmsi = f"far-{i:02d}"
+        usable[mmsi] = _track(mmsi, 110.0 + i, i % 3)
+
+    pairs, time_bins = _spatial_candidate_pairs(usable, max_distance_km=0.5, max_speed_kn=1.0)
+
+    assert ("a", "b") in pairs  # pair-specific resampling phases remain represented
+    assert time_bins >= 2
+    assert len(pairs) < len(usable) * (len(usable) - 1) // 20
 
 
 def test_loiter_detector_fires() -> None:

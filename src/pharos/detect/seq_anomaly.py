@@ -4,14 +4,16 @@ The flagship anomaly model. Rather than a bag of coordinates, it consumes the tr
 **sequence** of per-step motion (`tracks.build.track_sequence`: `[dx, dy, step_len, turn]`) and
 reconstructs it with a recurrent encoder-decoder — so it models pattern-of-life as *dynamics* (a
 straight run, a bend, a detour that returns), which is what separates a subtle anomalous excursion
-from a legitimate single manoeuvre. The eval keeps a linear PCA baseline (`anomaly.py`) for a fair
-comparison; the recurrent model beats it decisively under unsupervised training (`docs/EVAL.md`).
+from a legitimate single manoeuvre. The eval keeps nonlinear Isolation Forest and linear PCA
+baselines (`anomaly.py`) for a fair comparison; the recurrent model beats both under unsupervised
+training (`docs/EVAL.md`).
 
-Trained the honest way: a benign-only train set with a held-out **validation split**, **early
-stopping** on validation loss (best weights restored), and a recorded **learning curve** — not a
-fixed epoch count on the whole set. Anomaly score = per-track reconstruction error. Torch backend
-(CPU is plenty at this data scale; fast training here is expected, not a shortcut — the honest
-signal is the val-loss curve and a sub-1.0 AUC, both reported).
+Trained the honest way for the operational setting: an unlabeled track population (which can
+contain anomalies) with a held-out **validation split**, **early stopping** on validation loss
+(best weights restored), and a recorded **learning curve** — not a fixed epoch count on the whole
+set. Anomaly score = per-track reconstruction error. Torch backend (CPU is plenty at this data
+scale; fast training here is expected, not a shortcut — the honest signal is the val-loss curve
+and a sub-1.0 AUC, both reported).
 """
 
 from __future__ import annotations
@@ -53,7 +55,7 @@ class _SeqAE(nn.Module):
 class SequenceAnomalyModel:
     """GRU-autoencoder anomaly scorer over per-step track sequences."""
 
-    def __init__(self, hidden: int = 48, seed: int = 0) -> None:
+    def __init__(self, hidden: int = 8, seed: int = 0) -> None:
         self.hidden = hidden
         self.seed = seed
         self._model: _SeqAE | None = None
@@ -67,6 +69,12 @@ class SequenceAnomalyModel:
         assert self._mean is not None and self._std is not None
         return (x - self._mean) / self._std
 
+    @property
+    def parameter_count(self) -> int:
+        """Number of trainable parameters in the fitted network."""
+        assert self._model is not None, "fit() first"
+        return sum(parameter.numel() for parameter in self._model.parameters())
+
     def fit(
         self,
         sequences: NDArray[np.float64],
@@ -75,7 +83,7 @@ class SequenceAnomalyModel:
         val_frac: float = 0.25,
         patience: int = 25,
     ) -> TrainHistory:
-        """Train on benign sequences (N, L, C) with a val split + early stopping."""
+        """Train on unlabeled sequences (N, L, C) with a val split + early stopping."""
         torch.manual_seed(self.seed)
         rng = np.random.default_rng(self.seed)
         x = np.asarray(sequences, dtype=np.float64)

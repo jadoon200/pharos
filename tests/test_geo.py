@@ -2,6 +2,7 @@ import numpy as np
 
 from pharos.geo import (
     haversine_km,
+    haversine_pairs_km,
     haversine_series_km,
     implied_speed_kn,
     point_in_polygon,
@@ -26,6 +27,18 @@ def test_haversine_series_length() -> None:
     steps = haversine_series_km(lats, lons)
     assert steps.shape == (2,)
     assert np.all(steps > 0)
+
+
+def test_vector_haversine_matches_scalar() -> None:
+    lat1 = np.array([0.0, 1.2, 27.5])
+    lon1 = np.array([0.0, 103.8, -92.0])
+    lat2 = np.array([1.0, 1.201, 28.0])
+    lon2 = np.array([0.0, 103.802, -91.5])
+    vector = haversine_pairs_km(lat1, lon1, lat2, lon2)
+    scalar = np.array(
+        [haversine_km(a, b, c, d) for a, b, c, d in zip(lat1, lon1, lat2, lon2, strict=True)]
+    )
+    np.testing.assert_allclose(vector, scalar, rtol=1e-12, atol=1e-12)
 
 
 def test_implied_speed_impossible() -> None:

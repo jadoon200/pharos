@@ -11,7 +11,12 @@ from sqlalchemy.orm import Session
 
 from pharos.config import get_settings
 from pharos.db.models import Incident
-from pharos.detect.anomaly import PCAAnomalyBaseline, detect_anomalies, normalized_scores
+from pharos.detect.anomaly import (
+    IsolationForestAnomalyBaseline,
+    PCAAnomalyBaseline,
+    detect_anomalies,
+    normalized_scores,
+)
 from pharos.detect.seq_anomaly import SequenceAnomalyModel
 from pharos.ingest.persist import persist_scenario_or_positions
 from pharos.ingest.synthetic import generate_scenario
@@ -52,16 +57,17 @@ def test_gru_separates_anomalies_unsupervised() -> None:
     # Trained on ALL tracks (no labels — the honest operational setup), the GRU still ranks the
     # subtle detours above benign transits + benign manoeuvres.
     s, _f, lab = _voyages("singapore", seed=0)
-    g = SequenceAnomalyModel(hidden=64, seed=0)
+    g = SequenceAnomalyModel(hidden=get_settings().anomaly_hidden, seed=0)
     g.fit(s)
     assert _auc(g.score(s), lab) >= 0.85
     assert g.history.best_epoch >= 0 and g.history.val_loss  # a real train/val curve exists
+    assert g.parameter_count == 804  # capacity-selected compact flagship
 
 
 def test_gru_cross_region_transfer() -> None:
     s_sg, _f, _l = _voyages("singapore", seed=1)
     s_us, _fu, lab_us = _voyages("us-west", seed=1)
-    g = SequenceAnomalyModel(hidden=64, seed=0)
+    g = SequenceAnomalyModel(hidden=get_settings().anomaly_hidden, seed=0)
     g.fit(s_sg)  # train Singapore, score US west coast
     assert _auc(g.score(s_us), lab_us) >= 0.8
 
@@ -70,13 +76,22 @@ def test_gru_beats_pca_baseline_unsupervised() -> None:
     # The honest depth-matters finding: under unsupervised training on the hard set, the linear
     # PCA baseline falls APART (below chance), while the GRU holds up.
     s, f, lab = _voyages("singapore", seed=2)
-    gru = SequenceAnomalyModel(hidden=64, seed=0)
+    gru = SequenceAnomalyModel(hidden=get_settings().anomaly_hidden, seed=0)
     gru.fit(s)
     pca = PCAAnomalyBaseline(n_components=6)
     pca.fit(f)
     gru_auc = _auc(gru.score(s), lab)
     assert gru_auc >= 0.85
     assert gru_auc > _auc(pca.score(f), lab)  # the deep model beats the linear baseline
+
+
+def test_gru_beats_nonlinear_small_data_baseline() -> None:
+    s, _f, lab = _voyages("singapore", seed=3)
+    gru = SequenceAnomalyModel(hidden=get_settings().anomaly_hidden, seed=0)
+    gru.fit(s)
+    isolation = IsolationForestAnomalyBaseline(n_estimators=100, seed=0)
+    isolation.fit(s)
+    assert _auc(gru.score(s), lab) > _auc(isolation.score(s), lab)
 
 
 def test_normalized_scores_semantics() -> None:

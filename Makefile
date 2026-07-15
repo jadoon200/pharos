@@ -1,4 +1,4 @@
-.PHONY: env install lock lint typecheck test check up down migrate ingest live tracks detect train-anomaly ensemble eval api ui
+.PHONY: env install lock lint typecheck test check up down migrate ingest live tracks detect train-anomaly benchmark-anomaly ensemble eval api ui
 
 # One-time: create the conda env, then `conda activate pharos`
 env:
@@ -54,6 +54,10 @@ detect:
 # Train the flagship torch GRU trajectory-anomaly model.
 train-anomaly:
 	python -m pharos.detect.anomaly
+
+# Reproduce the GRU hidden-capacity selection over data + initialization seeds.
+benchmark-anomaly:
+	python -m scripts.benchmark_anomaly
 
 # Fuse detector outputs into per-vessel maritime-threat rollups (the composite).
 ensemble:
