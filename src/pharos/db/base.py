@@ -1,7 +1,9 @@
 from collections.abc import Iterator
 from contextlib import contextmanager
+from typing import Any
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
+from sqlalchemy.engine import Engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 from pharos.config import get_settings
@@ -11,11 +13,25 @@ class Base(DeclarativeBase):
     pass
 
 
-def make_engine(url: str | None = None):  # type: ignore[no-untyped-def]
+def _configure_sqlite_connection(dbapi_connection: Any, _connection_record: Any) -> None:
+    """Apply the durability/concurrency policy to every SQLite connection."""
+    cursor = dbapi_connection.cursor()
+    try:
+        cursor.execute("PRAGMA journal_mode=WAL")
+        cursor.execute("PRAGMA synchronous=NORMAL")
+        cursor.execute("PRAGMA busy_timeout=5000")
+    finally:
+        cursor.close()
+
+
+def make_engine(url: str | None = None) -> Engine:
     url = url or get_settings().database_url
     # A single-container SQLite deploy serves requests from a threadpool; allow cross-thread use.
     connect_args = {"check_same_thread": False} if url.startswith("sqlite") else {}
-    return create_engine(url, pool_pre_ping=True, connect_args=connect_args)
+    engine = create_engine(url, pool_pre_ping=True, connect_args=connect_args)
+    if engine.dialect.name == "sqlite":
+        event.listen(engine, "connect", _configure_sqlite_connection)
+    return engine
 
 
 _session_factory: sessionmaker[Session] | None = None

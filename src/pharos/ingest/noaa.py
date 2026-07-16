@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import csv
 from collections.abc import Iterator
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -44,7 +44,10 @@ def _parse_ts(value: str) -> datetime | None:
         return None
     for fmt in ("%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M:%S"):
         try:
-            return datetime.strptime(value, fmt).astimezone()
+            # Marine Cadastre BaseDateTime is UTC but carries no explicit offset. Calling
+            # astimezone() on a naive value would incorrectly interpret it in the workstation's
+            # local timezone before conversion.
+            return datetime.strptime(value, fmt).replace(tzinfo=UTC)
         except ValueError:
             continue
     return None

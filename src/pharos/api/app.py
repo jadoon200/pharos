@@ -22,7 +22,7 @@ from sqlalchemy.orm import Session
 
 from pharos import __version__
 from pharos.api.limits import ConcurrencyLimiter, RateLimiter, SlotUnavailable
-from pharos.api.scoring import score_track_points
+from pharos.api.scoring import reset_scorer, score_track_points
 from pharos.config import get_settings
 from pharos.db.base import get_session_factory, init_sqlite_schema
 from pharos.db.models import Incident, Position, Track, Vessel, Zone
@@ -251,13 +251,24 @@ def geoint_evidence(
 
 
 @app.post("/detect")
-def run_detection(db: Session = Depends(get_db), region: str | None = None) -> dict[str, Any]:
+def run_detection(
+    request: Request, db: Session = Depends(get_db), region: str | None = None
+) -> dict[str, Any]:
     """Rebuild the anomaly incidents on demand (the deterministic ones are rebuilt by the CLI).
 
     Guarded like the inference route — it trains the model. Included so a fresh deploy can
     populate the anomaly lane from the dashboard without the CLI. Not destructive to positions.
     """
-    return {"anomaly": detect_anomalies(db, region)}
+    if not _rate_limiter.allow(request):
+        raise HTTPException(status_code=429, detail="rate limit exceeded")
+    try:
+        with _concurrency.slot():
+            result = detect_anomalies(db, region)
+            db.commit()
+            reset_scorer()  # next inference loads the exact artifact just trained above
+            return {"anomaly": result}
+    except SlotUnavailable as exc:
+        raise HTTPException(status_code=503, detail="server busy, try again") from exc
 
 
 @app.post("/score-track")

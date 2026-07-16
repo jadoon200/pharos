@@ -14,9 +14,14 @@ per-vessel threat picture, the way a maritime fusion cell actually works.
 > AISStream live client + Global Fishing Watch labels + a deterministic labelled synthetic
 > generator), track building, the five-detector ensemble, the flagship trajectory-anomaly model,
 > the composite maritime-threat rollup, the honest eval harness, a hardened read-only API, and a
-> React/Leaflet map dashboard are all in place and browser-verified. Remaining polish: the free
-> cloud deploy config is written (see [`docs/DEPLOY.md`](docs/DEPLOY.md)) and the optional ARGUS
-> GEOINT bridge is a documented extra. Progress is tracked honestly in
+> React/Leaflet map dashboard are all in place and browser-verified. The ARGUS-shaped GEOINT
+> evidence bridge is also implemented. The Singapore pilot is live: Pilot Day 0 began on
+> 2026-07-16, the low-priority launch agent is collecting Class A/B AIS, and every two minutes the
+> incremental processor rebuilds dirty track tails and scores them with the frozen SHA-pinned GRU.
+> Phase 3 independent labels/evaluation and Phase 4 sanitized delayed snapshots/dashboard modes
+> are next. The separate baked-demo release step remains operational: connect the checked-in
+> free-cloud blueprint to Render and record the public URL (see [`docs/DEPLOY.md`](docs/DEPLOY.md)).
+> Progress is tracked honestly in
 > [`docs/ROADMAP.md`](docs/ROADMAP.md); every model/detector claim lands in
 > [`docs/EVAL.md`](docs/EVAL.md) with the number that survives scrutiny.
 
@@ -42,8 +47,10 @@ Admiralty-style reliability grade for AIS confidence):
 3. **Loitering / zone incursion** — dwelling in or entering a geofenced watch area.
 4. **AIS spoofing / identity anomaly** — physically impossible kinematics or duplicate identity.
 5. **Trajectory anomaly** — the flagship model: a **GRU sequence autoencoder** that learns
-   pattern-of-life from the ordered track and flags deviations (trained the honest way — benign
-   train/val split, early stopping, a recorded learning curve).
+   pattern-of-life from the ordered track and flags deviations (trained on the unlabeled
+   population with a train/val split, train-only normalization, early stopping, and a recorded
+   learning curve). Training writes a versioned artifact so batch detection and API inference use
+   the same weights, scaler, and threshold.
 
 ## Honest evaluation (the discipline)
 
@@ -58,9 +65,12 @@ Two evaluations, and [`docs/EVAL.md`](docs/EVAL.md) leads with the second:
   real pattern-of-life, surfaces the genuinely-distinctive tracks (the Catalina Island high-speed
   ferries) as the top anomalies — interpretable, real outliers.
 - **The flagship model beats fair baselines — the depth is necessary.** Under the realistic
-  *unsupervised* setup (train on all tracks, no labels), the GRU sequence-AE holds **~0.96 AUC**
-  (within *and* cross-region) while the linear-PCA baseline **falls below chance
-  (~0.27)**. The recurrent architecture that models ordered dynamics is what survives.
+  *unsupervised* setup (train on all tracks, no labels), the compact GRU sequence-AE reaches
+  **0.962 within-region / 0.962 cross-region AUC**, ahead of a nonlinear Isolation Forest
+  (**0.940 / 0.942**) while linear PCA falls below chance (**0.273**). A 25-run capacity sweep
+  selected 8 hidden units (**0.963 / 0.964 mean AUC**): slightly stronger transfer with 804 rather
+  than 38,660 parameters. These corrected numbers fit normalization only on the training
+  partition; the earlier optimistic result was discarded after the leakage audit.
 - **Honest about the synthetic ceiling.** The labelled offline gold set can't ship hundreds of MB
   of NOAA CSVs, so it uses a deterministic simulator (noise, benign confounders, graded anomalies).
   But self-generated anomalies are separable *by construction* — so the near-perfect detector P/R
@@ -68,8 +78,19 @@ Two evaluations, and [`docs/EVAL.md`](docs/EVAL.md) leads with the second:
   number is the baseline gap above.
 - **The AIS coverage confound is handled, not hidden.** A "dark ship" is often a receiver-coverage
   gap — handled via a displacement requirement, an AIS reliability grade (on real data a 20 h gap
-  was graded **E**), a calibration trap (held 5/5), and the GFW cross-check. Incidents are
-  **human-review decision support, never automated verdicts**.
+  was graded **E**), a calibration trap (held 5/5), and an operational GFW cross-check. The first
+  LA/LB GFW query returned no candidate events, so external-label precision remains unestimable on
+  that slice; the negative is recorded rather than buried. Incidents are **human-review decision
+  support, never automated verdicts**.
+- **External labels now overlap real NOAA traffic.** A selected east-Gulf cohort (2023-07-25;
+  337 vessels, 173k reports) produced vessel/type/time/place agreement with GFW for **4/34
+  rendezvous** and **65/298 loiter** calls. These are corroboration rates, not precision: the cohort
+  is label-enriched and GFW is an incomplete silver label. Its one gap label was offshore beyond
+  NOAA receiver coverage, a useful limitation recorded in [`docs/EVAL.md`](docs/EVAL.md).
+- **The full Gulf population now runs.** A conservative slow-motion space/time index reduces
+  937,765 possible rendezvous pairs to 51,570 exact candidates (5.50%). The 1.39M-report,
+  1,982-vessel detector run completes in 7.12s after loading and returns 93 unique pairs; 3 of 186
+  symmetric calls match the four GFW encounter labels under the same agreement rule.
 
 ## Data sources (all free)
 
@@ -83,7 +104,7 @@ Earth / EEZ reference geometry.
 
 Python 3.12 (conda) · SQLAlchemy 2.0 / Alembic · PostgreSQL (SQLite for tests — no PostGIS
 dependency; spatial math in pure numpy) · Prefect · httpx · scikit-learn · **torch GRU sequence
-autoencoder** (flagship anomaly model; **PCA baseline**) · FastAPI · React 19 + TypeScript +
+autoencoder** (flagship anomaly model; **Isolation Forest + PCA baselines**) · FastAPI · React 19 + TypeScript +
 Leaflet · Docker Compose · GitHub Actions. Mirrors SENTINEL/ARGUS conventions so the three read as
 one body of work. ruff + mypy (strict) + pytest gate every change.
 
@@ -96,10 +117,26 @@ make ingest FILE=data/ais/<slice>.csv REGION=us-west  # load a free NOAA AIS sli
 make tracks                                         # build per-vessel voyages
 make detect                                         # run the detector ensemble → incidents
 make eval                                           # score detectors on the gold set → docs/EVAL.md
+make benchmark-anomaly                              # reproduce GRU capacity selection (25 runs/size)
 make eval-real FILE=data/ais/<slice>.csv REGION=us-la  # the honest test on real AIS
+PHAROS_DATABASE_URL=sqlite:///data/sg-live.db make collector  # continuous SG lane
+PHAROS_DATABASE_URL=sqlite:///data/sg-live.db make process-live # manual incremental cycle
+PHAROS_DATABASE_URL=sqlite:///data/sg-live.db make prune      # WAL-safe retention pass
 make api                                            # read-only API + GeoJSON on :8000
 make ui                                             # React map dashboard on :5173
 ```
+
+The continuous Singapore pilot collector is micro-batched, Class A/B aware, reconnecting, and
+coverage-accounted for laptop sleep. Its low-priority macOS launch-agent setup and mobility drill
+are documented in [`docs/SG_PILOT_OPERATIONS.md`](docs/SG_PILOT_OPERATIONS.md). The bounded
+`make live` capture remains available for manual checks. The model/threshold freeze is auditable in
+[`docs/SG_PILOT_FREEZE.md`](docs/SG_PILOT_FREEZE.md); the full delivery and evaluation protocol is
+[`docs/SG_LIVE_PILOT_PLAN.md`](docs/SG_LIVE_PILOT_PLAN.md).
+
+Every two minutes the live worker rebuilds only dirty vessel track tails, refreshes affected
+detectors, and scores eligible tracks with the SHA-pinned frozen GRU—never request-path training or
+a silent fallback. Known collector outages suppress vessel-gap calls. Live positions retain for 21
+days after a successful WAL checkpoint, with 2 GB warning and 5 GB emergency sampling controls.
 
 No NOAA download to try it? Seed a self-contained demo from the deterministic synthetic
 generator (zones + tracks + the full detector ensemble + the anomaly model) into a SQLite file,
@@ -116,8 +153,10 @@ PHAROS_DATABASE_URL=sqlite:///data/demo.db make api   # then `make ui` in anothe
 evidence), `/zones` and `/tracks` (GeoJSON for the map), `/maritime-picture` (the composite
 per-vessel threat rollups), `/geoint/evidence` (incidents as citable, source-rated GEOINT evidence
 — the bridge below), plus one stateless inference route `POST /score-track` (scores a pasted
-track's shape through the anomaly model — inspects only the supplied points, never fetches a URL,
-so the API stays effectively read-only). Public-deploy hardening (CORS, per-client rate limit →
+track's shape through the persisted detector artifact — inspects only the supplied points, never
+fetches a URL, so the API stays effectively read-only). Its response reports
+`model_source=trained-artifact`, or `runtime-fallback` when no valid artifact is available, so
+model drift is visible rather than silent. Public-deploy hardening (CORS, per-client rate limit →
 429, request-size cap → 422, bounded concurrency → 503) is tuned via `PHAROS_API_*`.
 
 ### GEOINT bridge — cyber + cognitive + geospatial

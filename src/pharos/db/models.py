@@ -6,6 +6,7 @@ from sqlalchemy import (
     DateTime,
     Float,
     ForeignKey,
+    Index,
     Integer,
     String,
     Text,
@@ -50,6 +51,7 @@ class Position(Base):
     """A single AIS position report (one point on a vessel's track)."""
 
     __tablename__ = "positions"
+    __table_args__ = (Index("ix_positions_mmsi_ts", "mmsi", "ts"),)
 
     id: Mapped[int] = mapped_column(Integer(), primary_key=True, autoincrement=True)
     mmsi: Mapped[str] = mapped_column(ForeignKey("vessels.mmsi"), index=True)
@@ -66,6 +68,33 @@ class Position(Base):
     region: Mapped[str | None] = mapped_column(String(64), index=True)  # dataset slice label
     raw: Mapped[dict[str, Any] | None] = mapped_column(JsonType)
     ingested_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class CollectorRun(Base):
+    """One continuous collector process lifetime and its observed feed health."""
+
+    __tablename__ = "collector_runs"
+
+    id: Mapped[int] = mapped_column(Integer(), primary_key=True, autoincrement=True)
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+    last_message_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    stopped_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    stop_reason: Mapped[str | None] = mapped_column(String(255))
+    report_count: Mapped[int] = mapped_column(Integer(), default=0)
+    vessel_count: Mapped[int] = mapped_column(Integer(), default=0)
+    status: Mapped[str] = mapped_column(String(32), index=True, default="running")
+
+
+class CoverageOutage(Base):
+    """A receiver/feed outage that must not be interpreted as vessel silence."""
+
+    __tablename__ = "coverage_outages"
+
+    id: Mapped[int] = mapped_column(Integer(), primary_key=True, autoincrement=True)
+    opened_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+    closed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    reason: Mapped[str] = mapped_column(String(255))
+    run_id: Mapped[int] = mapped_column(ForeignKey("collector_runs.id"), index=True)
 
 
 class Track(Base):

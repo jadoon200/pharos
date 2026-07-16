@@ -10,7 +10,7 @@ story (M0–M8), with deploy (M9) last and the ARGUS bridge (M10) an explicit ex
 | M1 | Collection — NOAA bulk AIS loader, synthetic labelled generator, AISStream live client, GFW label client, zone/reference seed, Prefect flows | ✅ done |
 | M2 | Track building — per-MMSI segmentation (gap-split voyages), resampling, heading-invariant shape features, kinematics | ✅ done |
 | M3 | Deterministic detectors — dark-ship/gap, STS rendezvous, loiter/incursion, spoofing → incidents | ✅ done |
-| M4 | Flagship model — GRU sequence autoencoder (torch; train/val + early stopping) vs a PCA baseline; cross-region generalization | ✅ done |
+| M4 | Flagship model — compact GRU sequence autoencoder (torch; train/val + early stopping) vs Isolation Forest/PCA baselines; cross-region generalization | ✅ done |
 | M5 | Composite ensemble — fuse detectors into per-vessel maritime-threat rollups (transparent risk + reliability) | ✅ done |
 | M6 | Eval harness — gold set + calibration trap, per-type P/R, cross-region AUC, GFW cross-check → docs/EVAL.md | ✅ done |
 | M7 | API — hardened read-only FastAPI + GeoJSON endpoints + `POST /score-track` | ✅ done |
@@ -18,7 +18,17 @@ story (M0–M8), with deploy (M9) last and the ARGUS bridge (M10) an explicit ex
 | M9 | Deploy — `Dockerfile.web` + `render.yaml` free plan, baked demo SQLite seed, keep-alive; demo-seed script | ✅ config landed |
 | M10 | **Extra** — ARGUS GEOINT bridge: `GET /geoint/evidence` exposes incidents as citable, ARGUS-`EvidenceItem`-shaped GEOINT evidence | ✅ done |
 
-**Status:** the full system (M0–M10) is built and gating clean (79 tests). The whole pipeline
+### Post-M10: SG-PILOT-v0
+
+| Phase | Status |
+|---|---|
+| 1 — continuous Class A/B collector, coverage ledger, SQLite WAL/index, M3-safe launch agent, frozen model | ✅ collecting; Day 0 = 2026-07-16 |
+| 2 — incremental tracks/scoring, outage-aware gaps, retention/storage caps | ✅ deployed; every 2 min |
+| 3 — external/review labels and frozen evaluation | ⬜ planned |
+| 4 — delayed outbound snapshots and dashboard pilot modes | ⬜ planned |
+| 5 — Day-14 preliminary report / count-based continuation | ⬜ planned |
+
+**Status:** the full system (M0–M10) is built. The whole pipeline
 (collect → tracks → 5 detectors → flagship anomaly model → composite ensemble → honest eval) runs
 end-to-end, a hardened read-only API serves it, the React/Leaflet dashboard is browser-verified
 against the live API, the single-container free-deploy path is verified, and the GEOINT bridge
@@ -39,11 +49,32 @@ deployable, and the M10 bridge (originally optional) is done.
 - **Responsible use.** Public/open-source AIS only, vessel-level, defensive/analytical; incidents
   are human-review decision support, never automated verdicts.
 
-## Open questions (resolve as we build)
+## Resolved design questions
 
-- NOAA slice selection — which zone/day gives a rich enough mix of traffic + genuine events for a
-  reproducible eval without ballooning `data/`? Fix a small cached slice and record it.
-- Trajectory-anomaly model form — sequence autoencoder (reconstruction error) vs next-position
-  predictor vs trajectory clustering baseline; benchmark and record the operating point.
-- Cross-region split — which pair of regions makes the fairest generalization test (traffic
-  regime differs enough to be a real test, not a different planet)? Record the choice.
+- **NOAA slice:** LA / Long Beach, 2020-01-01 (352 vessels, 145,028 reports, 388 tracks) is the
+  recorded real-data validation corpus. The raw slice stays out of Git because AIS data is large.
+- **Trajectory model:** an 8-unit GRU sequence autoencoder over ordered track dynamics is the
+  flagship. A 25-run capacity sweep selected it over the 64-unit version (804 vs 38,660
+  parameters); Isolation Forest and linear PCA are retained as fair baselines. A model audit fixed
+  validation leakage by fitting normalization on the train partition only. Batch detection now
+  persists a versioned artifact that API inference loads directly, with any runtime fallback
+  exposed in the response. The operating comparison is recorded in [`EVAL.md`](EVAL.md).
+- **Cross-region split:** train on Singapore and score US west-coast traffic. Heading-invariant
+  track-shape descriptors make this a meaningful transfer test.
+- **External-label window:** east Gulf, 2023-07-25 (`27.0–30.5°N, 93.0–88.0°W`). A deterministic
+  label-enriched NOAA cohort yields real GFW agreement for rendezvous (4/34) and loiter (65/298).
+  The GFW gap label is offshore beyond NOAA receiver coverage, so gap calibration remains open.
+- **Reproducible real-data slicing:** `scripts.filter_noaa` streams national NOAA ZIPs by bbox/MMSI;
+  `scripts.select_gfw_cohort` retains every matched labelled vessel plus deterministic background.
+  Commands and checksums are recorded in [`EVAL.md`](EVAL.md).
+- **Rendezvous scaling:** a conservative slow-motion space/time index cuts the full east-Gulf
+  slice from 937,765 possible pairs to 51,570 exact candidates. The 1.39M-report detector run now
+  completes in 7.12s after loading; indexed/exhaustive cohort output is exactly identical.
+
+## Next build priorities
+
+1. **Build independent evaluation and the outbound-only showcase.** Persist official/silver events,
+   run blinded review, report observed-time denominators/CIs, and push delayed sanitized snapshots
+   for the Render dashboard.
+2. **Generate and commit the Linux dependency lock.** CI currently falls back to
+   `requirements.txt` until the manual Lock workflow creates `requirements.lock`.

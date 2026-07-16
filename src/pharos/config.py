@@ -1,3 +1,4 @@
+from datetime import datetime
 from functools import lru_cache
 from pathlib import Path
 
@@ -26,6 +27,30 @@ class Settings(BaseSettings):
     # Strait / Malacca approaches — the demo lane's whole point.
     aisstream_bbox: list[list[list[float]]] = [[[0.9, 103.3], [1.5, 104.2]]]
     aisstream_seconds: float = 120.0  # bounded capture window per `make live`
+
+    # The continuous Singapore collector is deliberately conservative on a personal M3 Pro:
+    # short, bounded in-memory batches; one routine sample per vessel/cadence; and a finite
+    # reconnect delay. Material course/speed/status changes bypass the routine downsample.
+    collector_region: str = "singapore-live"
+    # Optional frozen evaluation boundary. Collection may retain earlier smoke data, while
+    # incremental tracks/detectors exclude it from the official pilot window.
+    pilot_start_at: datetime | None = None
+    collector_batch_seconds: float = 45.0
+    collector_downsample_seconds: float = 45.0
+    collector_heading_delta_degrees: float = 20.0
+    collector_speed_delta_kn: float = 2.0
+    collector_health_timeout_seconds: float = 90.0
+    collector_backoff_initial_seconds: float = 1.0
+    collector_backoff_max_seconds: float = 300.0
+
+    # Background processing and outbound snapshot publication remain infrequent enough to
+    # avoid competing with normal laptop use. Raw live reports have bounded local retention.
+    process_interval_minutes: float = 2.0
+    publish_interval_minutes: float = 3.0
+    retention_positions_days: int = 21
+    retention_prune_interval_hours: float = 24.0
+    storage_warn_gb: float = 2.0
+    storage_hard_gb: float = 5.0
 
     # --- Collection: Global Fishing Watch event labels (optional cross-check) ----------
     # Free API token; empty disables the GFW cross-check in the eval.
@@ -73,9 +98,15 @@ class Settings(BaseSettings):
 
     # --- Flagship trajectory-anomaly model (GRU sequence autoencoder, torch) -----------
     anomaly_seq_len: int = 16  # resampled steps per windowed track sample
-    anomaly_hidden: int = 64
+    # Capacity-selected over 25 data/initialization runs: 8 units slightly improves transfer
+    # while cutting the model from 38,660 to 804 parameters for this small-data setting.
+    anomaly_hidden: int = 8
     anomaly_model_dir: Path = Path("data/models")
-    # Anomaly score percentile (over benign training tracks) above which a track is flagged.
+    # Optional operational pin. The pilot launch agent sets this to the Day-0 artifact SHA so a
+    # replaced/retrained file cannot silently alter the frozen evaluation window.
+    anomaly_model_sha256: str = ""
+    # Anomaly score percentile over the unlabeled training population above which a track is
+    # flagged.
     anomaly_threshold_pct: float = 99.0
 
     # --- API hardening for public deployment (safe local-dev defaults) -----------------

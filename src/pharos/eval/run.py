@@ -4,7 +4,8 @@ Runs the full pipeline (persist → tracks → detectors) on each gold scenario 
 in-memory database, scores per-detector precision/recall and the calibration trap, and scores the
 anomaly model threshold-free by AUC both within-region and cross-region (the headline). Results are
 averaged over seeds, printed, and written into `docs/EVAL.md` between the AUTO-EVAL markers. The
-optional Global Fishing Watch cross-check runs when `PHAROS_GFW_TOKEN` is set.
+real Global Fishing Watch corroboration belongs to `make eval-real`, where the time and geographic
+window come from observed NOAA AIS rather than synthetic events.
 
     python -m pharos.eval.run
 """
@@ -21,7 +22,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from pharos.config import get_settings
 from pharos.db.base import Base
 from pharos.db.models import Incident
-from pharos.detect.anomaly import PCAAnomalyBaseline
+from pharos.detect.anomaly import IsolationForestAnomalyBaseline, PCAAnomalyBaseline
 from pharos.detect.run import DETERMINISTIC_DETECTORS, run_detectors
 from pharos.detect.seq_anomaly import SequenceAnomalyModel
 from pharos.eval.goldset import GOLD_SEEDS, TEST_REGION, TRAIN_REGION, build_gold
@@ -77,6 +78,8 @@ def evaluate() -> dict[str, object]:
     gru_w: list[float] = []
     gru_x: list[float] = []
     pca_w: list[float] = []
+    isolation_w: list[float] = []
+    isolation_x: list[float] = []
 
     for seed in GOLD_SEEDS:
         incidents, truth = _run_pipeline(seed)
@@ -105,6 +108,11 @@ def evaluate() -> dict[str, object]:
         pca.fit(f_sg)
         pca_w.append(roc_auc_anomaly_vs_normal(pca.score(f_sg), lf_sg))
 
+        isolation = IsolationForestAnomalyBaseline(seed=0)
+        isolation.fit(s_sg)
+        isolation_w.append(roc_auc_anomaly_vs_normal(isolation.score(s_sg), l_sg))
+        isolation_x.append(roc_auc_anomaly_vs_normal(isolation.score(s_us), l_us))
+
     def _mean(xs: list[float]) -> float:
         vals = [x for x in xs if x == x]  # drop NaN
         return round(statistics.fmean(vals), 3) if vals else float("nan")
@@ -121,6 +129,8 @@ def evaluate() -> dict[str, object]:
         "trap_held": f"{trap_ok}/{len(GOLD_SEEDS)}",
         "anomaly_gru_within_auc": _mean(gru_w),
         "anomaly_gru_cross_auc": _mean(gru_x),
+        "anomaly_isolation_within_auc": _mean(isolation_w),
+        "anomaly_isolation_cross_auc": _mean(isolation_x),
         "anomaly_pca_within_auc": _mean(pca_w),
     }
     return results
@@ -149,11 +159,14 @@ def render_markdown(results: dict[str, object]) -> str:
         "|---|---|---|",
         f"| **GRU sequence-AE (flagship)** | **{results['anomaly_gru_within_auc']}** | "
         f"**{results['anomaly_gru_cross_auc']}** |",
+        f"| Isolation Forest (nonlinear baseline) | "
+        f"{results['anomaly_isolation_within_auc']} | "
+        f"{results['anomaly_isolation_cross_auc']} |",
         f"| PCA linear (baseline) | {results['anomaly_pca_within_auc']} | — |",
         "",
         f"Cross-region = train {TRAIN_REGION}, score {TEST_REGION}. The recurrent model that "
-        "captures ordered dynamics survives unsupervised training on the confounder-rich set while "
-        "the linear baseline falls below chance — the depth is necessary, not decorative.",
+        "captures ordered dynamics survives unsupervised training on the confounder-rich set and "
+        "beats both nonlinear Isolation Forest and linear PCA baselines.",
         "",
         "_Synthetic gold set (a known ceiling — see the note above). The real result is the "
         "false-positive reduction on real NOAA AIS in **Real-data validation** below._",

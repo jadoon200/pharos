@@ -5,6 +5,12 @@ dashboard from one service, off a **baked SQLite seed** (a precomputed maritime 
 deterministic synthetic gold scenario). No managed database, no live fetch at request time — ideal
 for a public demo. Mirrors SENTINEL/ARGUS.
 
+This document describes the baked-demo deployment. The active Singapore pilot remains local and
+outbound-only: Phase 4 will publish sanitized, derived snapshots delayed by at least 15 minutes to a
+dedicated `snapshots` branch, then add explicit live/delayed/offline/demo modes to this dashboard.
+No public listener or tunnel is opened on the collector laptop. See
+[`SG_LIVE_PILOT_PLAN.md`](SG_LIVE_PILOT_PLAN.md).
+
 ## Deploy to the cloud (free, one service)
 
 `render.yaml` + `Dockerfile.web` are ready to go:
@@ -13,8 +19,8 @@ for a public demo. Mirrors SENTINEL/ARGUS.
 2. On [render.com](https://render.com): **New → Blueprint**, point it at the repo. Render reads
    `render.yaml`, builds `Dockerfile.web`, and deploys on the free plan with TLS + a public URL.
 3. (Optional) set the repo **variable** `RENDER_URL` to the deployed base URL so
-   `.github/workflows/keep-alive.yml` pings `/health` every ~10 min and the free service never
-   cold-starts.
+   `.github/workflows/keep-alive.yml` pings `/health` every ~10 min and reduces free-tier
+   cold-starts. Scheduled workflows can be delayed, so this is not an uptime guarantee.
 
 What the image does (`Dockerfile.web`):
 

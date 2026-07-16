@@ -1,10 +1,10 @@
-.PHONY: env install lock lint typecheck test check up down migrate ingest live tracks detect train-anomaly ensemble eval api ui
+.PHONY: env install lock lint typecheck test check up down migrate ingest live collector collector-drill process-live prune tracks detect train-anomaly prepare-pilot-model benchmark-anomaly ensemble eval api ui
 
 # One-time: create the conda env, then `conda activate pharos`
 env:
 	conda create -y -n pharos python=3.12
 
-# Run inside the activated pharos env. MLX is a darwin-only extra (torch fallback elsewhere).
+# Run inside the activated pharos env. Torch powers the flagship GRU on every platform.
 install:
 	pip install -r requirements-dev.txt && pip install -e .
 
@@ -43,6 +43,23 @@ ingest:
 live:
 	python -m pharos.ingest.aisstream
 
+# Continuous, reconnecting Singapore collector. For the pilot, point it at a local SQLite file:
+#   PHAROS_DATABASE_URL=sqlite:///data/sg-live.db make collector
+collector:
+	python -m pharos.collector.worker
+
+# Deterministic, keyless failure drill: disconnect, health timeout (sleep), reconnect, and dedup.
+collector-drill:
+	pytest -q tests/test_collector_worker.py
+
+# One manual incremental pass over the configured live-pilot window.
+process-live:
+	python -m pharos.tracks.incremental
+
+# Checkpoint WAL and prune only expired live positions (default retention: 21 days).
+prune:
+	python -m scripts.prune
+
 # Build per-vessel tracks from raw positions (segment -> resample -> kinematics).
 tracks:
 	python -m pharos.tracks.build
@@ -51,16 +68,28 @@ tracks:
 detect:
 	python -m pharos.detect.run
 
-# Train the flagship trajectory-anomaly model (MLX on Apple silicon, torch fallback).
+# Train the flagship torch GRU trajectory-anomaly model.
 train-anomaly:
 	python -m pharos.detect.anomaly
+
+# Reproducible real-data artifact used for the Singapore pilot freeze.
+prepare-pilot-model:
+	OMP_NUM_THREADS=2 VECLIB_MAXIMUM_THREADS=2 \
+		PHAROS_DATABASE_URL=sqlite:///data/sg-pilot-training.db \
+		python -m scripts.prepare_pilot_model \
+		--source data/ais/la_2020_01_01.csv=us-la \
+		--source data/ais/gulf_gfw_cohort_2023_07_25.csv=us-gulf
+
+# Reproduce the GRU hidden-capacity selection over data + initialization seeds.
+benchmark-anomaly:
+	python -m scripts.benchmark_anomaly
 
 # Fuse detector outputs into per-vessel maritime-threat rollups (the composite).
 ensemble:
 	python -m pharos.detect.ensemble
 
-# Score the detector ensemble on the gold set (per-type P/R, cross-region, GFW cross-check)
-# -> docs/EVAL.md.
+# Score the detector ensemble on the synthetic gold set (per-type P/R, cross-region) ->
+# docs/EVAL.md. The independent GFW corroboration runs as part of eval-real.
 eval:
 	python -m pharos.eval.run
 

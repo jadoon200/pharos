@@ -28,9 +28,20 @@ picture for **human review**. It is analytical and defensive.
 
 ## Evaluation & known limitations
 
-**Trajectory anomaly flagship:** A GRU sequence autoencoder over ordered per-step tracks.
-Under unsupervised training (no labels), it achieves ~0.96 AUC while the linear PCA baseline falls
-below chance (~0.27 AUC). The recurrent depth is necessary, not decorative.
+**Trajectory anomaly flagship:** An 8-unit GRU sequence autoencoder over ordered per-step tracks.
+Under unsupervised training (no labels), it achieves 0.962 within-region / 0.962 cross-region AUC,
+ahead of Isolation Forest (0.940 / 0.942), while linear PCA falls below chance (0.273). A 25-run
+capacity sweep selected 8 over 64 hidden units (0.963 / 0.964 mean AUC), reducing 38,660 parameters
+to 804. Normalization is fitted on the training partition only; the earlier 0.971 / 0.967 result
+was retired after a validation-leakage audit. This is the best measured fit for PHAROS's small
+whole-track corpus, not a universal state-of-the-art claim; real trajectory-anomaly labels are
+still unavailable.
+
+**Training/inference integrity:** Batch training atomically persists versioned weights,
+train-partition normalization, the calibrated threshold, and provenance. `POST /score-track` loads
+that exact artifact. If it is absent or invalid, the endpoint uses an explicit runtime fallback and
+returns its `model_source`, avoiding silent training/inference drift. Artifacts load through
+PyTorch's restricted `weights_only` path and contain tensors and primitive metadata only.
 
 **Synthetic evaluation ceiling:** The offline gold set's near-perfect detector precision/recall
 (~1.0 for rendezvous, loiter, gaps) is a *known ceiling* — self-generated anomalies are separable
@@ -44,7 +55,18 @@ ferries). Real AIS carries no anomaly labels — that lane is qualitative. See [
 
 **Known limitation:** The AIS coverage confound is dominant behind "dark ship" false positives
 (dense coverage near shore vs. sparse offshore). Measured against Global Fishing Watch
-reception-modelled gap events rather than assumed away. Recorded negatives are kept, not buried.
+reception-modelled gap events rather than assumed away. The first real LA/LB cross-check returned
+no candidates. A selected east-Gulf cohort subsequently corroborated 4/34 PHAROS rendezvous and
+65/298 loiter calls at vessel/type/time/place level, but these are not precision estimates because
+the cohort is label-enriched and GFW is incomplete. Its gap label was 169–209 km offshore and had
+no NOAA reappearance report, so gap calibration remains unestimable. Recorded negatives are kept,
+not buried.
+
+**Scale validation:** The full 1,982-vessel east-Gulf slice is now tractable. A conservative
+slow-motion space/time index retains 51,570 of 937,765 possible rendezvous pairs (5.50%) before
+unchanged exact scoring; the detector completes in 7.12s after CSV loading. It returns 186
+symmetric calls (93 pairs), of which 3 agree with the four GFW encounter labels under the existing
+vessel/type/time/place rule. This 1.6% agreement is not precision because GFW is incomplete.
 
 ## Provenance
 

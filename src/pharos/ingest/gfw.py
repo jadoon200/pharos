@@ -31,6 +31,14 @@ _TYPE_MAP = {
     "gap": "gap",
 }
 
+# PHAROS detector name -> current GFW v3 dataset alias. Keep these explicit: the API's encounter
+# and gap dataset names are plural even though response event types are singular.
+_DATASET_MAP = {
+    "rendezvous": "public-global-encounters-events:latest",
+    "loiter": "public-global-loitering-events:latest",
+    "gap": "public-global-gaps-events:latest",
+}
+
 
 @dataclass(frozen=True)
 class GfwEvent:
@@ -85,15 +93,18 @@ def fetch_events(
 ) -> list[GfwEvent]:
     """Fetch GFW events of `event_type` (rendezvous|loiter|gap) in a date range / bbox.
 
-    Returns [] (never raises for the missing-token case) so the eval degrades gracefully.
+    Returns [] for the missing-token case. Callers at an optional integration boundary should
+    catch network/API errors so the offline evaluation remains usable.
     """
     settings = get_settings()
     if not settings.gfw_token:
         log.info("gfw_skip", reason="no token")
         return []
-    gfw_type = {v: k for k, v in _TYPE_MAP.items()}.get(event_type, event_type)
+    dataset = _DATASET_MAP.get(event_type)
+    if dataset is None:
+        raise ValueError(f"unsupported GFW event type: {event_type}")
     body: dict[str, Any] = {
-        "datasets": [f"public-global-{gfw_type}-events:latest"],
+        "datasets": [dataset],
         "startDate": start_date,
         "endDate": end_date,
     }
@@ -112,9 +123,31 @@ def fetch_events(
             ],
         }
     headers = {"Authorization": f"Bearer {settings.gfw_token}"}
+    events: list[GfwEvent] = []
+    offset = 0
+    limit = 1_000
     with httpx.Client(timeout=settings.http_timeout_seconds) as client:
-        resp = client.post(f"{settings.gfw_api_url}/events", json=body, headers=headers)
-        resp.raise_for_status()
-        events = parse_events(resp.json())
+        while True:
+            resp = client.post(
+                f"{settings.gfw_api_url}/events",
+                params={"offset": offset, "limit": limit},
+                json=body,
+                headers=headers,
+            )
+            resp.raise_for_status()
+            payload = resp.json()
+            page = parse_events(payload)
+            events.extend(page)
+
+            next_offset = payload.get("nextOffset")
+            total = payload.get("total")
+            if (
+                not page
+                or not isinstance(next_offset, int)
+                or next_offset <= offset
+                or (isinstance(total, int) and next_offset >= total)
+            ):
+                break
+            offset = next_offset
     log.info("gfw_fetched", event_type=event_type, count=len(events))
     return events

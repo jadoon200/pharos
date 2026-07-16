@@ -40,6 +40,24 @@ def haversine_series_km(
     return steps
 
 
+def haversine_pairs_km(
+    lats1: NDArray[np.float64],
+    lons1: NDArray[np.float64],
+    lats2: NDArray[np.float64],
+    lons2: NDArray[np.float64],
+) -> NDArray[np.float64]:
+    """Elementwise great-circle distances for aligned coordinate arrays, in kilometres."""
+    rlat1 = np.radians(lats1)
+    rlon1 = np.radians(lons1)
+    rlat2 = np.radians(lats2)
+    rlon2 = np.radians(lons2)
+    dlat = rlat2 - rlat1
+    dlon = rlon2 - rlon1
+    a = np.sin(dlat / 2.0) ** 2 + np.cos(rlat1) * np.cos(rlat2) * np.sin(dlon / 2.0) ** 2
+    distances: NDArray[np.float64] = 2.0 * EARTH_RADIUS_KM * np.arcsin(np.sqrt(a))
+    return distances
+
+
 def implied_speed_kn(lat1: float, lon1: float, lat2: float, lon2: float, seconds: float) -> float:
     """Speed (knots) implied by moving between two points in `seconds`.
 

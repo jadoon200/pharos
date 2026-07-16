@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.pharos.collector</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/jayden/anaconda3/envs/argus/bin/python</string>
+        <string>-m</string>
+        <string>pharos.collector.worker</string>
+    </array>
+    <key>WorkingDirectory</key>
+    <string>/Users/jayden/code-projects/pharos</string>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PYTHONPATH</key>
+        <string>/Users/jayden/code-projects/pharos/src</string>
+        <key>PHAROS_DATABASE_URL</key>
+        <string>sqlite:////Users/jayden/code-projects/pharos/data/sg-live.db</string>
+        <key>PHAROS_ANOMALY_MODEL_SHA256</key>
+        <string>01faa27e17dd194b8913a439034a5f71d56f48ebb291ddb073e6c9b0ee7788fb</string>
+        <key>PHAROS_PILOT_START_AT</key>
+        <string>2026-07-16T02:47:51Z</string>
+        <key>OMP_NUM_THREADS</key>
+        <string>2</string>
+        <key>VECLIB_MAXIMUM_THREADS</key>
+        <string>2</string>
+    </dict>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <dict>
+        <key>SuccessfulExit</key>
+        <false/>
+    </dict>
+    <key>ProcessType</key>
+    <string>Background</string>
+    <key>LowPriorityIO</key>
+    <true/>
+    <key>Nice</key>
+    <integer>5</integer>
+    <key>ThrottleInterval</key>
+    <integer>30</integer>
+    <key>StandardOutPath</key>
+    <string>/Users/jayden/Library/Logs/pharos-collector.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/jayden/Library/Logs/pharos-collector-error.log</string>
+</dict>
+</plist>
