@@ -22,8 +22,8 @@ story (M0–M8), with deploy (M9) last and the ARGUS bridge (M10) an explicit ex
 
 | Phase | Status |
 |---|---|
-| 1 — continuous Class A/B collector, coverage ledger, SQLite WAL/index, M3-safe launch agent, frozen model candidate | 🟡 built locally; gate/live start pending |
-| 2 — incremental tracks/scoring, outage-aware gaps, retention/storage caps | ⬜ next |
+| 1 — continuous Class A/B collector, coverage ledger, SQLite WAL/index, M3-safe launch agent, frozen model | ✅ collecting; Day 0 = 2026-07-16 |
+| 2 — incremental tracks/scoring, outage-aware gaps, retention/storage caps | 🟡 next build |
 | 3 — external/review labels and frozen evaluation | ⬜ planned |
 | 4 — delayed outbound snapshots and dashboard pilot modes | ⬜ planned |
 | 5 — Day-14 preliminary report / count-based continuation | ⬜ planned |
@@ -73,14 +73,11 @@ deployable, and the M10 bridge (originally optional) is done.
 
 ## Next build priorities
 
-1. **Start SG-PILOT-v0 collection.** Gate and push Phase 1, run the deterministic mobility drill,
-   record the implementation commit in [`SG_PILOT_FREEZE.md`](SG_PILOT_FREEZE.md), and start the
-   low-priority launch agent. A valid durable report marks Day 0.
-2. **Build incremental processing and outage-aware detection.** Rebuild only dirty vessel tails,
+1. **Build incremental processing and outage-aware detection.** Rebuild only dirty vessel tails,
    suppress gap calls across coverage outages, score with the frozen artifact, and enforce rolling
    retention/storage caps.
-3. **Build independent evaluation and the outbound-only showcase.** Persist official/silver events,
+2. **Build independent evaluation and the outbound-only showcase.** Persist official/silver events,
    run blinded review, report observed-time denominators/CIs, and push delayed sanitized snapshots
    for the Render dashboard.
-4. **Generate and commit the Linux dependency lock.** CI currently falls back to
+3. **Generate and commit the Linux dependency lock.** CI currently falls back to
    `requirements.txt` until the manual Lock workflow creates `requirements.lock`.

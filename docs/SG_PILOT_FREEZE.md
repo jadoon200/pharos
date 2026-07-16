@@ -2,10 +2,17 @@
 
 ## Status
 
-**Freeze candidate prepared on 2026-07-16; Pilot Day 0 has not started yet.** Day 0 begins only
-after the Phase 1 gate passes, this implementation is committed/pushed, the launch agent is
-loaded, and a valid Singapore AIS report is durably recorded. The implementation commit and
-collection start time will be added at that point.
+**Frozen and collecting — Pilot Day 0 began on 2026-07-16.** Phase 1 passed the complete 105-test
+gate and was pushed before collection. Scoring implementation commit: `8486ab4`. The user-level
+launch agent started collector run 3 at `2026-07-16T02:47:48Z`; the first valid source report was
+`2026-07-16T02:47:51Z`, and the first 11-report batch committed durably at
+`2026-07-16T02:48:34Z` (`2026-07-16T10:48:34+08:00`).
+
+Runs 1–2 and positions with source timestamps before `2026-07-16T02:47:51Z` were pre-pilot smoke
+tests and are excluded from SG-PILOT-v0 evaluation. Run 2 specifically verified two scheduled
+batches plus a SIGINT flush after the live-smoke persistence fix; it closed normally with no open
+coverage outage. The official collection boundary is collector run id `3` / initial position id
+`35`.
 
 The freeze covers the artifact bytes, anomaly threshold, and deterministic detector configuration
 below. Collector, review, evaluation, snapshot, and dashboard tooling may evolve without changing
