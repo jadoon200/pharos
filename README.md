@@ -15,9 +15,13 @@ per-vessel threat picture, the way a maritime fusion cell actually works.
 > generator), track building, the five-detector ensemble, the flagship trajectory-anomaly model,
 > the composite maritime-threat rollup, the honest eval harness, a hardened read-only API, and a
 > React/Leaflet map dashboard are all in place and browser-verified. The ARGUS-shaped GEOINT
-> evidence bridge is also implemented. The remaining release step is operational: connect the
-> checked-in free-cloud blueprint to Render and record the public URL (see
-> [`docs/DEPLOY.md`](docs/DEPLOY.md)). Progress is tracked honestly in
+> evidence bridge is also implemented. The Singapore pilot is live: Pilot Day 0 began on
+> 2026-07-16, the low-priority launch agent is collecting Class A/B AIS, and every two minutes the
+> incremental processor rebuilds dirty track tails and scores them with the frozen SHA-pinned GRU.
+> Phase 3 independent labels/evaluation and Phase 4 sanitized delayed snapshots/dashboard modes
+> are next. The separate baked-demo release step remains operational: connect the checked-in
+> free-cloud blueprint to Render and record the public URL (see [`docs/DEPLOY.md`](docs/DEPLOY.md)).
+> Progress is tracked honestly in
 > [`docs/ROADMAP.md`](docs/ROADMAP.md); every model/detector claim lands in
 > [`docs/EVAL.md`](docs/EVAL.md) with the number that survives scrutiny.
 
@@ -116,6 +120,8 @@ make eval                                           # score detectors on the gol
 make benchmark-anomaly                              # reproduce GRU capacity selection (25 runs/size)
 make eval-real FILE=data/ais/<slice>.csv REGION=us-la  # the honest test on real AIS
 PHAROS_DATABASE_URL=sqlite:///data/sg-live.db make collector  # continuous SG lane
+PHAROS_DATABASE_URL=sqlite:///data/sg-live.db make process-live # manual incremental cycle
+PHAROS_DATABASE_URL=sqlite:///data/sg-live.db make prune      # WAL-safe retention pass
 make api                                            # read-only API + GeoJSON on :8000
 make ui                                             # React map dashboard on :5173
 ```

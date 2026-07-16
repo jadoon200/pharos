@@ -5,6 +5,12 @@ dashboard from one service, off a **baked SQLite seed** (a precomputed maritime 
 deterministic synthetic gold scenario). No managed database, no live fetch at request time — ideal
 for a public demo. Mirrors SENTINEL/ARGUS.
 
+This document describes the baked-demo deployment. The active Singapore pilot remains local and
+outbound-only: Phase 4 will publish sanitized, derived snapshots delayed by at least 15 minutes to a
+dedicated `snapshots` branch, then add explicit live/delayed/offline/demo modes to this dashboard.
+No public listener or tunnel is opened on the collector laptop. See
+[`SG_LIVE_PILOT_PLAN.md`](SG_LIVE_PILOT_PLAN.md).
+
 ## Deploy to the cloud (free, one service)
 
 `render.yaml` + `Dockerfile.web` are ready to go:

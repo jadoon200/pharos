@@ -4,6 +4,11 @@ This runbook operates the outbound-only Singapore AIS collector on the local M3 
 public listener open. Laptop sleep and feed/network interruptions are expected: they become
 coverage-outage records and are excluded from observed time rather than treated as vessel gaps.
 
+**Current deployment:** Pilot Day 0 began on 2026-07-16. The launch agent is installed and running;
+its worker commits accepted reports about every 45 seconds, processes dirty vessel tails every two
+minutes with the frozen artifact SHA pinned, and schedules daily WAL-safe retention. Phases 1–2
+passed the complete 117-test backend gate.
+
 ## One-time preparation
 
 The launch agent is intentionally specific to this laptop and repository path. It runs at low I/O
@@ -70,6 +75,17 @@ sqlite3 -header -column data/sg-live.db \
 Expected steady behavior is one commit about every 45 seconds, average CPU below 5%, modest memory,
 and reconnect delays bounded at five minutes. A stale `last_message_at` with an open outage is an
 honest offline state, not a dark-ship event.
+
+Run one processing or retention cycle manually when diagnosing the scheduler:
+
+```bash
+PHAROS_DATABASE_URL=sqlite:////Users/jayden/code-projects/pharos/data/sg-live.db make process-live
+PHAROS_DATABASE_URL=sqlite:////Users/jayden/code-projects/pharos/data/sg-live.db make prune
+```
+
+The incremental command refuses to score if the local GRU artifact does not match the launch
+agent's pinned SHA. Pruning deletes only eligible old live positions after a successful WAL
+checkpoint; it preserves tracks, incidents, labels/evaluations, and coverage records.
 
 ## Stop, restart, and update
 

@@ -1,5 +1,22 @@
 # Singapore live-monitoring and evaluation pilot — amended plan (v2)
 
+## Execution status — 2026-07-16
+
+- **Phase 1 complete and collecting.** Pilot Day 0 began on 2026-07-16. The low-priority user
+  launch agent `com.pharos.collector` is running the Class A/B AISStream collector with the
+  coverage/outage ledger, SQLite WAL settings, micro-batching, downsampling, and signal-safe flush.
+- **Phase 2 complete and deployed.** Dirty-MMSI track tails, affected detectors, outage-aware gaps,
+  SHA-pinned frozen-GRU scoring, WAL-safe retention, and storage caps run incrementally every two
+  minutes. The backend gate is green at 117 tests.
+- **Scoring freeze active.** The 8-unit, 804-parameter GRU artifact SHA-256 is
+  `01faa27e17dd194b8913a439034a5f71d56f48ebb291ddb073e6c9b0ee7788fb`; threshold and detector
+  settings are recorded in `docs/SG_PILOT_FREEZE.md` and do not change during SG-PILOT-v0.
+- **Next:** Phase 3 external/review labels and frozen evaluation, followed by Phase 4 sanitized
+  delayed outbound snapshots and the dashboard's live/delayed/offline/demo modes.
+
+This status records execution of the plan below; the original workstream requirements remain as
+the acceptance contract and historical rationale.
+
 ## Feasibility verdict and amendments
 
 The original plan (`docs/SG_LIVE_PILOT_PLAN.md`, commit `ccddac0`) is **feasible at $0** and its
@@ -14,8 +31,8 @@ Three user-approved amendments:
 
 1. **Publish by push, not tunnel.** Workstream D is replaced: the laptop *pushes* sanitized, delayed
    JSON snapshots to a dedicated `snapshots` branch of the public `jadoon200/pharos` repo using the
-   already-authenticated `gh`/git CLI (single squashed commit, force-pushed — no history bloat). The
-   Render dashboard fetches `raw.githubusercontent.com` (CORS `*`). Zero inbound exposure, no new
+   local `gh`/git CLI once authenticated (single squashed commit, force-pushed — no history bloat).
+   The Render dashboard fetches `raw.githubusercontent.com` (CORS `*`). Zero inbound exposure, no new
    accounts, no beta tunnel. Funnel remains a documented upgrade path if fresher-than-CDN data is
    ever needed.
 2. **Collector-first sequencing.** Collection starts as soon as Workstream A lands (days, not
@@ -26,7 +43,8 @@ Three user-approved amendments:
    importer is a YAML → `ExternalEvent` entry tool holding minimal facts + source URLs. Review
    target confirmed at **200 blinded tracks / 50 reviewed alerts**.
 
-Confirmed gaps in current code (repo inventory, branch `feat/post-m10-hardening`): the collector is
+Baseline gaps confirmed when this v2 plan was approved follow; the Phase 1–2 items are now
+addressed, while label/evaluation and dashboard publishing remain Phase 3–4 work. The collector was
 bounded-only (no reconnect, no signal handling, single end-of-window persist, Class A only);
 `build_tracks` is a destructive full rebuild that also deletes incidents; no coverage/external-event/
 review/evaluation tables exist; no retention or storage caps; no SQLite WAL pragmas; no composite
@@ -299,7 +317,7 @@ Requirements:
   the conservative posture). Status/stats fields are aggregate and may be fresher.
 - Every file carries `generated_at`, a source/freshness/reliability statement, and the human-review
   disclaimer; GFW attribution accompanies anything GFW-derived.
-- Publishing uses the already-authenticated `gh`/git CLI; failures are logged and retried next
+- Publishing uses the locally authenticated `gh`/git CLI; failures are logged and retried next
   cycle (public site falls back gracefully; the collector never depends on publishing).
 
 ## Workstream E — Render showcase
@@ -334,7 +352,7 @@ pretending to provide uninterrupted coverage.
 
 ## Delivery sequence (collector-first)
 
-### Phase 1 — build the collector, then start collecting (≈ 1–2 working sessions)
+### Phase 1 — build the collector, then start collecting (complete)
 
 1. Migration 0003: `collector_runs` + `coverage_outages` + composite `(mmsi, ts)` index; WAL
    pragmas in `make_engine`; config keys (`collector_*`, `retention_*`, `storage_*`,
@@ -346,7 +364,7 @@ pretending to provide uninterrupted coverage.
 4. **Freeze**: record artifact SHA-256 + thresholds + detector config in `docs/SG_PILOT_FREEZE.md`;
    start the collector under launchd. **Pilot Day 0 begins here.**
 
-### Phase 2 — incremental processing + outage integrity (pilot days 1–3)
+### Phase 2 — incremental processing + outage integrity (complete)
 
 5. `tracks/incremental.py` dirty-set tail rebuilds; outage-aware gap suppression; frozen-artifact
    scoring in the cycle; incremental==full regression fixture; retention/pruning + storage caps.
@@ -369,8 +387,8 @@ pretending to provide uninterrupted coverage.
 - **Day 14:** freeze the data snapshot; run the pre-registered evaluation; write SG-PILOT-v0 into
   `docs/EVAL.md` (preliminary, with denominators and CIs) and `evaluations.json`.
 - **After Day 14:** continue collection until SG-REAL-v1 stopping counts are met. Amend
-  `docs/SG_LIVE_PILOT_PLAN.md` (Workstream D → push model; freeze-scope note) — doc pass delegated
-  to a Haiku subagent per user preference.
+  the status across `docs/SG_LIVE_PILOT_PLAN.md`, `docs/ROADMAP.md`, and the runbook; delegate the
+  documentation pass to a lightweight subagent per user preference.
 
 ## Acceptance criteria
 

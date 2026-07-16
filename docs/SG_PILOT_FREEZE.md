@@ -2,8 +2,10 @@
 
 ## Status
 
-**Frozen and collecting — Pilot Day 0 began on 2026-07-16.** Phase 1 passed the complete 105-test
-gate and was pushed before collection. Scoring implementation commit: `8486ab4`. The user-level
+**Frozen and collecting — Pilot Day 0 began on 2026-07-16.** Phase 1 passed its complete 105-test
+gate and was pushed before collection; Phase 2 later passed the expanded 117-test gate without
+changing the scoring freeze. Collector persistence hardening commit: `8486ab4`; incremental frozen
+scoring implementation commit: `46b1f4f`; deployed-processing record: `945c5df`. The user-level
 launch agent started collector run 3 at `2026-07-16T02:47:48Z`; the first valid source report was
 `2026-07-16T02:47:51Z`, and the first 11-report batch committed durably at
 `2026-07-16T02:48:34Z` (`2026-07-16T10:48:34+08:00`).
@@ -86,13 +88,13 @@ artifact SHA and this freeze version.
 
 ## Post-freeze operational processing
 
-Operational processing commit `46b1f4f` was deployed at `2026-07-16T03:09:53Z`; it does not alter
-the frozen model or detector thresholds. It non-destructively rebuilds dirty vessel tails every two
-minutes, suppresses gap calls across recorded receiver outages, and refuses to score if the local
-artifact differs from the SHA above. The first automatic real-data cycle completed at
-`2026-07-16T03:12:12Z`: 21 dirty vessels, three tracks created / one updated, two exact rendezvous
-candidates from 378 possible pairs, four tracks scored, and zero alerts. Zero is an early-window
-count, not a performance claim.
+Operational processing commit `46b1f4f` was deployed at `2026-07-16T03:09:53Z` and recorded in
+`945c5df`; it does not alter the frozen model or detector thresholds. It non-destructively rebuilds
+dirty vessel tails every two minutes, suppresses gap calls across recorded receiver outages, and
+refuses to score if the local artifact differs from the SHA above. The first automatic real-data
+cycle completed at `2026-07-16T03:12:12Z`: 21 dirty vessels, three tracks created / one updated,
+two exact rendezvous candidates from 378 possible pairs, four tracks scored, and zero alerts. Zero
+is an early-window count, not a performance claim.
 
 WAL-safe live-position retention is 21 days. Local storage warns at 2 GB; at 5 GB routine samples
 stop while material heading, speed, and navigation-status changes remain accepted. The deployed
