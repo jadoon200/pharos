@@ -40,6 +40,17 @@ def _utcnow() -> datetime:
     return datetime.now(UTC)
 
 
+def _subscription_message(settings: Settings) -> str:
+    """Serialize the credential-bearing payload without retaining it in the run-loop frame."""
+    return json.dumps(
+        {
+            "APIKey": settings.aisstream_key,
+            "BoundingBoxes": settings.aisstream_bbox,
+            "FilterMessageTypes": list(SUBSCRIPTION_MESSAGE_TYPES),
+        }
+    )
+
+
 def _heading_delta(left: float | None, right: float | None) -> float:
     if left is None or right is None:
         return 0.0
@@ -390,17 +401,12 @@ class CollectorWorker:
         delay = self.settings.collector_backoff_initial_seconds
         status = "stopped"
         reason = self._stop_reason
-        subscribe = {
-            "APIKey": self.settings.aisstream_key,
-            "BoundingBoxes": self.settings.aisstream_bbox,
-            "FilterMessageTypes": list(SUBSCRIPTION_MESSAGE_TYPES),
-        }
         try:
             while not self._stop.is_set():
                 self._connection_healthy = False
                 try:
                     async with connector(self.settings.aisstream_url) as websocket:
-                        await websocket.send(json.dumps(subscribe))
+                        await websocket.send(_subscription_message(self.settings))
                         log.info("collector_connected", region=self.settings.collector_region)
                         await self._consume(websocket)
                 except Exception as exc:
@@ -432,13 +438,20 @@ class CollectorWorker:
             reason = f"worker failure ({type(exc).__name__})"
             raise
         finally:
+            flush_error_type: str | None = None
             try:
                 self._flush()
             except Exception as exc:
                 status = "failed"
-                reason = f"final flush failure ({type(exc).__name__})"
-                log.exception("collector_final_flush_failed", error_type=type(exc).__name__)
+                flush_error_type = type(exc).__name__
+                reason = f"final flush failure ({flush_error_type})"
+                # Do not render a rich traceback here: coroutine frames can contain the
+                # credential-bearing subscription payload. The exception class is sufficient
+                # operationally and cannot leak the API key.
+                log.error("collector_final_flush_failed", error_type=flush_error_type)
             self._finish_run(status, reason)
+            if flush_error_type is not None:
+                raise RuntimeError(f"collector final flush failed ({flush_error_type})") from None
         return self._run_id
 
 
@@ -449,7 +462,12 @@ async def _run_worker() -> None:
     for signum in (signal.SIGTERM, signal.SIGINT):
         with suppress(NotImplementedError):  # macOS/Linux support signal handlers
             loop.add_signal_handler(signum, worker.request_stop, signum.name.lower())
-    await worker.run()
+    try:
+        await worker.run()
+    except Exception as exc:
+        # Keep launchd output secret-safe and exit non-zero so restart-on-failure applies.
+        log.error("collector_worker_failed", error_type=type(exc).__name__)
+        raise SystemExit(1) from None
 
 
 def main() -> None:

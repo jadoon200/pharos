@@ -5,6 +5,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from types import TracebackType
 
+import pytest
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -118,6 +119,27 @@ class _SequenceConnector:
         return _Connection(websocket)
 
 
+class _BatchBoundaryWebSocket:
+    def __init__(self, worker: CollectorWorker) -> None:
+        self.worker = worker
+        self.call = 0
+
+    async def send(self, _message: str) -> None:
+        return None
+
+    async def recv(self) -> str:
+        self.call += 1
+        if self.call == 1:
+            return _message("2026-07-16 01:00:00.000000000 +0000 UTC")
+        if self.call == 2:
+            await asyncio.Event().wait()  # cancelled at the first batch deadline
+        if self.call == 3:
+            return _message("2026-07-16 01:01:00.000000000 +0000 UTC")
+        self.worker.request_stop("two batches complete")
+        await asyncio.Event().wait()
+        return ""  # pragma: no cover - task is cancelled by the stop event
+
+
 def test_worker_reconnects_records_outage_and_flushes_idempotently(tmp_path: Path) -> None:
     url = f"sqlite:///{tmp_path / 'collector.db'}"
     engine = make_engine(url)
@@ -204,4 +226,70 @@ def test_worker_treats_feed_silence_as_coverage_outage(tmp_path: Path) -> None:
         assert outage.closed_at >= outage.opened_at
         assert session.scalar(select(func.count()).select_from(Position)) == 2
     assert connector.calls == 2
+    engine.dispose()
+
+
+def test_worker_flushes_two_sqlite_batches_without_logging_key(tmp_path: Path, capsys) -> None:  # type: ignore[no-untyped-def]
+    url = f"sqlite:///{tmp_path / 'two-batches.db'}"
+    engine = make_engine(url)
+    Base.metadata.create_all(engine)
+    factory = sessionmaker(bind=engine, expire_on_commit=False)
+    settings = Settings(
+        _env_file=None,
+        database_url=url,
+        aisstream_key="never-log-this-key",
+        collector_batch_seconds=0.005,
+        collector_health_timeout_seconds=1.0,
+        collector_downsample_seconds=45.0,
+    )
+    worker = CollectorWorker(settings, session_factory=factory)
+    websocket = _BatchBoundaryWebSocket(worker)
+    worker._connector = _SequenceConnector([websocket])
+
+    run_id = asyncio.run(worker.run())
+
+    with Session(engine) as session:
+        run = session.get(CollectorRun, run_id)
+        assert run is not None and run.status == "stopped"
+        assert run.report_count == 2
+        assert session.scalar(select(func.count()).select_from(Position)) == 2
+    captured = capsys.readouterr()
+    assert "never-log-this-key" not in captured.out
+    assert "never-log-this-key" not in captured.err
+    engine.dispose()
+
+
+def test_final_flush_failure_is_nonzero_and_redacts_key(
+    tmp_path: Path, monkeypatch, capsys
+) -> None:  # type: ignore[no-untyped-def]
+    url = f"sqlite:///{tmp_path / 'failed-flush.db'}"
+    engine = make_engine(url)
+    Base.metadata.create_all(engine)
+    factory = sessionmaker(bind=engine, expire_on_commit=False)
+    settings = Settings(
+        _env_file=None,
+        database_url=url,
+        aisstream_key="also-never-log-this-key",
+    )
+    worker = CollectorWorker(settings, session_factory=factory)
+    websocket = _FakeWebSocket(
+        [_message("2026-07-16 01:00:00.000000000 +0000 UTC")],
+        worker,
+    )
+    worker._connector = _SequenceConnector([websocket])
+
+    def fail_persistence(_session: Session, _vessels: object) -> int:
+        raise TypeError("simulated persistence failure")
+
+    monkeypatch.setattr("pharos.collector.worker.ensure_vessels", fail_persistence)
+    with pytest.raises(RuntimeError, match=r"collector final flush failed \(TypeError\)"):
+        asyncio.run(worker.run())
+
+    with Session(engine) as session:
+        run = session.scalars(select(CollectorRun)).one()
+        assert run.status == "failed"
+        assert run.stop_reason == "final flush failure (TypeError)"
+    captured = capsys.readouterr()
+    assert "also-never-log-this-key" not in captured.out
+    assert "also-never-log-this-key" not in captured.err
     engine.dispose()

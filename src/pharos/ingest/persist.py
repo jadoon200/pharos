@@ -8,7 +8,7 @@ ingest never duplicates a track.
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -21,6 +21,13 @@ def _ts_key(ts: datetime) -> str:
     mismatch would defeat (mmsi, ts) dedup — comparing on a normalized ISO string is robust
     across the SQLite (naive) and Postgres (aware) dialects alike."""
     return (ts.replace(tzinfo=None) if ts.tzinfo else ts).isoformat()
+
+
+def _utc_naive(ts: datetime) -> datetime:
+    """Comparable UTC timestamp for dialects (notably SQLite) that drop tzinfo."""
+    if ts.tzinfo is None:
+        return ts
+    return ts.astimezone(UTC).replace(tzinfo=None)
 
 
 def ensure_vessels(session: Session, vessels: list[Vessel]) -> int:
@@ -40,9 +47,15 @@ def ensure_vessels(session: Session, vessels: list[Vessel]) -> int:
             existing.flag = existing.flag or v.flag
             existing.length = existing.length or v.length
             existing.width = existing.width or v.width
-            if v.first_seen and (existing.first_seen is None or v.first_seen < existing.first_seen):
+            if v.first_seen and (
+                existing.first_seen is None
+                or _utc_naive(v.first_seen) < _utc_naive(existing.first_seen)
+            ):
                 existing.first_seen = v.first_seen
-            if v.last_seen and (existing.last_seen is None or v.last_seen > existing.last_seen):
+            if v.last_seen and (
+                existing.last_seen is None
+                or _utc_naive(v.last_seen) > _utc_naive(existing.last_seen)
+            ):
                 existing.last_seen = v.last_seen
     session.flush()  # satisfy the Position.mmsi FK before inserting positions
     return len(seen)
