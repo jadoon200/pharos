@@ -1,4 +1,4 @@
-.PHONY: env install lock lint typecheck test check up down migrate ingest live tracks detect train-anomaly benchmark-anomaly ensemble eval api ui
+.PHONY: env install lock lint typecheck test check up down migrate ingest live collector collector-drill tracks detect train-anomaly prepare-pilot-model benchmark-anomaly ensemble eval api ui
 
 # One-time: create the conda env, then `conda activate pharos`
 env:
@@ -43,6 +43,15 @@ ingest:
 live:
 	python -m pharos.ingest.aisstream
 
+# Continuous, reconnecting Singapore collector. For the pilot, point it at a local SQLite file:
+#   PHAROS_DATABASE_URL=sqlite:///data/sg-live.db make collector
+collector:
+	python -m pharos.collector.worker
+
+# Deterministic, keyless failure drill: disconnect, health timeout (sleep), reconnect, and dedup.
+collector-drill:
+	pytest -q tests/test_collector_worker.py
+
 # Build per-vessel tracks from raw positions (segment -> resample -> kinematics).
 tracks:
 	python -m pharos.tracks.build
@@ -54,6 +63,14 @@ detect:
 # Train the flagship torch GRU trajectory-anomaly model.
 train-anomaly:
 	python -m pharos.detect.anomaly
+
+# Reproducible real-data artifact used for the Singapore pilot freeze.
+prepare-pilot-model:
+	OMP_NUM_THREADS=2 VECLIB_MAXIMUM_THREADS=2 \
+		PHAROS_DATABASE_URL=sqlite:///data/sg-pilot-training.db \
+		python -m scripts.prepare_pilot_model \
+		--source data/ais/la_2020_01_01.csv=us-la \
+		--source data/ais/gulf_gfw_cohort_2023_07_25.csv=us-gulf
 
 # Reproduce the GRU hidden-capacity selection over data + initialization seeds.
 benchmark-anomaly:

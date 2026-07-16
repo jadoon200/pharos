@@ -61,3 +61,14 @@ def test_migration_schema_matches_models(tmp_path: Path) -> None:
     model_schema = _schema(create_engine(model_url))
 
     assert migration_schema == model_schema
+
+
+def test_live_tail_index_exists_after_migration(tmp_path: Path) -> None:
+    migration_url = f"sqlite:///{tmp_path / 'migration.db'}"
+    _run_migrations(migration_url)
+
+    indexes = inspect(create_engine(migration_url)).get_indexes("positions")
+    assert any(
+        index["name"] == "ix_positions_mmsi_ts" and index["column_names"] == ["mmsi", "ts"]
+        for index in indexes
+    )

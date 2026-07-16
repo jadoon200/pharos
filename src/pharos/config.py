@@ -27,6 +27,26 @@ class Settings(BaseSettings):
     aisstream_bbox: list[list[list[float]]] = [[[0.9, 103.3], [1.5, 104.2]]]
     aisstream_seconds: float = 120.0  # bounded capture window per `make live`
 
+    # The continuous Singapore collector is deliberately conservative on a personal M3 Pro:
+    # short, bounded in-memory batches; one routine sample per vessel/cadence; and a finite
+    # reconnect delay. Material course/speed/status changes bypass the routine downsample.
+    collector_region: str = "singapore-live"
+    collector_batch_seconds: float = 45.0
+    collector_downsample_seconds: float = 45.0
+    collector_heading_delta_degrees: float = 20.0
+    collector_speed_delta_kn: float = 2.0
+    collector_health_timeout_seconds: float = 90.0
+    collector_backoff_initial_seconds: float = 1.0
+    collector_backoff_max_seconds: float = 300.0
+
+    # Background processing and outbound snapshot publication remain infrequent enough to
+    # avoid competing with normal laptop use. Raw live reports have bounded local retention.
+    process_interval_minutes: float = 2.0
+    publish_interval_minutes: float = 3.0
+    retention_positions_days: int = 21
+    storage_warn_gb: float = 2.0
+    storage_hard_gb: float = 5.0
+
     # --- Collection: Global Fishing Watch event labels (optional cross-check) ----------
     # Free API token; empty disables the GFW cross-check in the eval.
     gfw_token: str = ""

@@ -115,9 +115,17 @@ make detect                                         # run the detector ensemble 
 make eval                                           # score detectors on the gold set → docs/EVAL.md
 make benchmark-anomaly                              # reproduce GRU capacity selection (25 runs/size)
 make eval-real FILE=data/ais/<slice>.csv REGION=us-la  # the honest test on real AIS
+PHAROS_DATABASE_URL=sqlite:///data/sg-live.db make collector  # continuous SG lane
 make api                                            # read-only API + GeoJSON on :8000
 make ui                                             # React map dashboard on :5173
 ```
+
+The continuous Singapore pilot collector is micro-batched, Class A/B aware, reconnecting, and
+coverage-accounted for laptop sleep. Its low-priority macOS launch-agent setup and mobility drill
+are documented in [`docs/SG_PILOT_OPERATIONS.md`](docs/SG_PILOT_OPERATIONS.md). The bounded
+`make live` capture remains available for manual checks. The model/threshold freeze is auditable in
+[`docs/SG_PILOT_FREEZE.md`](docs/SG_PILOT_FREEZE.md); the full delivery and evaluation protocol is
+[`docs/SG_LIVE_PILOT_PLAN.md`](docs/SG_LIVE_PILOT_PLAN.md).
 
 No NOAA download to try it? Seed a self-contained demo from the deterministic synthetic
 generator (zones + tracks + the full detector ensemble + the anomaly model) into a SQLite file,

@@ -18,6 +18,16 @@ story (M0–M8), with deploy (M9) last and the ARGUS bridge (M10) an explicit ex
 | M9 | Deploy — `Dockerfile.web` + `render.yaml` free plan, baked demo SQLite seed, keep-alive; demo-seed script | ✅ config landed |
 | M10 | **Extra** — ARGUS GEOINT bridge: `GET /geoint/evidence` exposes incidents as citable, ARGUS-`EvidenceItem`-shaped GEOINT evidence | ✅ done |
 
+### Post-M10: SG-PILOT-v0
+
+| Phase | Status |
+|---|---|
+| 1 — continuous Class A/B collector, coverage ledger, SQLite WAL/index, M3-safe launch agent, frozen model candidate | 🟡 built locally; gate/live start pending |
+| 2 — incremental tracks/scoring, outage-aware gaps, retention/storage caps | ⬜ next |
+| 3 — external/review labels and frozen evaluation | ⬜ planned |
+| 4 — delayed outbound snapshots and dashboard pilot modes | ⬜ planned |
+| 5 — Day-14 preliminary report / count-based continuation | ⬜ planned |
+
 **Status:** the full system (M0–M10) is built. The whole pipeline
 (collect → tracks → 5 detectors → flagship anomaly model → composite ensemble → honest eval) runs
 end-to-end, a hardened read-only API serves it, the React/Leaflet dashboard is browser-verified
@@ -63,14 +73,14 @@ deployable, and the M10 bridge (originally optional) is done.
 
 ## Next build priorities
 
-1. **Publish and smoke-test the public demo.** The Render blueprint is implemented and locally
-   buildable; connecting it to Render, recording the URL, and verifying `/health` plus the SPA are
-   deployment operations still to do.
-2. **Find a receiver-compatible gap corpus.** GFW's Gulf gap events are offshore satellite labels;
-   the NOAA terrestrial feed does not observe both endpoints. Add a source/window with compatible
-   reception before claiming real gap calibration.
-3. **Generate and commit the Linux dependency lock.** CI currently falls back to
+1. **Start SG-PILOT-v0 collection.** Gate and push Phase 1, run the deterministic mobility drill,
+   record the implementation commit in [`SG_PILOT_FREEZE.md`](SG_PILOT_FREEZE.md), and start the
+   low-priority launch agent. A valid durable report marks Day 0.
+2. **Build incremental processing and outage-aware detection.** Rebuild only dirty vessel tails,
+   suppress gap calls across coverage outages, score with the frozen artifact, and enforce rolling
+   retention/storage caps.
+3. **Build independent evaluation and the outbound-only showcase.** Persist official/silver events,
+   run blinded review, report observed-time denominators/CIs, and push delayed sanitized snapshots
+   for the Render dashboard.
+4. **Generate and commit the Linux dependency lock.** CI currently falls back to
    `requirements.txt` until the manual Lock workflow creates `requirements.lock`.
-4. **Acquire real trajectory-anomaly labels.** The compact GRU wins the current multi-seed
-   synthetic/cross-region comparison, but model-family promotion needs externally labelled real
-   route anomalies rather than reconstruction-error anecdotes.

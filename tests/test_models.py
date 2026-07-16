@@ -3,7 +3,7 @@ from datetime import UTC, datetime
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from pharos.db.models import Incident, Position, Track, Vessel, Zone
+from pharos.db.models import CollectorRun, CoverageOutage, Incident, Position, Track, Vessel, Zone
 
 
 def test_vessel_position_track_incident_roundtrip(session: Session) -> None:
@@ -68,3 +68,17 @@ def test_zone_polygon_roundtrip(session: Session) -> None:
     z = session.get(Zone, "z1")
     assert z is not None and z.polygon[0] == [1.1, 103.5]
     assert z.sensitive == 1
+
+
+def test_collector_coverage_roundtrip(session: Session) -> None:
+    ts = datetime(2026, 7, 16, 1, 0, tzinfo=UTC)
+    run = CollectorRun(started_at=ts, report_count=12, vessel_count=3, status="running")
+    session.add(run)
+    session.flush()
+    session.add(CoverageOutage(opened_at=ts, reason="feed disconnected", run_id=run.id))
+    session.commit()
+
+    stored = session.get(CollectorRun, run.id)
+    assert stored is not None and stored.report_count == 12
+    outage = session.scalars(select(CoverageOutage)).one()
+    assert outage.run_id == run.id and outage.closed_at is None
