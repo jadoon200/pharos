@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
+from itertools import pairwise
 
 from pharos.config import get_settings
 from pharos.db.models import Position
@@ -32,6 +33,31 @@ def test_gap_detector_fires_on_dark_ship() -> None:
     assert inc.reliability in {"C", "D", "E", "F"}  # never certified high
 
 
+def test_gap_detector_suppresses_known_coverage_outage() -> None:
+    sc = generate_scenario("singapore", seed=0, n_normal=4)
+    dark = _truth_mmsi(sc, "gap")
+    points = sorted((p for p in sc.positions if p.mmsi == dark), key=lambda p: p.ts)
+    gap_pair = next(
+        (left, right)
+        for left, right in pairwise(points)
+        if (right.ts - left.ts).total_seconds() >= 120 * 60
+    )
+
+    suppressed = detect_gaps(
+        sc.positions,
+        get_settings(),
+        [(gap_pair[0].ts + timedelta(minutes=1), gap_pair[1].ts - timedelta(minutes=1))],
+    )
+    unrelated = detect_gaps(
+        sc.positions,
+        get_settings(),
+        [(gap_pair[1].ts + timedelta(days=1), gap_pair[1].ts + timedelta(days=2))],
+    )
+
+    assert not [incident for incident in suppressed if incident.mmsi == dark]
+    assert [incident for incident in unrelated if incident.mmsi == dark]
+
+
 def test_rendezvous_detector_fires_on_sts() -> None:
     sc = generate_scenario("singapore", seed=0, n_normal=4)
     incidents = detect_rendezvous(sc.positions, get_settings())
@@ -55,6 +81,23 @@ def test_rendezvous_index_matches_exhaustive_detector() -> None:
         indexed_result = [(i.incident_id, i.evidence) for i in indexed]
         exhaustive_result = [(i.incident_id, i.evidence) for i in exhaustive]
         assert indexed_result == exhaustive_result
+
+
+def test_focused_rendezvous_matches_full_for_dirty_vessel() -> None:
+    settings = get_settings()
+    sc = generate_scenario("singapore", seed=0, n_normal=12)
+    dirty = _truth_mmsi(sc, "rendezvous")
+    full = detect_rendezvous(sc.positions, settings)
+    focused = detect_rendezvous(sc.positions, settings, focus_mmsis={dirty})
+    expected = [
+        incident
+        for incident in full
+        if incident.mmsi == dirty or incident.counterpart_mmsi == dirty
+    ]
+
+    assert [(item.incident_id, item.evidence) for item in focused] == [
+        (item.incident_id, item.evidence) for item in expected
+    ]
 
 
 def test_rendezvous_index_handles_unaligned_reports_and_prunes_distance() -> None:

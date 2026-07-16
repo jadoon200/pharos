@@ -259,8 +259,14 @@ def _spatial_candidate_pairs(
 
 
 def detect_rendezvous(
-    positions: list[Position], settings: Settings, *, use_candidate_index: bool = True
+    positions: list[Position],
+    settings: Settings,
+    *,
+    use_candidate_index: bool = True,
+    focus_mmsis: set[str] | None = None,
 ) -> list[Incident]:
+    if focus_mmsis is not None and not focus_mmsis:
+        return []
     by_vessel = positions_by_vessel(positions)
     # Only pair vessels with enough points, and only *transiting* vessels (exclude anchored ones).
     usable = {
@@ -280,7 +286,22 @@ def detect_rendezvous(
             settings.rendezvous_max_km,
             settings.rendezvous_max_speed_kn,
         )
-        pairs = sorted(indexed_pairs)
+        if focus_mmsis is None:
+            pairs = sorted(indexed_pairs)
+        else:
+            # Evaluate the dirty vessels' direct candidate neighbours plus every candidate pair
+            # touching those neighbours. The one-hop expansion preserves each participant's
+            # full partner degree, so the anchorage-cluster post-filter remains identical to a
+            # full recompute for incidents involving a dirty vessel.
+            neighbourhood = set(focus_mmsis)
+            for left, right in indexed_pairs:
+                if left in focus_mmsis or right in focus_mmsis:
+                    neighbourhood.update((left, right))
+            pairs = sorted(
+                pair
+                for pair in indexed_pairs
+                if pair[0] in neighbourhood or pair[1] in neighbourhood
+            )
     else:
         time_bins = 0
         pairs = list(combinations(sorted(usable), 2))
@@ -351,6 +372,12 @@ def detect_rendezvous(
         if degree[c.b_mmsi] > settings.rendezvous_max_partners:
             continue
         for mmsi, counterpart in ((c.a_mmsi, c.b_mmsi), (c.b_mmsi, c.a_mmsi)):
+            if (
+                focus_mmsis is not None
+                and mmsi not in focus_mmsis
+                and counterpart not in focus_mmsis
+            ):
+                continue
             incidents.append(
                 make_incident(
                     detector="rendezvous",

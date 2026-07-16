@@ -18,6 +18,10 @@
         <string>/Users/jayden/code-projects/pharos/src</string>
         <key>PHAROS_DATABASE_URL</key>
         <string>sqlite:////Users/jayden/code-projects/pharos/data/sg-live.db</string>
+        <key>PHAROS_ANOMALY_MODEL_SHA256</key>
+        <string>01faa27e17dd194b8913a439034a5f71d56f48ebb291ddb073e6c9b0ee7788fb</string>
+        <key>PHAROS_PILOT_START_AT</key>
+        <string>2026-07-16T02:47:51Z</string>
         <key>OMP_NUM_THREADS</key>
         <string>2</string>
         <key>VECLIB_MAXIMUM_THREADS</key>

@@ -1,4 +1,4 @@
-.PHONY: env install lock lint typecheck test check up down migrate ingest live collector collector-drill tracks detect train-anomaly prepare-pilot-model benchmark-anomaly ensemble eval api ui
+.PHONY: env install lock lint typecheck test check up down migrate ingest live collector collector-drill process-live prune tracks detect train-anomaly prepare-pilot-model benchmark-anomaly ensemble eval api ui
 
 # One-time: create the conda env, then `conda activate pharos`
 env:
@@ -51,6 +51,14 @@ collector:
 # Deterministic, keyless failure drill: disconnect, health timeout (sleep), reconnect, and dedup.
 collector-drill:
 	pytest -q tests/test_collector_worker.py
+
+# One manual incremental pass over the configured live-pilot window.
+process-live:
+	python -m pharos.tracks.incremental
+
+# Checkpoint WAL and prune only expired live positions (default retention: 21 days).
+prune:
+	python -m scripts.prune
 
 # Build per-vessel tracks from raw positions (segment -> resample -> kinematics).
 tracks:

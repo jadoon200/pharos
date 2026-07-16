@@ -14,6 +14,8 @@ cross-check (`docs/EVAL.md`). Every gap incident is a lead for a human, never a 
 
 from __future__ import annotations
 
+from collections.abc import Iterable
+from datetime import UTC, datetime
 from itertools import pairwise
 
 from pharos.config import Settings
@@ -22,8 +24,34 @@ from pharos.detect.base import make_incident, positions_by_vessel
 from pharos.geo import haversine_km, implied_speed_kn
 from pharos.zones import zone_for
 
+CoverageInterval = tuple[datetime, datetime | None]
 
-def detect_gaps(positions: list[Position], settings: Settings) -> list[Incident]:
+
+def _utc_naive(value: datetime) -> datetime:
+    if value.tzinfo is None:
+        return value
+    return value.astimezone(UTC).replace(tzinfo=None)
+
+
+def _overlaps_outage(
+    start: datetime,
+    end: datetime,
+    outages: list[CoverageInterval],
+) -> bool:
+    gap_start = _utc_naive(start)
+    gap_end = _utc_naive(end)
+    return any(
+        _utc_naive(opened_at) < gap_end and (closed_at is None or _utc_naive(closed_at) > gap_start)
+        for opened_at, closed_at in outages
+    )
+
+
+def detect_gaps(
+    positions: list[Position],
+    settings: Settings,
+    coverage_outages: Iterable[CoverageInterval] = (),
+) -> list[Incident]:
+    outages = list(coverage_outages)
     incidents: list[Incident] = []
     for mmsi, pts in positions_by_vessel(positions).items():
         for prev, cur in pairwise(pts):
@@ -32,6 +60,10 @@ def detect_gaps(positions: list[Position], settings: Settings) -> list[Incident]
                 continue
             disp_km = haversine_km(prev.lat, prev.lon, cur.lat, cur.lon)
             if disp_km < settings.gap_min_displacement_km:
+                continue
+            # Receiver/laptop silence is not vessel behaviour. Suppress the call entirely when
+            # any known coverage outage intersects the vessel's silent interval.
+            if _overlaps_outage(prev.ts, cur.ts, outages):
                 continue
             # Where it went dark; a sensitive zone there raises salience.
             zone = zone_for(prev.lat, prev.lon)

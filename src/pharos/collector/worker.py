@@ -17,8 +17,10 @@ from typing import Any, Protocol, cast
 from sqlalchemy import select
 from sqlalchemy.orm import Session, sessionmaker
 
+from pharos.collector.retention import prune_positions
+from pharos.collector.storage import storage_status
 from pharos.config import Settings, get_settings
-from pharos.db.base import get_session_factory, init_sqlite_schema
+from pharos.db.base import get_session_factory, init_sqlite_schema, make_engine
 from pharos.db.models import CollectorRun, CoverageOutage, Position, Vessel
 from pharos.ingest.aisstream import SUBSCRIPTION_MESSAGE_TYPES, parse_message
 from pharos.ingest.persist import ensure_vessels, persist_positions
@@ -176,8 +178,14 @@ class CollectorWorker:
         self._run_id: int | None = None
         self._outage_open = False
         self._batch = CollectorBatch()
+        self._dirty_mmsis: set[str] = set()
+        self._next_process_at = self._monotonic() + self.settings.process_interval_minutes * 60.0
+        self._next_prune_at = (
+            self._monotonic() + self.settings.retention_prune_interval_hours * 3600.0
+        )
         self._seen_mmsis: set[str] = set()
         self._connection_healthy = False
+        self._storage_level = "normal"
         self._downsampler = PositionDownsampler(
             cadence_seconds=self.settings.collector_downsample_seconds,
             heading_delta_degrees=self.settings.collector_heading_delta_degrees,
@@ -276,6 +284,7 @@ class CollectorWorker:
     def _flush(self) -> dict[str, int]:
         if self._batch.empty or self._run_id is None:
             return {"new": 0, "skipped": 0, "positions": 0}
+        stored_mmsis = {position.mmsi for position in self._batch.positions}
         with self._session() as session:
             ensure_vessels(session, list(self._batch.vessels.values()))
             stats = persist_positions(session, self._batch.positions)
@@ -289,8 +298,82 @@ class CollectorWorker:
                 run.last_message_at = self._batch.last_message_at
         report_count = self._batch.report_count
         self._batch.clear()
+        self._dirty_mmsis.update(stored_mmsis)
+        self._refresh_storage_policy()
         log.info("collector_batch_flushed", reports=report_count, **stats)
         return stats
+
+    def _refresh_storage_policy(self) -> None:
+        status = storage_status(self.settings)
+        # At the hard cap, routine cadence samples are nonessential and stop; material
+        # heading/speed/nav-status changes still pass PositionDownsampler.accept().
+        self._downsampler.cadence_seconds = (
+            float("inf") if status.level == "hard" else self.settings.collector_downsample_seconds
+        )
+        if status.level != self._storage_level:
+            log_method = log.error if status.level == "hard" else log.warning
+            if status.level == "normal":
+                log_method = log.info
+            log_method(
+                "collector_storage_state",
+                level=status.level,
+                gib_used=round(status.gib_used, 3),
+                routine_samples_enabled=status.level != "hard",
+            )
+            self._storage_level = status.level
+
+    def _process_dirty(self, dirty_mmsis: set[str]) -> dict[str, object]:
+        from pharos.tracks.incremental import process_dirty_vessels
+
+        with self._session() as session:
+            return process_dirty_vessels(
+                session,
+                dirty_mmsis,
+                region=self.settings.collector_region,
+                settings=self.settings,
+            )
+
+    async def _maybe_process(self) -> None:
+        if self._monotonic() < self._next_process_at:
+            return
+        self._next_process_at = self._monotonic() + self.settings.process_interval_minutes * 60.0
+        if not self._dirty_mmsis:
+            return
+        dirty = set(self._dirty_mmsis)
+        try:
+            stats = await asyncio.to_thread(self._process_dirty, dirty)
+        except Exception as exc:
+            # Collection remains primary: retain the dirty set and retry next cycle without
+            # converting a processing/model failure into a feed outage.
+            log.error(
+                "collector_processing_failed",
+                error_type=type(exc).__name__,
+                dirty_vessels=len(dirty),
+            )
+            return
+        self._dirty_mmsis.difference_update(dirty)
+        log.info("collector_processing_complete", dirty_vessels=len(dirty), stats=stats)
+
+    def _prune(self) -> dict[str, int | float | str]:
+        engine = make_engine(self.settings.database_url)
+        try:
+            return prune_positions(engine, self.settings)
+        finally:
+            engine.dispose()
+
+    async def _maybe_prune(self) -> None:
+        if self._monotonic() < self._next_prune_at:
+            return
+        try:
+            await asyncio.to_thread(self._prune)
+        except Exception as exc:
+            log.error("collector_prune_failed", error_type=type(exc).__name__)
+            # A busy checkpoint is safe and expected occasionally; retry at the next batch.
+            self._next_prune_at = self._monotonic() + self.settings.collector_batch_seconds
+            return
+        self._next_prune_at = (
+            self._monotonic() + self.settings.retention_prune_interval_hours * 3600.0
+        )
 
     def _finish_run(self, status: str, reason: str) -> None:
         if self._run_id is None:
@@ -343,6 +426,8 @@ class CollectorWorker:
                         + timedelta(seconds=self.settings.collector_health_timeout_seconds)
                     )
                 self._flush()
+                await self._maybe_process()
+                await self._maybe_prune()
                 batch_deadline = self._monotonic() + self.settings.collector_batch_seconds
                 continue
 

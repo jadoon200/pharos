@@ -293,3 +293,80 @@ def test_final_flush_failure_is_nonzero_and_redacts_key(
     assert "also-never-log-this-key" not in captured.out
     assert "also-never-log-this-key" not in captured.err
     engine.dispose()
+
+
+def test_processing_cycle_clears_dirty_set_only_after_success(tmp_path: Path) -> None:
+    url = f"sqlite:///{tmp_path / 'processing.db'}"
+    engine = make_engine(url)
+    Base.metadata.create_all(engine)
+    factory = sessionmaker(bind=engine, expire_on_commit=False)
+    settings = Settings(
+        _env_file=None,
+        database_url=url,
+        aisstream_key="test-key",
+        process_interval_minutes=0.0,
+    )
+    worker = CollectorWorker(settings, session_factory=factory)
+    worker._dirty_mmsis = {"563123456"}
+    processed: list[set[str]] = []
+
+    def succeed(dirty: set[str]) -> dict[str, object]:
+        processed.append(dirty)
+        return {"ok": True}
+
+    worker._process_dirty = succeed
+    asyncio.run(worker._maybe_process())
+
+    assert processed == [{"563123456"}]
+    assert worker._dirty_mmsis == set()
+    engine.dispose()
+
+
+def test_processing_failure_retains_dirty_set(tmp_path: Path) -> None:
+    url = f"sqlite:///{tmp_path / 'processing-failure.db'}"
+    engine = make_engine(url)
+    Base.metadata.create_all(engine)
+    factory = sessionmaker(bind=engine, expire_on_commit=False)
+    settings = Settings(
+        _env_file=None,
+        database_url=url,
+        aisstream_key="test-key",
+        process_interval_minutes=0.0,
+    )
+    worker = CollectorWorker(settings, session_factory=factory)
+    worker._dirty_mmsis = {"563123456"}
+
+    def fail(_dirty: set[str]) -> dict[str, object]:
+        raise RuntimeError("simulated processing failure")
+
+    worker._process_dirty = fail
+    asyncio.run(worker._maybe_process())
+
+    assert worker._dirty_mmsis == {"563123456"}
+    engine.dispose()
+
+
+def test_due_retention_prune_runs_off_event_loop(tmp_path: Path) -> None:
+    url = f"sqlite:///{tmp_path / 'scheduled-prune.db'}"
+    engine = make_engine(url)
+    Base.metadata.create_all(engine)
+    factory = sessionmaker(bind=engine, expire_on_commit=False)
+    settings = Settings(
+        _env_file=None,
+        database_url=url,
+        aisstream_key="test-key",
+        retention_prune_interval_hours=0.0,
+    )
+    worker = CollectorWorker(settings, session_factory=factory)
+    calls = 0
+
+    def prune() -> dict[str, int | float | str]:
+        nonlocal calls
+        calls += 1
+        return {"deleted": 0}
+
+    worker._prune = prune
+    asyncio.run(worker._maybe_prune())
+
+    assert calls == 1
+    engine.dispose()
