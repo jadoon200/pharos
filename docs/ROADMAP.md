@@ -23,7 +23,7 @@ story (M0–M8), with deploy (M9) last and the ARGUS bridge (M10) an explicit ex
 | Phase | Status |
 |---|---|
 | 1 — continuous Class A/B collector, coverage ledger, SQLite WAL/index, M3-safe launch agent, frozen model | ✅ collecting; Day 0 = 2026-07-16 |
-| 2 — incremental tracks/scoring, outage-aware gaps, retention/storage caps | 🟡 next build |
+| 2 — incremental tracks/scoring, outage-aware gaps, retention/storage caps | ✅ deployed; every 2 min |
 | 3 — external/review labels and frozen evaluation | ⬜ planned |
 | 4 — delayed outbound snapshots and dashboard pilot modes | ⬜ planned |
 | 5 — Day-14 preliminary report / count-based continuation | ⬜ planned |
@@ -73,11 +73,8 @@ deployable, and the M10 bridge (originally optional) is done.
 
 ## Next build priorities
 
-1. **Build incremental processing and outage-aware detection.** Rebuild only dirty vessel tails,
-   suppress gap calls across coverage outages, score with the frozen artifact, and enforce rolling
-   retention/storage caps.
-2. **Build independent evaluation and the outbound-only showcase.** Persist official/silver events,
+1. **Build independent evaluation and the outbound-only showcase.** Persist official/silver events,
    run blinded review, report observed-time denominators/CIs, and push delayed sanitized snapshots
    for the Render dashboard.
-3. **Generate and commit the Linux dependency lock.** CI currently falls back to
+2. **Generate and commit the Linux dependency lock.** CI currently falls back to
    `requirements.txt` until the manual Lock workflow creates `requirements.lock`.

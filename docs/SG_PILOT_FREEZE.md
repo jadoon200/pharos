@@ -83,3 +83,18 @@ on the pilot artifact during days 0–14.
 Operational settings such as the 45-second batch/downsample cadence may be adjusted for laptop
 health and storage without tuning model/detector thresholds. Every evaluation row will carry the
 artifact SHA and this freeze version.
+
+## Post-freeze operational processing
+
+Operational processing commit `46b1f4f` was deployed at `2026-07-16T03:09:53Z`; it does not alter
+the frozen model or detector thresholds. It non-destructively rebuilds dirty vessel tails every two
+minutes, suppresses gap calls across recorded receiver outages, and refuses to score if the local
+artifact differs from the SHA above. The first automatic real-data cycle completed at
+`2026-07-16T03:12:12Z`: 21 dirty vessels, three tracks created / one updated, two exact rendezvous
+candidates from 378 possible pairs, four tracks scored, and zero alerts. Zero is an early-window
+count, not a performance claim.
+
+WAL-safe live-position retention is 21 days. Local storage warns at 2 GB; at 5 GB routine samples
+stop while material heading, speed, and navigation-status changes remain accepted. The deployed
+collector measured 0.0% CPU while idle and approximately 239 MB RSS immediately after its first
+incremental cycle on the M3 Pro.

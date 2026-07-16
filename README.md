@@ -127,6 +127,11 @@ are documented in [`docs/SG_PILOT_OPERATIONS.md`](docs/SG_PILOT_OPERATIONS.md). 
 [`docs/SG_PILOT_FREEZE.md`](docs/SG_PILOT_FREEZE.md); the full delivery and evaluation protocol is
 [`docs/SG_LIVE_PILOT_PLAN.md`](docs/SG_LIVE_PILOT_PLAN.md).
 
+Every two minutes the live worker rebuilds only dirty vessel track tails, refreshes affected
+detectors, and scores eligible tracks with the SHA-pinned frozen GRU—never request-path training or
+a silent fallback. Known collector outages suppress vessel-gap calls. Live positions retain for 21
+days after a successful WAL checkpoint, with 2 GB warning and 5 GB emergency sampling controls.
+
 No NOAA download to try it? Seed a self-contained demo from the deterministic synthetic
 generator (zones + tracks + the full detector ensemble + the anomaly model) into a SQLite file,
 then serve the API + dashboard off it:
