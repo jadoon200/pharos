@@ -42,6 +42,13 @@ def _utcnow() -> datetime:
     return datetime.now(UTC)
 
 
+def _utc_naive(value: datetime) -> datetime:
+    """Comparable UTC timestamp across dialects (SQLite round-trips naive, Postgres aware)."""
+    if value.tzinfo is None:
+        return value
+    return value.astimezone(UTC).replace(tzinfo=None)
+
+
 def _subscription_message(settings: Settings) -> str:
     """Serialize the credential-bearing payload without retaining it in the run-loop frame."""
     return json.dumps(
@@ -227,7 +234,13 @@ class CollectorWorker:
                         CoverageOutage.closed_at.is_(None),
                     )
                 ):
-                    outage.closed_at = recovered_at
+                    # An outage may have opened after the last message (feed silence before the
+                    # crash); never close it before it opened.
+                    outage.closed_at = max(outage.opened_at, recovered_at)
+
+            previous = session.scalars(
+                select(CollectorRun).order_by(CollectorRun.started_at.desc()).limit(1)
+            ).first()
 
             run = CollectorRun(
                 started_at=started_at,
@@ -238,6 +251,29 @@ class CollectorWorker:
             session.add(run)
             session.flush()
             run_id = run.id
+
+            # The window between the previous run's end and this start is receiver downtime, not
+            # vessel silence — record it so the gap detector suppresses it like any other outage.
+            # Left open here; the first valid report of this run closes it.
+            offline_since: datetime | None = None
+            if previous is not None:
+                prev_end = previous.stopped_at or previous.last_message_at or previous.started_at
+                if _utc_naive(prev_end) < _utc_naive(started_at):
+                    session.add(
+                        CoverageOutage(
+                            run_id=run_id,
+                            opened_at=prev_end,
+                            reason="collector offline between runs",
+                        )
+                    )
+                    offline_since = prev_end
+        self._outage_open = offline_since is not None
+        if offline_since is not None:
+            log.info(
+                "collector_offline_window_bridged",
+                run_id=run_id,
+                offline_since=offline_since.isoformat(),
+            )
         log.info("collector_run_started", run_id=run_id)
         return run_id
 

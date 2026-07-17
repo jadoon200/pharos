@@ -16,18 +16,23 @@ from sqlalchemy.orm import Session
 from pharos.db.models import Position, Vessel
 
 
-def _ts_key(ts: datetime) -> str:
-    """A tz-normalized timestamp key. SQLite drops tzinfo on round-trip, so a naive/aware
-    mismatch would defeat (mmsi, ts) dedup — comparing on a normalized ISO string is robust
-    across the SQLite (naive) and Postgres (aware) dialects alike."""
-    return (ts.replace(tzinfo=None) if ts.tzinfo else ts).isoformat()
-
-
 def _utc_naive(ts: datetime) -> datetime:
     """Comparable UTC timestamp for dialects (notably SQLite) that drop tzinfo."""
     if ts.tzinfo is None:
         return ts
     return ts.astimezone(UTC).replace(tzinfo=None)
+
+
+def _utc_aware(ts: datetime) -> datetime:
+    """Normalize to aware UTC (naive input is by convention already UTC)."""
+    return ts.replace(tzinfo=UTC) if ts.tzinfo is None else ts.astimezone(UTC)
+
+
+def _ts_key(ts: datetime) -> str:
+    """A UTC-normalized timestamp key. SQLite drops tzinfo on round-trip, so a naive/aware
+    mismatch would defeat (mmsi, ts) dedup — comparing on a UTC-naive ISO string is robust
+    across the SQLite (naive) and Postgres (aware) dialects alike."""
+    return _utc_naive(ts).isoformat()
 
 
 def ensure_vessels(session: Session, vessels: list[Vessel]) -> int:
@@ -63,6 +68,10 @@ def ensure_vessels(session: Session, vessels: list[Vessel]) -> int:
 
 def persist_positions(session: Session, positions: list[Position]) -> dict[str, int]:
     """Insert new position reports only; skip any (MMSI, ts) already stored."""
+    for p in positions:
+        # Store UTC regardless of the producer's offset: SQLite persists raw clock fields, so
+        # an aware non-UTC timestamp would otherwise be stored as its local clock time.
+        p.ts = _utc_aware(p.ts)
     incoming = {(p.mmsi, _ts_key(p.ts)): p for p in positions}  # de-dupe within the batch
     mmsis = {p.mmsi for p in positions}
     existing: set[tuple[str, str]] = set()

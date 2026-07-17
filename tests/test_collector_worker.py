@@ -188,6 +188,44 @@ def test_worker_reconnects_records_outage_and_flushes_idempotently(tmp_path: Pat
     engine.dispose()
 
 
+def test_restart_bridges_offline_window_as_outage(tmp_path: Path) -> None:
+    """Downtime between runs (laptop off, launchd reload) must never become a vessel gap."""
+    url = f"sqlite:///{tmp_path / 'restart-bridge.db'}"
+    engine = make_engine(url)
+    Base.metadata.create_all(engine)
+    factory = sessionmaker(bind=engine, expire_on_commit=False)
+    stopped_at = datetime(2026, 7, 16, 20, 0, tzinfo=UTC)
+    with Session(engine) as session:
+        session.add(
+            CollectorRun(
+                started_at=stopped_at - timedelta(hours=2),
+                last_message_at=stopped_at - timedelta(minutes=1),
+                stopped_at=stopped_at,
+                stop_reason="requested",
+                report_count=10,
+                vessel_count=3,
+                status="stopped",
+            )
+        )
+        session.commit()
+    settings = Settings(_env_file=None, database_url=url, aisstream_key="test-key")
+    worker = CollectorWorker(settings, session_factory=factory)
+    websocket = _FakeWebSocket([_message("2026-07-16 22:00:00.000000000 +0000 UTC")], worker)
+    worker._connector = _SequenceConnector([websocket])
+
+    run_id = asyncio.run(worker.run())
+
+    with Session(engine) as session:
+        outage = session.scalars(select(CoverageOutage)).one()
+        assert outage.run_id == run_id
+        assert outage.reason == "collector offline between runs"
+        assert outage.opened_at.replace(tzinfo=UTC) == stopped_at
+        # Closed by the first valid report of the new run, not left dangling.
+        assert outage.closed_at is not None
+        assert outage.closed_at >= outage.opened_at
+    engine.dispose()
+
+
 def test_worker_treats_feed_silence_as_coverage_outage(tmp_path: Path) -> None:
     url = f"sqlite:///{tmp_path / 'sleep-wake.db'}"
     engine = make_engine(url)

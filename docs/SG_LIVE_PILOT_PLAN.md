@@ -168,7 +168,9 @@ staleness is always visible via `generated_at`.
   last_message_at, stopped_at, stop_reason, report_count, vessel_count, status) and
   `coverage_outages` (id, opened_at, closed_at, reason, run FK). Open an outage when the feed goes
   unhealthy (no message > 90 s, or disconnect); close it only after reconnection **and** receipt of
-  valid reports.
+  valid reports. On startup the worker also bridges the window since the previous run's end
+  (laptop off, clean stop, crash) as a `collector offline between runs` outage, closed by the new
+  run's first valid report — downtime between runs is receiver silence, never vessel silence.
 - Never create a dark-ship/AIS-gap incident whose silent interval overlaps a known coverage outage
   (`detect/gaps.py` consults the ledger). Tracks crossing an outage carry reduced coverage
   reliability or are excluded from evaluation, per detector.
