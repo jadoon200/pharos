@@ -8,26 +8,38 @@ ingest never duplicates a track.
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import datetime
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from pharos.db.models import Position, Vessel
+from pharos.timeutil import utc_aware, utc_naive
 
 
 def _ts_key(ts: datetime) -> str:
-    """A tz-normalized timestamp key. SQLite drops tzinfo on round-trip, so a naive/aware
-    mismatch would defeat (mmsi, ts) dedup — comparing on a normalized ISO string is robust
+    """A UTC-normalized timestamp key. SQLite drops tzinfo on round-trip, so a naive/aware
+    mismatch would defeat (mmsi, ts) dedup — comparing on a UTC-naive ISO string is robust
     across the SQLite (naive) and Postgres (aware) dialects alike."""
-    return (ts.replace(tzinfo=None) if ts.tzinfo else ts).isoformat()
+    return utc_naive(ts).isoformat()
 
 
-def _utc_naive(ts: datetime) -> datetime:
-    """Comparable UTC timestamp for dialects (notably SQLite) that drop tzinfo."""
-    if ts.tzinfo is None:
-        return ts
-    return ts.astimezone(UTC).replace(tzinfo=None)
+def merge_vessel_identity(target: Vessel, source: Vessel) -> None:
+    """Fill `target`'s missing identity fields and widen first/last-seen from `source`."""
+    target.name = target.name or source.name
+    target.call_sign = target.call_sign or source.call_sign
+    target.ship_type = target.ship_type or source.ship_type
+    target.flag = target.flag or source.flag
+    target.length = target.length or source.length
+    target.width = target.width or source.width
+    if source.first_seen and (
+        target.first_seen is None or utc_naive(source.first_seen) < utc_naive(target.first_seen)
+    ):
+        target.first_seen = source.first_seen
+    if source.last_seen and (
+        target.last_seen is None or utc_naive(source.last_seen) > utc_naive(target.last_seen)
+    ):
+        target.last_seen = source.last_seen
 
 
 def ensure_vessels(session: Session, vessels: list[Vessel]) -> int:
@@ -41,28 +53,17 @@ def ensure_vessels(session: Session, vessels: list[Vessel]) -> int:
         if existing is None:
             session.add(v)
         else:
-            existing.name = existing.name or v.name
-            existing.call_sign = existing.call_sign or v.call_sign
-            existing.ship_type = existing.ship_type or v.ship_type
-            existing.flag = existing.flag or v.flag
-            existing.length = existing.length or v.length
-            existing.width = existing.width or v.width
-            if v.first_seen and (
-                existing.first_seen is None
-                or _utc_naive(v.first_seen) < _utc_naive(existing.first_seen)
-            ):
-                existing.first_seen = v.first_seen
-            if v.last_seen and (
-                existing.last_seen is None
-                or _utc_naive(v.last_seen) > _utc_naive(existing.last_seen)
-            ):
-                existing.last_seen = v.last_seen
+            merge_vessel_identity(existing, v)
     session.flush()  # satisfy the Position.mmsi FK before inserting positions
     return len(seen)
 
 
 def persist_positions(session: Session, positions: list[Position]) -> dict[str, int]:
     """Insert new position reports only; skip any (MMSI, ts) already stored."""
+    for p in positions:
+        # Store UTC regardless of the producer's offset: SQLite persists raw clock fields, so
+        # an aware non-UTC timestamp would otherwise be stored as its local clock time.
+        p.ts = utc_aware(p.ts)
     incoming = {(p.mmsi, _ts_key(p.ts)): p for p in positions}  # de-dupe within the batch
     mmsis = {p.mmsi for p in positions}
     existing: set[tuple[str, str]] = set()

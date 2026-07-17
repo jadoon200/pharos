@@ -11,20 +11,20 @@ from collections.abc import Callable, Iterator
 from contextlib import AbstractAsyncContextManager, contextmanager, suppress
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
-from enum import Enum
 from typing import Any, Protocol, cast
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session, sessionmaker
 
 from pharos.collector.retention import prune_positions
 from pharos.collector.storage import storage_status
 from pharos.config import Settings, get_settings
 from pharos.db.base import get_session_factory, init_sqlite_schema, make_engine
-from pharos.db.models import CollectorRun, CoverageOutage, Position, Vessel
+from pharos.db.models import CollectorRun, CoverageOutage, Position, Track, Vessel
 from pharos.ingest.aisstream import SUBSCRIPTION_MESSAGE_TYPES, parse_message
-from pharos.ingest.persist import ensure_vessels, persist_positions
+from pharos.ingest.persist import ensure_vessels, merge_vessel_identity, persist_positions
 from pharos.logging import configure_logging, get_logger
+from pharos.timeutil import utc_naive
 
 log = get_logger(__name__)
 
@@ -94,19 +94,6 @@ class PositionDownsampler:
         return False
 
 
-def _merge_vessel(target: Vessel, source: Vessel) -> None:
-    target.name = target.name or source.name
-    target.call_sign = target.call_sign or source.call_sign
-    target.ship_type = target.ship_type or source.ship_type
-    target.flag = target.flag or source.flag
-    target.length = target.length or source.length
-    target.width = target.width or source.width
-    if source.first_seen and (target.first_seen is None or source.first_seen < target.first_seen):
-        target.first_seen = source.first_seen
-    if source.last_seen and (target.last_seen is None or source.last_seen > target.last_seen):
-        target.last_seen = source.last_seen
-
-
 @dataclass
 class CollectorBatch:
     vessels: dict[str, Vessel] = field(default_factory=dict)
@@ -120,7 +107,7 @@ class CollectorBatch:
         if existing is None:
             self.vessels[vessel.mmsi] = vessel
         else:
-            _merge_vessel(existing, vessel)
+            merge_vessel_identity(existing, vessel)
 
     def add_report(self, vessel: Vessel, position: Position, *, store: bool) -> None:
         self.add_vessel(vessel)
@@ -143,15 +130,18 @@ class CollectorBatch:
         return not self.vessels and self.report_count == 0
 
 
-class ReceiveState(Enum):
-    STOP = "stop"
-    TIMEOUT = "timeout"
-
-
 class FeedUnhealthy(RuntimeError):
     def __init__(self, opened_at: datetime) -> None:
         super().__init__("valid AIS report timeout")
         self.opened_at = opened_at
+
+
+class BatchPersistenceError(RuntimeError):
+    """A batch flush failed; carries only the underlying exception's class name (secret-safe)."""
+
+    def __init__(self, error_type: str) -> None:
+        super().__init__(error_type)
+        self.error_type = error_type
 
 
 class CollectorWorker:
@@ -227,7 +217,13 @@ class CollectorWorker:
                         CoverageOutage.closed_at.is_(None),
                     )
                 ):
-                    outage.closed_at = recovered_at
+                    # An outage may have opened after the last message (feed silence before the
+                    # crash); never close it before it opened.
+                    outage.closed_at = max(outage.opened_at, recovered_at)
+
+            previous = session.scalars(
+                select(CollectorRun).order_by(CollectorRun.started_at.desc()).limit(1)
+            ).first()
 
             run = CollectorRun(
                 started_at=started_at,
@@ -238,8 +234,65 @@ class CollectorWorker:
             session.add(run)
             session.flush()
             run_id = run.id
+
+            # The window between the previous run's end and this start is receiver downtime, not
+            # vessel silence — record it so the gap detector suppresses it like any other outage.
+            # Left open here; the first valid report of this run closes it.
+            offline_since: datetime | None = None
+            if previous is not None:
+                prev_end = previous.stopped_at or previous.last_message_at or previous.started_at
+                if utc_naive(prev_end) < utc_naive(started_at):
+                    session.add(
+                        CoverageOutage(
+                            run_id=run_id,
+                            opened_at=prev_end,
+                            reason="collector offline between runs",
+                        )
+                    )
+                    offline_since = prev_end
+        self._outage_open = offline_since is not None
+        if offline_since is not None:
+            log.info(
+                "collector_offline_window_bridged",
+                run_id=run_id,
+                offline_since=offline_since.isoformat(),
+            )
         log.info("collector_run_started", run_id=run_id)
         return run_id
+
+    def _seed_dirty_backlog(self) -> int:
+        """Recover vessels whose latest positions were never processed (in-memory dirty sets do
+        not survive a stop/crash). A vessel is backlog when its newest pilot-window position is
+        newer than its newest track's end — idempotent to over-mark, so sparse tails that never
+        form a track merely reprocess cheaply once per startup."""
+        region = self.settings.collector_region
+        with self._session() as session:
+            position_query = (
+                select(Position.mmsi, func.max(Position.ts))
+                .where(Position.region == region)
+                .group_by(Position.mmsi)
+            )
+            if self.settings.pilot_start_at is not None:
+                position_query = position_query.where(Position.ts >= self.settings.pilot_start_at)
+            latest_position = dict(session.execute(position_query).tuples().all())
+            latest_track_end = dict(
+                session.execute(
+                    select(Track.mmsi, func.max(Track.end_ts))
+                    .where(Track.region == region)
+                    .group_by(Track.mmsi)
+                )
+                .tuples()
+                .all()
+            )
+        backlog = {
+            mmsi
+            for mmsi, newest in latest_position.items()
+            if mmsi not in latest_track_end or utc_naive(newest) > utc_naive(latest_track_end[mmsi])
+        }
+        self._dirty_mmsis.update(backlog)
+        if backlog:
+            log.info("collector_dirty_backlog_recovered", vessels=len(backlog))
+        return len(backlog)
 
     def _open_outage(self, reason: str, opened_at: datetime | None = None) -> None:
         if self._run_id is None:
@@ -388,78 +441,87 @@ class CollectorWorker:
                 run.status = status
         log.info("collector_run_stopped", run_id=self._run_id, status=status, reason=reason)
 
-    async def _recv_or_stop(
-        self, websocket: WebSocketClient, timeout: float
-    ) -> str | bytes | ReceiveState:
-        receive_task = asyncio.create_task(websocket.recv())
-        stop_task = asyncio.create_task(self._stop.wait())
-        done, pending = await asyncio.wait(
-            {receive_task, stop_task},
-            timeout=max(0.0, timeout),
-            return_when=asyncio.FIRST_COMPLETED,
-        )
-        for task in pending:
-            task.cancel()
-        if pending:
-            await asyncio.gather(*pending, return_exceptions=True)
-        if not done:
-            return ReceiveState.TIMEOUT
-        if stop_task in done and stop_task.result():
-            if receive_task in done:
-                with suppress(Exception):
-                    receive_task.result()
-            return ReceiveState.STOP
-        return receive_task.result()
+    def _flush_or_raise(self) -> None:
+        """Flush, wrapping any failure so it is distinguishable from a connection failure.
+
+        The batch is retained by `_flush` on failure, so nothing is lost — the reconnect loop
+        retries at the next batch deadline. Only the exception class name is carried (the
+        credential-bearing subscription payload must never reach logs or the outage ledger).
+        """
+        try:
+            self._flush()
+        except Exception as exc:
+            raise BatchPersistenceError(type(exc).__name__) from exc
 
     async def _consume(self, websocket: WebSocketClient) -> None:
         batch_deadline = self._monotonic() + self.settings.collector_batch_seconds
         last_valid_monotonic = self._monotonic()
         last_valid_wall = self._now()
-        while not self._stop.is_set():
-            current = self._monotonic()
-            health_deadline = last_valid_monotonic + self.settings.collector_health_timeout_seconds
-            timeout = min(batch_deadline, health_deadline) - current
-            if timeout <= 0.0:
-                if current >= health_deadline:
-                    raise FeedUnhealthy(
-                        last_valid_wall
-                        + timedelta(seconds=self.settings.collector_health_timeout_seconds)
-                    )
-                self._flush()
-                await self._maybe_process()
-                await self._maybe_prune()
-                batch_deadline = self._monotonic() + self.settings.collector_batch_seconds
-                continue
+        # One long-lived stop waiter, and a receive that survives deadline ticks: a batch/health
+        # deadline no longer cancels an in-flight recv(), so no message is ever mid-cancelled.
+        stop_task = asyncio.create_task(self._stop.wait())
+        receive_task: asyncio.Task[str | bytes] | None = None
+        try:
+            while not self._stop.is_set():
+                current = self._monotonic()
+                health_deadline = (
+                    last_valid_monotonic + self.settings.collector_health_timeout_seconds
+                )
+                timeout = min(batch_deadline, health_deadline) - current
+                if timeout <= 0.0:
+                    if current >= health_deadline:
+                        raise FeedUnhealthy(
+                            last_valid_wall
+                            + timedelta(seconds=self.settings.collector_health_timeout_seconds)
+                        )
+                    self._flush_or_raise()
+                    await self._maybe_process()
+                    await self._maybe_prune()
+                    batch_deadline = self._monotonic() + self.settings.collector_batch_seconds
+                    continue
 
-            received = await self._recv_or_stop(websocket, timeout)
-            if received is ReceiveState.STOP:
-                return
-            if received is ReceiveState.TIMEOUT:
-                continue
-            try:
-                payload: Any = json.loads(received)
-            except (json.JSONDecodeError, UnicodeDecodeError, TypeError):
-                log.warning("collector_message_skipped", reason="invalid JSON")
-                continue
-            if not isinstance(payload, dict):
-                continue
-            parsed = parse_message(payload)
-            if parsed is None:
-                continue
-            vessel, position = parsed
-            if position is None:
-                self._batch.add_vessel(vessel)
-                continue
+                if receive_task is None:
+                    receive_task = asyncio.create_task(websocket.recv())
+                done, _pending = await asyncio.wait(
+                    {receive_task, stop_task},
+                    timeout=max(0.0, timeout),
+                    return_when=asyncio.FIRST_COMPLETED,
+                )
+                if stop_task in done:
+                    return
+                if receive_task not in done:
+                    continue  # deadline tick; the receive stays in flight
+                received = receive_task.result()
+                receive_task = None
+                try:
+                    payload: Any = json.loads(received)
+                except (json.JSONDecodeError, UnicodeDecodeError, TypeError):
+                    log.warning("collector_message_skipped", reason="invalid JSON")
+                    continue
+                if not isinstance(payload, dict):
+                    continue
+                parsed = parse_message(payload)
+                if parsed is None:
+                    continue
+                vessel, position = parsed
+                if position is None:
+                    self._batch.add_vessel(vessel)
+                    continue
 
-            last_valid_monotonic = self._monotonic()
-            last_valid_wall = self._now()
-            self._connection_healthy = True
-            self._close_outage(last_valid_wall)
-            self._batch.add_report(
-                vessel,
-                position,
-                store=self._downsampler.accept(position),
-            )
+                last_valid_monotonic = self._monotonic()
+                last_valid_wall = self._now()
+                self._connection_healthy = True
+                self._close_outage(last_valid_wall)
+                self._batch.add_report(
+                    vessel,
+                    position,
+                    store=self._downsampler.accept(position),
+                )
+        finally:
+            tasks = [task for task in (receive_task, stop_task) if task is not None]
+            for task in tasks:
+                task.cancel()
+            await asyncio.gather(*tasks, return_exceptions=True)
 
     async def _wait_for_reconnect(self, seconds: float) -> None:
         with suppress(TimeoutError):
@@ -483,6 +545,7 @@ class CollectorWorker:
             connector = cast(ConnectFactory, websockets.connect)
 
         self._run_id = self._start_run()
+        self._seed_dirty_backlog()
         delay = self.settings.collector_backoff_initial_seconds
         status = "stopped"
         reason = self._stop_reason
@@ -498,11 +561,14 @@ class CollectorWorker:
                     if self._stop.is_set():
                         break
                     opened_at = exc.opened_at if isinstance(exc, FeedUnhealthy) else self._now()
-                    outage_reason = (
-                        "valid report timeout"
-                        if isinstance(exc, FeedUnhealthy)
-                        else f"connection failure ({type(exc).__name__})"
-                    )
+                    if isinstance(exc, FeedUnhealthy):
+                        outage_reason = "valid report timeout"
+                    elif isinstance(exc, BatchPersistenceError):
+                        # A local DB failure is not receiver downtime, but collection still
+                        # restarts through the same guarded path; label it honestly.
+                        outage_reason = f"batch persistence failure ({exc.error_type})"
+                    else:
+                        outage_reason = f"connection failure ({type(exc).__name__})"
                     self._open_outage(outage_reason, opened_at)
                     log.warning(
                         "collector_reconnecting",

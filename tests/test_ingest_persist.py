@@ -1,10 +1,10 @@
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime, timedelta, timezone
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from pharos.db.models import Position, Vessel, Zone
-from pharos.ingest.persist import ensure_vessels, persist_scenario_or_positions
+from pharos.ingest.persist import ensure_vessels, persist_positions, persist_scenario_or_positions
 from pharos.ingest.reference import seed_zones
 from pharos.ingest.synthetic import generate_scenario
 
@@ -35,6 +35,35 @@ def test_seed_zones_idempotent(session: Session) -> None:
     assert stored == n1
     z = session.get(Zone, "singapore-strait")
     assert z is not None and z.sensitive == 1 and len(z.polygon) >= 3
+
+
+def test_position_dedup_normalizes_producer_timezones(session: Session) -> None:
+    """The same instant expressed at another UTC offset must dedup, and store as UTC."""
+    ts_utc = datetime(2026, 7, 16, 1, 0, tzinfo=UTC)
+
+    def _report(ts: datetime) -> Position:
+        return Position(
+            mmsi="563123456",
+            ts=ts,
+            lat=1.25,
+            lon=103.81,
+            source="aisstream",
+            region="singapore-live",
+        )
+
+    ensure_vessels(session, [Vessel(mmsi="563123456")])
+    first = persist_positions(session, [_report(ts_utc)])
+    session.commit()
+    session.expire_all()  # SQLite reloads DateTime(timezone=True) as a naive value.
+    assert first["new"] == 1
+
+    same_instant_sgt = ts_utc.astimezone(timezone(timedelta(hours=8)))
+    second = persist_positions(session, [_report(same_instant_sgt)])
+    session.commit()
+    assert second == {"new": 0, "skipped": 1, "positions": 1}
+
+    stored = session.scalars(select(Position)).one()
+    assert stored.ts.replace(tzinfo=UTC) == ts_utc  # stored as UTC clock fields, not +08:00
 
 
 def test_vessel_upsert_handles_sqlite_timezone_roundtrip(session: Session) -> None:
