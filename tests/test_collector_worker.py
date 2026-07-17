@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from pharos.collector.worker import CollectorWorker, PositionDownsampler, WebSocketClient
 from pharos.config import Settings
 from pharos.db.base import Base, make_engine
-from pharos.db.models import CollectorRun, CoverageOutage, Position
+from pharos.db.models import CollectorRun, CoverageOutage, Position, Track, Vessel
 
 
 def _position(ts: datetime, *, heading: float = 90.0, sog: float = 8.0) -> Position:
@@ -381,6 +381,56 @@ def test_processing_failure_retains_dirty_set(tmp_path: Path) -> None:
     asyncio.run(worker._maybe_process())
 
     assert worker._dirty_mmsis == {"563123456"}
+    engine.dispose()
+
+
+def test_startup_recovers_unprocessed_dirty_backlog(tmp_path: Path) -> None:
+    """A dirty set lost at stop/crash is re-derived from unprocessed position tails."""
+    url = f"sqlite:///{tmp_path / 'dirty-backlog.db'}"
+    engine = make_engine(url)
+    Base.metadata.create_all(engine)
+    factory = sessionmaker(bind=engine, expire_on_commit=False)
+    ts = datetime(2026, 7, 16, 1, 0, tzinfo=UTC)
+
+    def _report(mmsi: str, at: datetime) -> Position:
+        return Position(
+            mmsi=mmsi, ts=at, lat=1.25, lon=103.81, source="aisstream", region="singapore-live"
+        )
+
+    with Session(engine) as session:
+        for mmsi in ("111111111", "222222222", "333333333"):
+            session.add(Vessel(mmsi=mmsi))
+            session.add(_report(mmsi, ts))
+            session.add(_report(mmsi, ts + timedelta(minutes=5)))
+        # 111…: fully processed (track covers its newest position). 222…: stale track.
+        session.add(
+            Track(
+                track_id=f"111111111:{ts.isoformat()}",
+                mmsi="111111111",
+                region="singapore-live",
+                start_ts=ts,
+                end_ts=ts + timedelta(minutes=5),
+                point_count=2,
+            )
+        )
+        session.add(
+            Track(
+                track_id=f"222222222:{ts.isoformat()}",
+                mmsi="222222222",
+                region="singapore-live",
+                start_ts=ts,
+                end_ts=ts,
+                point_count=1,
+            )
+        )
+        session.commit()
+
+    settings = Settings(_env_file=None, database_url=url, aisstream_key="test-key")
+    worker = CollectorWorker(settings, session_factory=factory)
+    recovered = worker._seed_dirty_backlog()
+
+    assert recovered == 2
+    assert worker._dirty_mmsis == {"222222222", "333333333"}
     engine.dispose()
 
 

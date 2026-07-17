@@ -74,6 +74,8 @@ def parse_message(msg: dict[str, Any]) -> ParsedMessage | None:
          "Message": {"PositionReport": {"Sog": 12.3, "Cog": 90, "TrueHeading": 91}}}
     Class A and standard Class B reports produce a position. `ShipStaticData` produces only
     advisory vessel identity enrichment; malformed static data never blocks position handling.
+    A position report with missing/invalid coordinates still salvages the vessel identity —
+    only the (unusable) position is dropped.
     """
     message_type = msg.get("MessageType")
     if message_type not in SUBSCRIPTION_MESSAGE_TYPES:
@@ -97,7 +99,7 @@ def parse_message(msg: dict[str, Any]) -> ParsedMessage | None:
         or not -90.0 <= latitude <= 90.0
         or not -180.0 <= longitude <= 180.0
     ):
-        return None
+        return vessel, None
     ts = _parse_ts(meta.get("time_utc")) or datetime.now(UTC)
     vessel.first_seen = ts
     vessel.last_seen = ts
@@ -156,14 +158,13 @@ async def capture(seconds: float | None = None) -> int:
     }
     vessels: dict[str, Vessel] = {}
     positions: list[Position] = []
-    deadline = asyncio.get_event_loop().time() + window
+    loop = asyncio.get_running_loop()
+    deadline = loop.time() + window
     async with websockets.connect(settings.aisstream_url) as ws:
         await ws.send(json.dumps(subscribe))
-        while asyncio.get_event_loop().time() < deadline:
+        while loop.time() < deadline:
             try:
-                raw = await asyncio.wait_for(
-                    ws.recv(), timeout=max(1.0, deadline - asyncio.get_event_loop().time())
-                )
+                raw = await asyncio.wait_for(ws.recv(), timeout=max(1.0, deadline - loop.time()))
             except TimeoutError:
                 break
             parsed = parse_message(json.loads(raw))

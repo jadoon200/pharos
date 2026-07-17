@@ -14,17 +14,18 @@ from datetime import UTC, datetime, timedelta
 from enum import Enum
 from typing import Any, Protocol, cast
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session, sessionmaker
 
 from pharos.collector.retention import prune_positions
 from pharos.collector.storage import storage_status
 from pharos.config import Settings, get_settings
 from pharos.db.base import get_session_factory, init_sqlite_schema, make_engine
-from pharos.db.models import CollectorRun, CoverageOutage, Position, Vessel
+from pharos.db.models import CollectorRun, CoverageOutage, Position, Track, Vessel
 from pharos.ingest.aisstream import SUBSCRIPTION_MESSAGE_TYPES, parse_message
-from pharos.ingest.persist import ensure_vessels, persist_positions
+from pharos.ingest.persist import ensure_vessels, merge_vessel_identity, persist_positions
 from pharos.logging import configure_logging, get_logger
+from pharos.timeutil import utc_naive
 
 log = get_logger(__name__)
 
@@ -40,13 +41,6 @@ ConnectFactory = Callable[[str], AbstractAsyncContextManager[WebSocketClient]]
 
 def _utcnow() -> datetime:
     return datetime.now(UTC)
-
-
-def _utc_naive(value: datetime) -> datetime:
-    """Comparable UTC timestamp across dialects (SQLite round-trips naive, Postgres aware)."""
-    if value.tzinfo is None:
-        return value
-    return value.astimezone(UTC).replace(tzinfo=None)
 
 
 def _subscription_message(settings: Settings) -> str:
@@ -101,19 +95,6 @@ class PositionDownsampler:
         return False
 
 
-def _merge_vessel(target: Vessel, source: Vessel) -> None:
-    target.name = target.name or source.name
-    target.call_sign = target.call_sign or source.call_sign
-    target.ship_type = target.ship_type or source.ship_type
-    target.flag = target.flag or source.flag
-    target.length = target.length or source.length
-    target.width = target.width or source.width
-    if source.first_seen and (target.first_seen is None or source.first_seen < target.first_seen):
-        target.first_seen = source.first_seen
-    if source.last_seen and (target.last_seen is None or source.last_seen > target.last_seen):
-        target.last_seen = source.last_seen
-
-
 @dataclass
 class CollectorBatch:
     vessels: dict[str, Vessel] = field(default_factory=dict)
@@ -127,7 +108,7 @@ class CollectorBatch:
         if existing is None:
             self.vessels[vessel.mmsi] = vessel
         else:
-            _merge_vessel(existing, vessel)
+            merge_vessel_identity(existing, vessel)
 
     def add_report(self, vessel: Vessel, position: Position, *, store: bool) -> None:
         self.add_vessel(vessel)
@@ -258,7 +239,7 @@ class CollectorWorker:
             offline_since: datetime | None = None
             if previous is not None:
                 prev_end = previous.stopped_at or previous.last_message_at or previous.started_at
-                if _utc_naive(prev_end) < _utc_naive(started_at):
+                if utc_naive(prev_end) < utc_naive(started_at):
                     session.add(
                         CoverageOutage(
                             run_id=run_id,
@@ -276,6 +257,40 @@ class CollectorWorker:
             )
         log.info("collector_run_started", run_id=run_id)
         return run_id
+
+    def _seed_dirty_backlog(self) -> int:
+        """Recover vessels whose latest positions were never processed (in-memory dirty sets do
+        not survive a stop/crash). A vessel is backlog when its newest pilot-window position is
+        newer than its newest track's end — idempotent to over-mark, so sparse tails that never
+        form a track merely reprocess cheaply once per startup."""
+        region = self.settings.collector_region
+        with self._session() as session:
+            position_query = (
+                select(Position.mmsi, func.max(Position.ts))
+                .where(Position.region == region)
+                .group_by(Position.mmsi)
+            )
+            if self.settings.pilot_start_at is not None:
+                position_query = position_query.where(Position.ts >= self.settings.pilot_start_at)
+            latest_position = dict(session.execute(position_query).tuples().all())
+            latest_track_end = dict(
+                session.execute(
+                    select(Track.mmsi, func.max(Track.end_ts))
+                    .where(Track.region == region)
+                    .group_by(Track.mmsi)
+                )
+                .tuples()
+                .all()
+            )
+        backlog = {
+            mmsi
+            for mmsi, newest in latest_position.items()
+            if mmsi not in latest_track_end or utc_naive(newest) > utc_naive(latest_track_end[mmsi])
+        }
+        self._dirty_mmsis.update(backlog)
+        if backlog:
+            log.info("collector_dirty_backlog_recovered", vessels=len(backlog))
+        return len(backlog)
 
     def _open_outage(self, reason: str, opened_at: datetime | None = None) -> None:
         if self._run_id is None:
@@ -519,6 +534,7 @@ class CollectorWorker:
             connector = cast(ConnectFactory, websockets.connect)
 
         self._run_id = self._start_run()
+        self._seed_dirty_backlog()
         delay = self.settings.collector_backoff_initial_seconds
         status = "stopped"
         reason = self._stop_reason

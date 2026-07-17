@@ -77,8 +77,22 @@ def test_parse_message_ignores_other_types() -> None:
     assert parse_message({"MessageType": "AidToNavigationReport", "MetaData": {}}) is None
 
 
-def test_parse_message_requires_position() -> None:
-    assert parse_message({"MessageType": "PositionReport", "MetaData": {"MMSI": 1}}) is None
+def test_parse_message_salvages_identity_without_valid_position() -> None:
+    parsed = parse_message(
+        {"MessageType": "PositionReport", "MetaData": {"MMSI": 1, "ShipName": "NO FIX"}}
+    )
+    assert parsed is not None
+    vessel, position = parsed
+    assert position is None  # unusable coordinates → no position…
+    assert vessel.mmsi == "1" and vessel.name == "NO FIX"  # …but identity is kept
+
+    out_of_range = parse_message(
+        {
+            **_MSG,
+            "MetaData": {**_MSG["MetaData"], "latitude": 91.0},
+        }
+    )
+    assert out_of_range is not None and out_of_range[1] is None
 
 
 def test_subscription_requests_class_a_b_and_static() -> None:
