@@ -132,8 +132,9 @@ class _BatchBoundaryWebSocket:
         if self.call == 1:
             return _message("2026-07-16 01:00:00.000000000 +0000 UTC")
         if self.call == 2:
-            await asyncio.Event().wait()  # cancelled at the first batch deadline
-        if self.call == 3:
+            # Stay in flight across the first batch deadline (the flush happens around this
+            # pending receive), then deliver the second batch's report.
+            await asyncio.sleep(0.02)
             return _message("2026-07-16 01:01:00.000000000 +0000 UTC")
         self.worker.request_stop("two batches complete")
         await asyncio.Event().wait()
@@ -294,6 +295,80 @@ def test_worker_flushes_two_sqlite_batches_without_logging_key(tmp_path: Path, c
     captured = capsys.readouterr()
     assert "never-log-this-key" not in captured.out
     assert "never-log-this-key" not in captured.err
+    engine.dispose()
+
+
+def test_batch_flush_failure_retains_data_and_labels_outage(tmp_path: Path, monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    """A mid-run DB failure is not a 'connection failure', and the batch survives to retry."""
+    url = f"sqlite:///{tmp_path / 'flush-retry.db'}"
+    engine = make_engine(url)
+    Base.metadata.create_all(engine)
+    factory = sessionmaker(bind=engine, expire_on_commit=False)
+    settings = Settings(
+        _env_file=None,
+        database_url=url,
+        aisstream_key="test-key",
+        collector_batch_seconds=0.005,
+        collector_health_timeout_seconds=5.0,
+        collector_backoff_initial_seconds=0.001,
+        collector_backoff_max_seconds=0.001,
+    )
+    worker = CollectorWorker(settings, session_factory=factory, jitter=lambda: 0.0)
+
+    from pharos.ingest import persist as persist_module
+
+    real_ensure_vessels = persist_module.ensure_vessels
+    failures = {"remaining": 1}
+
+    def flaky_ensure_vessels(session: Session, vessels: list[Vessel]) -> int:
+        if failures["remaining"]:
+            failures["remaining"] -= 1
+            raise TypeError("simulated transient DB failure")
+        return real_ensure_vessels(session, vessels)
+
+    monkeypatch.setattr("pharos.collector.worker.ensure_vessels", flaky_ensure_vessels)
+
+    class _FlushRetryWebSocket:
+        def __init__(self, worker: CollectorWorker) -> None:
+            self.worker = worker
+            self.call = 0
+
+        async def send(self, _message: str) -> None:
+            return None
+
+        async def recv(self) -> str:
+            self.call += 1
+            if self.call == 1:
+                return _message("2026-07-16 01:00:00.000000000 +0000 UTC")
+            # Sit silent so the batch deadline fires (flush fails once → reconnect → retry).
+            await asyncio.Event().wait()
+            return ""  # pragma: no cover - task is cancelled
+
+    class _StopAfterReconnectWebSocket:
+        def __init__(self, worker: CollectorWorker) -> None:
+            self.worker = worker
+
+        async def send(self, _message: str) -> None:
+            return None
+
+        async def recv(self) -> str:
+            self.worker.request_stop("retry verified")
+            await asyncio.Event().wait()
+            return ""  # pragma: no cover - task is cancelled
+
+    worker._connector = _SequenceConnector(
+        [_FlushRetryWebSocket(worker), _StopAfterReconnectWebSocket(worker)]
+    )
+
+    run_id = asyncio.run(worker.run())
+
+    with Session(engine) as session:
+        run = session.get(CollectorRun, run_id)
+        assert run is not None and run.status == "stopped"
+        # The failed batch was retained and persisted by the final flush.
+        assert session.scalar(select(func.count()).select_from(Position)) == 1
+        outage = session.scalars(select(CoverageOutage)).one()
+        assert outage.reason == "batch persistence failure (TypeError)"
     engine.dispose()
 
 

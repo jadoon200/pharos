@@ -128,6 +128,13 @@ def _region_positions(
     region: str | None,
     settings: Settings,
 ) -> list[Position]:
+    """Every pilot-window position in the region — deliberately NOT time-scoped further.
+
+    The incremental cycle deletes every deterministic incident touching a dirty vessel and
+    regenerates them, so detectors must see the vessel's full retained history, and rendezvous
+    partner-degree suppression is defined over the whole window. Retention (`make prune`)
+    is what bounds this load; narrowing it here would silently drop regenerated incidents.
+    """
     query = select(Position)
     if region is not None:
         query = query.where(Position.region == region)

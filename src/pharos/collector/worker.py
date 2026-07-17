@@ -11,7 +11,6 @@ from collections.abc import Callable, Iterator
 from contextlib import AbstractAsyncContextManager, contextmanager, suppress
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
-from enum import Enum
 from typing import Any, Protocol, cast
 
 from sqlalchemy import func, select
@@ -131,15 +130,18 @@ class CollectorBatch:
         return not self.vessels and self.report_count == 0
 
 
-class ReceiveState(Enum):
-    STOP = "stop"
-    TIMEOUT = "timeout"
-
-
 class FeedUnhealthy(RuntimeError):
     def __init__(self, opened_at: datetime) -> None:
         super().__init__("valid AIS report timeout")
         self.opened_at = opened_at
+
+
+class BatchPersistenceError(RuntimeError):
+    """A batch flush failed; carries only the underlying exception's class name (secret-safe)."""
+
+    def __init__(self, error_type: str) -> None:
+        super().__init__(error_type)
+        self.error_type = error_type
 
 
 class CollectorWorker:
@@ -439,78 +441,87 @@ class CollectorWorker:
                 run.status = status
         log.info("collector_run_stopped", run_id=self._run_id, status=status, reason=reason)
 
-    async def _recv_or_stop(
-        self, websocket: WebSocketClient, timeout: float
-    ) -> str | bytes | ReceiveState:
-        receive_task = asyncio.create_task(websocket.recv())
-        stop_task = asyncio.create_task(self._stop.wait())
-        done, pending = await asyncio.wait(
-            {receive_task, stop_task},
-            timeout=max(0.0, timeout),
-            return_when=asyncio.FIRST_COMPLETED,
-        )
-        for task in pending:
-            task.cancel()
-        if pending:
-            await asyncio.gather(*pending, return_exceptions=True)
-        if not done:
-            return ReceiveState.TIMEOUT
-        if stop_task in done and stop_task.result():
-            if receive_task in done:
-                with suppress(Exception):
-                    receive_task.result()
-            return ReceiveState.STOP
-        return receive_task.result()
+    def _flush_or_raise(self) -> None:
+        """Flush, wrapping any failure so it is distinguishable from a connection failure.
+
+        The batch is retained by `_flush` on failure, so nothing is lost — the reconnect loop
+        retries at the next batch deadline. Only the exception class name is carried (the
+        credential-bearing subscription payload must never reach logs or the outage ledger).
+        """
+        try:
+            self._flush()
+        except Exception as exc:
+            raise BatchPersistenceError(type(exc).__name__) from exc
 
     async def _consume(self, websocket: WebSocketClient) -> None:
         batch_deadline = self._monotonic() + self.settings.collector_batch_seconds
         last_valid_monotonic = self._monotonic()
         last_valid_wall = self._now()
-        while not self._stop.is_set():
-            current = self._monotonic()
-            health_deadline = last_valid_monotonic + self.settings.collector_health_timeout_seconds
-            timeout = min(batch_deadline, health_deadline) - current
-            if timeout <= 0.0:
-                if current >= health_deadline:
-                    raise FeedUnhealthy(
-                        last_valid_wall
-                        + timedelta(seconds=self.settings.collector_health_timeout_seconds)
-                    )
-                self._flush()
-                await self._maybe_process()
-                await self._maybe_prune()
-                batch_deadline = self._monotonic() + self.settings.collector_batch_seconds
-                continue
+        # One long-lived stop waiter, and a receive that survives deadline ticks: a batch/health
+        # deadline no longer cancels an in-flight recv(), so no message is ever mid-cancelled.
+        stop_task = asyncio.create_task(self._stop.wait())
+        receive_task: asyncio.Task[str | bytes] | None = None
+        try:
+            while not self._stop.is_set():
+                current = self._monotonic()
+                health_deadline = (
+                    last_valid_monotonic + self.settings.collector_health_timeout_seconds
+                )
+                timeout = min(batch_deadline, health_deadline) - current
+                if timeout <= 0.0:
+                    if current >= health_deadline:
+                        raise FeedUnhealthy(
+                            last_valid_wall
+                            + timedelta(seconds=self.settings.collector_health_timeout_seconds)
+                        )
+                    self._flush_or_raise()
+                    await self._maybe_process()
+                    await self._maybe_prune()
+                    batch_deadline = self._monotonic() + self.settings.collector_batch_seconds
+                    continue
 
-            received = await self._recv_or_stop(websocket, timeout)
-            if received is ReceiveState.STOP:
-                return
-            if received is ReceiveState.TIMEOUT:
-                continue
-            try:
-                payload: Any = json.loads(received)
-            except (json.JSONDecodeError, UnicodeDecodeError, TypeError):
-                log.warning("collector_message_skipped", reason="invalid JSON")
-                continue
-            if not isinstance(payload, dict):
-                continue
-            parsed = parse_message(payload)
-            if parsed is None:
-                continue
-            vessel, position = parsed
-            if position is None:
-                self._batch.add_vessel(vessel)
-                continue
+                if receive_task is None:
+                    receive_task = asyncio.create_task(websocket.recv())
+                done, _pending = await asyncio.wait(
+                    {receive_task, stop_task},
+                    timeout=max(0.0, timeout),
+                    return_when=asyncio.FIRST_COMPLETED,
+                )
+                if stop_task in done:
+                    return
+                if receive_task not in done:
+                    continue  # deadline tick; the receive stays in flight
+                received = receive_task.result()
+                receive_task = None
+                try:
+                    payload: Any = json.loads(received)
+                except (json.JSONDecodeError, UnicodeDecodeError, TypeError):
+                    log.warning("collector_message_skipped", reason="invalid JSON")
+                    continue
+                if not isinstance(payload, dict):
+                    continue
+                parsed = parse_message(payload)
+                if parsed is None:
+                    continue
+                vessel, position = parsed
+                if position is None:
+                    self._batch.add_vessel(vessel)
+                    continue
 
-            last_valid_monotonic = self._monotonic()
-            last_valid_wall = self._now()
-            self._connection_healthy = True
-            self._close_outage(last_valid_wall)
-            self._batch.add_report(
-                vessel,
-                position,
-                store=self._downsampler.accept(position),
-            )
+                last_valid_monotonic = self._monotonic()
+                last_valid_wall = self._now()
+                self._connection_healthy = True
+                self._close_outage(last_valid_wall)
+                self._batch.add_report(
+                    vessel,
+                    position,
+                    store=self._downsampler.accept(position),
+                )
+        finally:
+            tasks = [task for task in (receive_task, stop_task) if task is not None]
+            for task in tasks:
+                task.cancel()
+            await asyncio.gather(*tasks, return_exceptions=True)
 
     async def _wait_for_reconnect(self, seconds: float) -> None:
         with suppress(TimeoutError):
@@ -550,11 +561,14 @@ class CollectorWorker:
                     if self._stop.is_set():
                         break
                     opened_at = exc.opened_at if isinstance(exc, FeedUnhealthy) else self._now()
-                    outage_reason = (
-                        "valid report timeout"
-                        if isinstance(exc, FeedUnhealthy)
-                        else f"connection failure ({type(exc).__name__})"
-                    )
+                    if isinstance(exc, FeedUnhealthy):
+                        outage_reason = "valid report timeout"
+                    elif isinstance(exc, BatchPersistenceError):
+                        # A local DB failure is not receiver downtime, but collection still
+                        # restarts through the same guarded path; label it honestly.
+                        outage_reason = f"batch persistence failure ({exc.error_type})"
+                    else:
+                        outage_reason = f"connection failure ({type(exc).__name__})"
                     self._open_outage(outage_reason, opened_at)
                     log.warning(
                         "collector_reconnecting",
