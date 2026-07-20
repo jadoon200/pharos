@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any
 
 from sqlalchemy import (
@@ -23,7 +23,9 @@ JsonType = JSON(none_as_null=True).with_variant(postgresql.JSONB(none_as_null=Tr
 
 
 def _now() -> datetime:
-    return datetime.now().astimezone()
+    # Aware UTC, not local: SQLite drops tzinfo on round-trip, so an aware local-time default
+    # would persist the local clock fields and skew against every other UTC-stored timestamp.
+    return datetime.now(UTC)
 
 
 class Vessel(Base):

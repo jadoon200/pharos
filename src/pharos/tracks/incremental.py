@@ -294,7 +294,14 @@ def process_dirty_vessels(
     region: str | None = None,
     settings: Settings | None = None,
 ) -> dict[str, object]:
-    """Run one non-destructive incremental track/detector/frozen-model cycle."""
+    """Run one non-destructive incremental track/detector/frozen-model cycle.
+
+    Each phase commits its own short transaction. The cycle now runs concurrently with the
+    collector's batch flushes, and SQLite holds its single write lock from a transaction's
+    first write until commit — one cycle-long transaction would block every flush for the
+    whole (minutes-long) detector compute. Phases are idempotent and the dirty set is
+    restored on failure, so a partial cycle is safely re-run.
+    """
     active_settings = settings or get_settings()
     track_stats = rebuild_dirty_tracks(
         session,
@@ -302,12 +309,14 @@ def process_dirty_vessels(
         region=region,
         settings=active_settings,
     )
+    session.commit()
     detector_stats = rebuild_dirty_incidents(
         session,
         dirty_mmsis,
         region=region,
         settings=active_settings,
     )
+    session.commit()
     anomaly_stats = score_dirty_tracks(
         session,
         dirty_mmsis,

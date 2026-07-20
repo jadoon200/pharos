@@ -174,6 +174,8 @@ class CollectorWorker:
             self._monotonic() + self.settings.retention_prune_interval_hours * 3600.0
         )
         self._seen_mmsis: set[str] = set()
+        self._process_task: asyncio.Task[None] | None = None
+        self._last_valid_wall: datetime | None = None
         self._connection_healthy = False
         self._storage_level = "normal"
         self._downsampler = PositionDownsampler(
@@ -386,26 +388,45 @@ class CollectorWorker:
                 settings=self.settings,
             )
 
-    async def _maybe_process(self) -> None:
-        if self._monotonic() < self._next_process_at:
+    def _maybe_start_processing(self) -> None:
+        """Start one background processing task when due — never blocking the receive loop.
+
+        Processing a growing pilot window can take minutes; awaiting it inline starves the
+        websocket until AISStream drops the slow consumer, turning every processing cycle into
+        a forced disconnect with an unledgered coverage hole. The dirty snapshot is *claimed*
+        (removed) up front: reports flushed mid-cycle re-mark their vessels dirty, so nothing
+        is silently treated as processed by a cycle that never saw it.
+        """
+        if self._monotonic() < self._next_process_at or self._process_task is not None:
             return
-        self._next_process_at = self._monotonic() + self.settings.process_interval_minutes * 60.0
         if not self._dirty_mmsis:
+            self._next_process_at = (
+                self._monotonic() + self.settings.process_interval_minutes * 60.0
+            )
             return
         dirty = set(self._dirty_mmsis)
+        self._dirty_mmsis.difference_update(dirty)
+        self._process_task = asyncio.create_task(self._run_processing(dirty))
+
+    async def _run_processing(self, dirty: set[str]) -> None:
         try:
             stats = await asyncio.to_thread(self._process_dirty, dirty)
         except Exception as exc:
-            # Collection remains primary: retain the dirty set and retry next cycle without
-            # converting a processing/model failure into a feed outage.
+            # Collection remains primary: restore the claimed dirty set and retry next cycle
+            # without converting a processing/model failure into a feed outage.
+            self._dirty_mmsis.update(dirty)
             log.error(
                 "collector_processing_failed",
                 error_type=type(exc).__name__,
                 dirty_vessels=len(dirty),
             )
-            return
-        self._dirty_mmsis.difference_update(dirty)
-        log.info("collector_processing_complete", dirty_vessels=len(dirty), stats=stats)
+        else:
+            log.info("collector_processing_complete", dirty_vessels=len(dirty), stats=stats)
+        finally:
+            self._process_task = None
+            self._next_process_at = (
+                self._monotonic() + self.settings.process_interval_minutes * 60.0
+            )
 
     def _prune(self) -> dict[str, int | float | str]:
         engine = make_engine(self.settings.database_url)
@@ -416,6 +437,10 @@ class CollectorWorker:
 
     async def _maybe_prune(self) -> None:
         if self._monotonic() < self._next_prune_at:
+            return
+        if self._process_task is not None:
+            # The processing cycle's read snapshot would leave the WAL checkpoint busy anyway;
+            # `_next_prune_at` is unchanged, so the prune retries at the next batch deadline.
             return
         try:
             await asyncio.to_thread(self._prune)
@@ -475,9 +500,9 @@ class CollectorWorker:
                             + timedelta(seconds=self.settings.collector_health_timeout_seconds)
                         )
                     self._flush_or_raise()
-                    await self._maybe_process()
-                    await self._maybe_prune()
                     batch_deadline = self._monotonic() + self.settings.collector_batch_seconds
+                    self._maybe_start_processing()
+                    await self._maybe_prune()
                     continue
 
                 if receive_task is None:
@@ -510,6 +535,7 @@ class CollectorWorker:
 
                 last_valid_monotonic = self._monotonic()
                 last_valid_wall = self._now()
+                self._last_valid_wall = last_valid_wall
                 self._connection_healthy = True
                 self._close_outage(last_valid_wall)
                 self._batch.add_report(
@@ -560,7 +586,12 @@ class CollectorWorker:
                 except Exception as exc:
                     if self._stop.is_set():
                         break
-                    opened_at = exc.opened_at if isinstance(exc, FeedUnhealthy) else self._now()
+                    if isinstance(exc, FeedUnhealthy):
+                        opened_at = exc.opened_at
+                    else:
+                        # Coverage is unknown from the last valid report onward, not merely from
+                        # when the failure surfaced — stamp the outage honestly.
+                        opened_at = self._last_valid_wall or self._now()
                     if isinstance(exc, FeedUnhealthy):
                         outage_reason = "valid report timeout"
                     elif isinstance(exc, BatchPersistenceError):
@@ -570,16 +601,16 @@ class CollectorWorker:
                     else:
                         outage_reason = f"connection failure ({type(exc).__name__})"
                     self._open_outage(outage_reason, opened_at)
-                    log.warning(
-                        "collector_reconnecting",
-                        reason=outage_reason,
-                        backoff_seconds=round(delay, 2),
-                    )
                     if self._connection_healthy:
                         delay = self.settings.collector_backoff_initial_seconds
                     wait_seconds = min(
                         self.settings.collector_backoff_max_seconds,
                         delay + delay * 0.1 * self._jitter(),
+                    )
+                    log.warning(
+                        "collector_reconnecting",
+                        reason=outage_reason,
+                        backoff_seconds=round(wait_seconds, 2),
                     )
                     await self._wait_for_reconnect(wait_seconds)
                     delay = min(self.settings.collector_backoff_max_seconds, delay * 2.0)
@@ -589,6 +620,12 @@ class CollectorWorker:
             reason = f"worker failure ({type(exc).__name__})"
             raise
         finally:
+            if self._process_task is not None:
+                # Same wait as the old inline behaviour, made explicit: the incremental cycle
+                # commits per phase and startup backlog recovery covers a hard kill mid-cycle.
+                log.info("collector_shutdown_waiting_for_processing")
+                with suppress(Exception):
+                    await self._process_task
             flush_error_type: str | None = None
             try:
                 self._flush()

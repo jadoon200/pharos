@@ -408,7 +408,7 @@ def test_final_flush_failure_is_nonzero_and_redacts_key(
     engine.dispose()
 
 
-def test_processing_cycle_clears_dirty_set_only_after_success(tmp_path: Path) -> None:
+def test_processing_runs_in_background_and_claims_dirty_set(tmp_path: Path) -> None:
     url = f"sqlite:///{tmp_path / 'processing.db'}"
     engine = make_engine(url)
     Base.metadata.create_all(engine)
@@ -428,14 +428,26 @@ def test_processing_cycle_clears_dirty_set_only_after_success(tmp_path: Path) ->
         return {"ok": True}
 
     worker._process_dirty = succeed
-    asyncio.run(worker._maybe_process())
+
+    async def scenario() -> None:
+        worker._maybe_start_processing()
+        task = worker._process_task
+        assert task is not None
+        # The snapshot is claimed up front, so a mid-cycle flush re-marks its vessels dirty
+        # rather than being wiped by the cycle's completion.
+        assert worker._dirty_mmsis == set()
+        worker._dirty_mmsis.add("563999999")  # simulates a flush landing mid-cycle
+        await task
+
+    asyncio.run(scenario())
 
     assert processed == [{"563123456"}]
-    assert worker._dirty_mmsis == set()
+    assert worker._dirty_mmsis == {"563999999"}
+    assert worker._process_task is None
     engine.dispose()
 
 
-def test_processing_failure_retains_dirty_set(tmp_path: Path) -> None:
+def test_processing_failure_restores_dirty_set(tmp_path: Path) -> None:
     url = f"sqlite:///{tmp_path / 'processing-failure.db'}"
     engine = make_engine(url)
     Base.metadata.create_all(engine)
@@ -453,9 +465,133 @@ def test_processing_failure_retains_dirty_set(tmp_path: Path) -> None:
         raise RuntimeError("simulated processing failure")
 
     worker._process_dirty = fail
-    asyncio.run(worker._maybe_process())
+
+    async def scenario() -> None:
+        worker._maybe_start_processing()
+        task = worker._process_task
+        assert task is not None
+        await task
+
+    asyncio.run(scenario())
 
     assert worker._dirty_mmsis == {"563123456"}
+    assert worker._process_task is None
+    engine.dispose()
+
+
+def test_slow_processing_does_not_starve_the_feed(tmp_path: Path) -> None:
+    """A minutes-long incremental cycle must not stop the receive loop (the pre-fix behaviour
+    starved the websocket until AISStream dropped the connection on every cycle)."""
+    import threading
+
+    url = f"sqlite:///{tmp_path / 'slow-processing.db'}"
+    engine = make_engine(url)
+    Base.metadata.create_all(engine)
+    factory = sessionmaker(bind=engine, expire_on_commit=False)
+    settings = Settings(
+        _env_file=None,
+        database_url=url,
+        aisstream_key="test-key",
+        collector_batch_seconds=0.01,
+        collector_health_timeout_seconds=5.0,
+        # Long interval + a forced-due first deadline: exactly one cycle runs, deterministically.
+        process_interval_minutes=60.0,
+    )
+    worker = CollectorWorker(settings, session_factory=factory)
+    worker._next_process_at = worker._monotonic()
+    release = threading.Event()
+    processed: list[set[str]] = []
+
+    def slow_process(dirty: set[str]) -> dict[str, object]:
+        processed.append(dirty)
+        assert release.wait(timeout=5.0)
+        return {"ok": True}
+
+    worker._process_dirty = slow_process
+
+    class _DuringProcessingWebSocket:
+        def __init__(self, worker: CollectorWorker) -> None:
+            self.worker = worker
+            self.call = 0
+
+        async def send(self, _message: str) -> None:
+            return None
+
+        async def recv(self) -> str:
+            self.call += 1
+            if self.call == 1:
+                return _message("2026-07-16 01:00:00.000000000 +0000 UTC")
+            if self.call == 2:
+                # Deliver a second report only once processing is definitely in flight.
+                while self.worker._process_task is None:
+                    await asyncio.sleep(0.001)
+                return _message("2026-07-16 01:01:00.000000000 +0000 UTC")
+            # Let the cycle finish, then stop; the connection was never dropped.
+            task = self.worker._process_task
+            release.set()
+            if task is not None:
+                await task
+            self.worker.request_stop("processed while receiving")
+            await asyncio.Event().wait()
+            return ""  # pragma: no cover - task is cancelled by the stop event
+
+    connector = _SequenceConnector([_DuringProcessingWebSocket(worker)])
+    worker._connector = connector
+
+    run_id = asyncio.run(worker.run())
+
+    with Session(engine) as session:
+        run = session.get(CollectorRun, run_id)
+        assert run is not None and run.status == "stopped"
+        # The second report was received and flushed while the slow cycle was running.
+        assert run.report_count == 2
+        assert session.scalar(select(func.count()).select_from(Position)) == 2
+        assert session.scalar(select(func.count()).select_from(CoverageOutage)) == 0
+    assert processed == [{"563123456"}]
+    assert connector.calls == 1
+    engine.dispose()
+
+
+def test_connection_failure_outage_opens_at_last_valid_report(tmp_path: Path) -> None:
+    """Coverage is unknown from the last valid report onward — not merely from the moment the
+    failure surfaced, which can be minutes later."""
+    url = f"sqlite:///{tmp_path / 'outage-honesty.db'}"
+    engine = make_engine(url)
+    Base.metadata.create_all(engine)
+    factory = sessionmaker(bind=engine, expire_on_commit=False)
+    settings = Settings(
+        _env_file=None,
+        database_url=url,
+        aisstream_key="test-key",
+        collector_backoff_initial_seconds=0.001,
+        collector_backoff_max_seconds=0.001,
+    )
+    worker = CollectorWorker(settings, session_factory=factory, jitter=lambda: 0.0)
+
+    class _FailAfterReportWebSocket:
+        def __init__(self) -> None:
+            self.call = 0
+
+        async def send(self, _message: str) -> None:
+            return None
+
+        async def recv(self) -> str:
+            self.call += 1
+            if self.call == 1:
+                return _message("2026-07-16 01:00:00.000000000 +0000 UTC")
+            await asyncio.sleep(0.02)  # a distinctly later failure instant
+            raise OSError("simulated drop")
+
+    stopper = _FakeWebSocket([], worker)
+    worker._connector = _SequenceConnector([_FailAfterReportWebSocket(), stopper])
+
+    asyncio.run(worker.run())
+
+    assert worker._last_valid_wall is not None
+    with Session(engine) as session:
+        outage = session.scalars(select(CoverageOutage)).one()
+        assert outage.reason == "connection failure (OSError)"
+        assert outage.opened_at.replace(tzinfo=UTC) == worker._last_valid_wall
     engine.dispose()
 
 
