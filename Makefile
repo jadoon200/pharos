@@ -1,4 +1,4 @@
-.PHONY: env install lock lint typecheck test check up down migrate ingest live collector collector-drill process-live prune tracks detect train-anomaly prepare-pilot-model benchmark-anomaly ensemble eval api ui
+.PHONY: env install lock lint typecheck test check up down migrate ingest live collector collector-drill process-live prune tracks detect train-anomaly prepare-pilot-model benchmark-anomaly ensemble eval labels-import labels-match review review-rereview eval-pilot pilot-health publish-snapshot api ui
 
 # One-time: create the conda env, then `conda activate pharos`
 env:
@@ -98,6 +98,27 @@ eval:
 #   make eval-real FILE=data/ais/la_2020_01_01.csv REGION=us-la
 eval-real:
 	python -m scripts.eval_real "$(FILE)" "$(REGION)"
+
+labels-import:
+	python -m pharos.labels.external
+
+labels-match:
+	python -m pharos.labels.match
+
+review:
+	python -m pharos.labels.review
+
+review-rereview:
+	python -m pharos.labels.review --rereview
+
+eval-pilot:
+	python -m pharos.eval.pilot
+
+pilot-health:
+	python -m scripts.pilot_health
+
+publish-snapshot:
+	bash scripts/publish_snapshot.sh
 
 # Serve the read-only FastAPI + GeoJSON endpoints on :8000
 api:

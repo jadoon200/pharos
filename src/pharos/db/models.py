@@ -3,6 +3,7 @@ from typing import Any
 
 from sqlalchemy import (
     JSON,
+    Boolean,
     DateTime,
     Float,
     ForeignKey,
@@ -173,4 +174,78 @@ class Incident(Base):
     techniques: Mapped[list[str] | None] = mapped_column(JsonType)
     evidence: Mapped[dict[str, Any] | None] = mapped_column(JsonType)
     region: Mapped[str | None] = mapped_column(String(64), index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class ExternalEvent(Base):
+    """A minimal, attributed event imported from an independent external source."""
+
+    __tablename__ = "external_events"
+
+    event_id: Mapped[str] = mapped_column(String(255), primary_key=True)
+    source: Mapped[str] = mapped_column(String(64), index=True)
+    source_ref: Mapped[str] = mapped_column(String(255))
+    source_url: Mapped[str] = mapped_column(Text())
+    event_type: Mapped[str] = mapped_column(String(64))
+    mmsi: Mapped[str | None] = mapped_column(String(16), index=True)
+    imo: Mapped[str | None] = mapped_column(String(16))
+    vessel_name: Mapped[str | None] = mapped_column(String(255))
+    ts_start: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    ts_end: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    lat: Mapped[float | None] = mapped_column(Float())
+    lon: Mapped[float | None] = mapped_column(Float())
+    source_confidence: Mapped[str] = mapped_column(String(32))
+    retrieved_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    attribution: Mapped[str] = mapped_column(Text())
+    raw: Mapped[dict[str, Any] | None] = mapped_column(JsonType)
+
+
+class EventTrackMatch(Base):
+    """A recorded match decision; unmatched events receive an explicit NULL-track row."""
+
+    __tablename__ = "event_track_matches"
+
+    match_id: Mapped[str] = mapped_column(String(384), primary_key=True)
+    event_id: Mapped[str] = mapped_column(ForeignKey("external_events.event_id"), index=True)
+    track_id: Mapped[str | None] = mapped_column(ForeignKey("tracks.track_id"))
+    identifier_match: Mapped[bool] = mapped_column(Boolean())
+    temporal_distance_s: Mapped[float | None] = mapped_column(Float())
+    spatial_distance_km: Mapped[float | None] = mapped_column(Float())
+    rule_version: Mapped[str] = mapped_column(String(32))
+    status: Mapped[str] = mapped_column(String(32))
+    in_observed_coverage: Mapped[bool] = mapped_column(Boolean())
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class TrackReview(Base):
+    """One blinded human-review queue item and its optional submitted label."""
+
+    __tablename__ = "track_reviews"
+
+    review_id: Mapped[str] = mapped_column(String(96), primary_key=True)
+    track_id: Mapped[str] = mapped_column(ForeignKey("tracks.track_id"), index=True)
+    queue_order: Mapped[int] = mapped_column(Integer())
+    stratum: Mapped[str] = mapped_column(String(64))
+    label: Mapped[str | None] = mapped_column(String(64))
+    subtype: Mapped[str | None] = mapped_column(String(128))
+    confidence: Mapped[str | None] = mapped_column(String(16))
+    reason: Mapped[str | None] = mapped_column(Text())
+    reviewer_id: Mapped[str] = mapped_column(String(64))
+    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    adjudication: Mapped[str | None] = mapped_column(String(96))
+
+
+class EvaluationRun(Base):
+    """A reproducible pilot evaluation tied to the frozen artifact and input versions."""
+
+    __tablename__ = "evaluation_runs"
+
+    run_id: Mapped[str] = mapped_column(String(96), primary_key=True)
+    artifact_sha256: Mapped[str] = mapped_column(String(64))
+    data_snapshot: Mapped[dict[str, Any]] = mapped_column(JsonType)
+    label_versions: Mapped[dict[str, Any]] = mapped_column(JsonType)
+    sampling_design: Mapped[dict[str, Any]] = mapped_column(JsonType)
+    metrics: Mapped[dict[str, Any]] = mapped_column(JsonType)
+    exclusions: Mapped[dict[str, Any]] = mapped_column(JsonType)
+    negatives: Mapped[dict[str, Any]] = mapped_column(JsonType)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)

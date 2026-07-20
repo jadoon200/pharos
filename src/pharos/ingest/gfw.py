@@ -13,7 +13,7 @@ Opt-in and non-fatal: with no `PHAROS_GFW_TOKEN` the client returns [], so the o
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, date, datetime
 from typing import Any
 
 import httpx
@@ -29,6 +29,9 @@ _TYPE_MAP = {
     "encounter": "rendezvous",
     "loitering": "loiter",
     "gap": "gap",
+    "port_visit": "port-visit",
+    "port-visit": "port-visit",
+    "portvisit": "port-visit",
 }
 
 # PHAROS detector name -> current GFW v3 dataset alias. Keep these explicit: the API's encounter
@@ -37,6 +40,7 @@ _DATASET_MAP = {
     "rendezvous": "public-global-encounters-events:latest",
     "loiter": "public-global-loitering-events:latest",
     "gap": "public-global-gaps-events:latest",
+    "port-visit": "public-global-port-visits-events:latest",
 }
 
 
@@ -49,6 +53,7 @@ class GfwEvent:
     lat: float | None
     lon: float | None
     raw: dict[str, Any]
+    event_id: str | None = None
 
 
 def _parse_ts(value: str | None) -> datetime | None:
@@ -58,6 +63,15 @@ def _parse_ts(value: str | None) -> datetime | None:
         return datetime.fromisoformat(value.replace("Z", "+00:00"))
     except ValueError:
         return None
+
+
+def _event_in_window(event: GfwEvent, start_date: str, end_date: str) -> bool:
+    if event.start is None:
+        return False
+    start = date.fromisoformat(start_date)
+    end = date.fromisoformat(end_date)
+    event_start = event.start.astimezone(UTC).date()
+    return start <= event_start < end
 
 
 def parse_events(payload: dict[str, Any]) -> list[GfwEvent]:
@@ -79,19 +93,35 @@ def parse_events(payload: dict[str, Any]) -> list[GfwEvent]:
                 lat=pos.get("lat"),
                 lon=pos.get("lon"),
                 raw=entry,
+                event_id=str(entry.get("id") or "") or None,
             )
         )
     return out
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, max=10), reraise=True)
+def _post_page(
+    client: httpx.Client,
+    url: str,
+    *,
+    params: dict[str, str | int],
+    body: dict[str, Any],
+    headers: dict[str, str],
+) -> dict[str, Any]:
+    """Retry one page so a late-page timeout does not restart an entire large query."""
+    response = client.post(url, params=params, json=body, headers=headers)
+    response.raise_for_status()
+    payload: dict[str, Any] = response.json()
+    return payload
+
+
 def fetch_events(
     event_type: str,
     start_date: str,
     end_date: str,
     bbox: tuple[float, float, float, float] | None = None,
 ) -> list[GfwEvent]:
-    """Fetch GFW events of `event_type` (rendezvous|loiter|gap) in a date range / bbox.
+    """Fetch GFW events of `event_type` in a date range / bbox.
 
     Returns [] for the missing-token case. Callers at an optional integration boundary should
     catch network/API errors so the offline evaluation remains usable.
@@ -126,17 +156,30 @@ def fetch_events(
     events: list[GfwEvent] = []
     offset = 0
     limit = 1_000
-    with httpx.Client(timeout=settings.http_timeout_seconds) as client:
+    timeout = httpx.Timeout(
+        settings.http_timeout_seconds,
+        read=max(90.0, settings.http_timeout_seconds),
+    )
+    with httpx.Client(timeout=timeout) as client:
         while True:
-            resp = client.post(
+            payload = _post_page(
+                client,
                 f"{settings.gfw_api_url}/events",
-                params={"offset": offset, "limit": limit},
-                json=body,
+                params={
+                    "offset": offset,
+                    "limit": limit,
+                    "start-date": start_date,
+                    "end-date": end_date,
+                    "sort": "-start",
+                },
+                body=body,
                 headers=headers,
             )
-            resp.raise_for_status()
-            payload = resp.json()
-            page = parse_events(payload)
+            page = [
+                event
+                for event in parse_events(payload)
+                if _event_in_window(event, start_date, end_date)
+            ]
             events.extend(page)
 
             next_offset = payload.get("nextOffset")

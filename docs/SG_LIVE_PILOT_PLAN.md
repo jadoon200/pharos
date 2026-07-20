@@ -86,7 +86,7 @@ criteria rather than elapsed time alone.
 - Unlabelled Singapore AIS cannot by itself establish real anomaly precision or recall. Synthetic
   injections remain stress tests, not real-world ground truth.
 - Repository commits remain under `@jaydenOoOo` only, with no co-author or AI-attribution trailers;
-  `CLAUDE.md` and `.claude/` stay untracked.
+  local working notes and editor/tool configuration stay untracked.
 - Every phase lands gate-green: ruff + ruff-format + mypy strict + pytest (run via the argus env
   python with `PYTHONPATH=src`), plus frontend `tsc -b` + eslint when touched.
 

@@ -15,5 +15,3 @@ htmlcov
 .env
 docs
 tests
-CLAUDE.md
-.claude

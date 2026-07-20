@@ -20,6 +20,7 @@ dependencies = [
     "torch>=2.2",
     "fastapi>=0.115",
     "uvicorn>=0.30",
+    "PyYAML>=6.0",
 ]
 
 [project.optional-dependencies]
@@ -69,6 +70,7 @@ module = [
     "prefect.*",
     "websockets.*",
     "torch.*",
+    "yaml.*",
 ]
 ignore_missing_imports = true
 

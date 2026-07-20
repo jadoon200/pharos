@@ -108,3 +108,47 @@ def point_in_polygon(lat: float, lon: float, polygon: Sequence[tuple[float, floa
                 inside = not inside
         j = i
     return inside
+
+
+def simplify_polyline(
+    lat: Sequence[float], lon: Sequence[float], tolerance_km: float
+) -> tuple[list[float], list[float]]:
+    """Simplify a lat/lon line with deterministic Douglas-Peucker geometry.
+
+    The local equirectangular projection is accurate at the short maritime-track scale and keeps
+    this implementation pure numpy. Endpoints are always retained and input order is preserved.
+    """
+    if len(lat) != len(lon):
+        raise ValueError("latitude and longitude lengths differ")
+    if tolerance_km < 0:
+        raise ValueError("tolerance_km must be non-negative")
+    if len(lat) <= 2 or tolerance_km == 0:
+        return list(lat), list(lon)
+
+    lats = np.asarray(lat, dtype=np.float64)
+    lons = np.asarray(lon, dtype=np.float64)
+    mean_lat = float(np.radians(lats.mean()))
+    x = np.radians(lons) * EARTH_RADIUS_KM * np.cos(mean_lat)
+    y = np.radians(lats) * EARTH_RADIUS_KM
+    keep = np.zeros(len(lats), dtype=np.bool_)
+    keep[0] = keep[-1] = True
+    stack: list[tuple[int, int]] = [(0, len(lats) - 1)]
+    while stack:
+        start, end = stack.pop()
+        if end <= start + 1:
+            continue
+        vx, vy = x[end] - x[start], y[end] - y[start]
+        px, py = x[start + 1 : end] - x[start], y[start + 1 : end] - y[start]
+        denominator = vx * vx + vy * vy
+        if denominator == 0.0:
+            distances = np.hypot(px, py)
+        else:
+            fraction = np.clip((px * vx + py * vy) / denominator, 0.0, 1.0)
+            distances = np.hypot(px - fraction * vx, py - fraction * vy)
+        relative = int(np.argmax(distances))
+        maximum = float(distances[relative])
+        if maximum > tolerance_km:
+            index = start + 1 + relative
+            keep[index] = True
+            stack.extend(((start, index), (index, end)))
+    return lats[keep].tolist(), lons[keep].tolist()

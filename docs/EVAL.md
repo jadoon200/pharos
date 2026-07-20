@@ -247,6 +247,16 @@ The NOAA artifacts remain gitignored. The cohort checksum is recorded against GF
 aliases as resolved on 2026-07-15; a future upstream dataset revision may intentionally change the
 labelled-vessel selection.
 
+<!-- AUTO-EVAL-PILOT:START -->
+## SG-PILOT-v0 evaluation
+
+Status: **collecting — no pilot evaluation run recorded yet**. The evaluator asserts the frozen
+artifact SHA, explicit match decisions for every in-coverage external event, and observed-time
+denominators before it writes this block. Short review counts are recorded as preliminary; sparse
+metrics render as `not estimable`, never zero. GFW overlap is labelled agreement rather than
+independent recall.
+<!-- AUTO-EVAL-PILOT:END -->
+
 ## Recorded negatives
 
 - **Synthetic-eval ceiling.** On the gold set every detector scores ~1.0 P/R and the GRU ~0.97 AUC,
