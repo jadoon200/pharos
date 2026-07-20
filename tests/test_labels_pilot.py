@@ -24,6 +24,7 @@ from pharos.db.models import (
 )
 from pharos.eval.pilot import run_pilot_evaluation, wilson_interval
 from pharos.ingest.gfw import GfwEvent
+from pharos.labels.alerts import detectors_by_track, incident_track_pairs
 from pharos.labels.coverage import observed_hours, observed_intervals
 from pharos.labels.external import GFW_ATTRIBUTION, import_gfw_events, import_yaml_events
 from pharos.labels.match import match_event
@@ -359,6 +360,35 @@ def test_review_queue_reproducible_blinded_and_rereviewed(
         )
         == 3
     )
+
+
+def test_deterministic_incidents_attribute_to_containing_tracks(session: Session) -> None:
+    """Gap/loiter/rendezvous incidents carry no track_id; attribution must still find their
+    track so the pharos-alert stratum and alert-precision denominators are never empty."""
+    vessel = _vessel(session)
+    track = _track(session)
+    session.add(
+        Incident(
+            incident_id="det-incident-0",
+            mmsi=vessel.mmsi,
+            track_id=None,
+            detector="gap",
+            incident_type="dark ship (AIS gap)",
+            score=0.7,
+            severity="moderate",
+            reliability="C",
+            ts_start=track.start_ts + timedelta(minutes=10),
+            ts_end=track.start_ts + timedelta(minutes=40),
+            region="singapore-live",
+            evidence={},
+        )
+    )
+    session.commit()
+    pairs = incident_track_pairs(session, "singapore-live")
+    assert [(incident.detector, track_id) for incident, track_id in pairs] == [
+        ("gap", track.track_id)
+    ]
+    assert detectors_by_track(pairs) == {track.track_id: {"gap"}}
 
 
 def test_wilson_and_evaluation_are_reproducible(session: Session, tmp_path: Path) -> None:

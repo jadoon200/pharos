@@ -32,6 +32,11 @@ from pharos.db.models import (
     Zone,
 )
 from pharos.detect.seq_anomaly import SequenceAnomalyModel, model_artifact_path
+from pharos.labels.alerts import (
+    DETECTABLE_EVENT_TYPES,
+    detectors_by_track,
+    incident_track_pairs,
+)
 from pharos.labels.coverage import (
     observed_hours,
     observed_intervals,
@@ -157,12 +162,24 @@ def _weighted_discrimination(
     }
 
 
-def _external_agreement(session: Session, confidence: str) -> dict[str, Any]:
+def _external_agreement(
+    session: Session, confidence: str, track_detectors: dict[str, set[str]]
+) -> dict[str, Any]:
+    """Recall (official) or agreement (silver) against matched external events.
+
+    Official incidents count any detector firing on the matched track — a real robbery or
+    collision has no single detector counterpart. Silver GFW events are AIS-derived detector
+    analogues, so agreement requires the *same-typed* detector, and event types with no PHAROS
+    counterpart (port visits) are excluded rather than left to dilute the denominator to zero.
+    """
     events = session.scalars(
         select(ExternalEvent)
         .where(ExternalEvent.source_confidence == confidence)
         .order_by(ExternalEvent.event_id)
     ).all()
+    official = confidence == "official"
+    if not official:
+        events = [event for event in events if event.event_type in DETECTABLE_EVENT_TYPES]
     eligible = 0
     detected = 0
     by_source: dict[str, dict[str, int]] = defaultdict(lambda: {"detected": 0, "eligible": 0})
@@ -179,17 +196,20 @@ def _external_agreement(session: Session, confidence: str) -> dict[str, Any]:
         eligible += 1
         by_source[event.source]["eligible"] += 1
         track_ids = [match.track_id for match in matches if match.track_id]
-        has_alert = bool(
-            session.scalar(
-                select(Incident.incident_id).where(Incident.track_id.in_(track_ids)).limit(1)
+        if official:
+            has_alert = any(track_detectors.get(track_id) for track_id in track_ids)
+        else:
+            has_alert = any(
+                event.event_type in track_detectors.get(track_id, set()) for track_id in track_ids
             )
-        )
         if has_alert:
             detected += 1
             by_source[event.source]["detected"] += 1
     result = wilson_interval(detected, eligible)
     result["sources"] = dict(sorted(by_source.items()))
-    result["term"] = "recall" if confidence == "official" else "agreement"
+    result["term"] = "recall" if official else "agreement"
+    if not official:
+        result["eligible_event_types"] = sorted(DETECTABLE_EVENT_TYPES)
     return result
 
 
@@ -215,16 +235,16 @@ def _review_agreement(session: Session) -> dict[str, Any]:
     )
 
 
-def _per_detector(session: Session, reviews: dict[str, TrackReview]) -> dict[str, Any]:
+def _per_detector(
+    reviews: dict[str, TrackReview], track_detectors: dict[str, set[str]]
+) -> dict[str, Any]:
     output: dict[str, Any] = {}
     for detector in ("gap", "rendezvous", "loiter", "spoof", "anomaly"):
-        track_ids = set(
-            session.scalars(
-                select(Incident.track_id).where(
-                    Incident.detector == detector, Incident.track_id.in_(list(reviews))
-                )
-            ).all()
-        )
+        track_ids = {
+            track_id
+            for track_id, detectors in track_detectors.items()
+            if detector in detectors and track_id in reviews
+        }
         eligible = [review for track_id, review in reviews.items() if track_id in track_ids]
         positives = sum(review.label in _POSITIVE_LABELS for review in eligible)
         output[detector] = (
@@ -282,10 +302,12 @@ def compute_metrics(
     hours = observed_hours(intervals)
     vessel_hours = observed_vessel_hours(session, intervals, settings.collector_region)
     reviews = _latest_review_by_track(session)
-    reviewed_alert_tracks = set(
-        session.scalars(select(Incident.track_id).where(Incident.track_id.in_(list(reviews)))).all()
-    )
-    eligible_alert_reviews = [reviews[track_id] for track_id in reviewed_alert_tracks if track_id]
+    # Shared incident→track attribution: deterministic detectors carry no track_id, so joining
+    # on it directly would leave the alert-precision denominator permanently empty.
+    pairs = incident_track_pairs(session, settings.collector_region)
+    track_detectors = detectors_by_track(pairs)
+    reviewed_alert_tracks = {track_id for track_id in track_detectors if track_id in reviews}
+    eligible_alert_reviews = [reviews[track_id] for track_id in sorted(reviewed_alert_tracks)]
     alert_positives = sum(review.label in _POSITIVE_LABELS for review in eligible_alert_reviews)
     incident_count = (
         session.scalar(
@@ -309,12 +331,12 @@ def compute_metrics(
             "uncertain": sum(review.label == "uncertain" for review in reviews.values()),
         },
         "precision_reviewed_alerts": wilson_interval(alert_positives, len(eligible_alert_reviews)),
-        "external_official_recall": _external_agreement(session, "official"),
-        "external_gfw_agreement": _external_agreement(session, "silver"),
+        "external_official_recall": _external_agreement(session, "official", track_detectors),
+        "external_gfw_agreement": _external_agreement(session, "silver", track_detectors),
         "weighted_discrimination": _weighted_discrimination(
             session, reviews, sampling_design, settings
         ),
-        "per_detector": _per_detector(session, reviews),
+        "per_detector": _per_detector(reviews, track_detectors),
         "alert_rate": {
             "value_per_100_observed_vessel_hours": (
                 round(incident_count * 100.0 / vessel_hours, 6) if vessel_hours else None

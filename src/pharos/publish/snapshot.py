@@ -32,6 +32,7 @@ from pharos.db.models import (
 from pharos.detect.seq_anomaly import SequenceAnomalyModel, model_artifact_path
 from pharos.eval.pilot import FROZEN_ARTIFACT_SHA256
 from pharos.geo import simplify_polyline
+from pharos.labels.alerts import incident_track_pairs
 from pharos.labels.coverage import observed_hours, observed_intervals, observed_vessel_hours
 from pharos.labels.external import GFW_ATTRIBUTION
 from pharos.timeutil import utc_aware
@@ -204,13 +205,19 @@ def _stats(
         )
         or 0
     )
-    reviewed_alerts = (
-        session.scalar(
-            select(func.count(func.distinct(TrackReview.track_id)))
-            .join(Incident, Incident.track_id == TrackReview.track_id)
-            .where(TrackReview.reviewer_id == "primary", TrackReview.reviewed_at.isnot(None))
-        )
-        or 0
+    alert_tracks = {
+        track_id for _incident, track_id in incident_track_pairs(session, settings.collector_region)
+    }
+    reviewed_alerts = len(
+        {
+            review.track_id
+            for review in session.scalars(
+                select(TrackReview).where(
+                    TrackReview.reviewer_id == "primary", TrackReview.reviewed_at.isnot(None)
+                )
+            )
+            if review.track_id in alert_tracks
+        }
     )
     outages = session.scalars(select(CoverageOutage)).all()
     return {
@@ -337,14 +344,22 @@ def _incidents(session: Session, settings: Settings, now: datetime) -> dict[str,
         .order_by(Incident.ts_start.desc(), Incident.score.desc())
         .limit(settings.snapshot_incident_limit)
     ).all()
-    matched_tracks = set(
-        session.scalars(
-            select(EventTrackMatch.track_id).where(
-                EventTrackMatch.track_id.isnot(None),
-                EventTrackMatch.status.in_(("matched", "ambiguous")),
+    # track id → (source confidence, event type) of its matched external events. Corroboration
+    # is type-aware: an official incident corroborates any alert on the track, while a silver
+    # GFW event only corroborates the same-typed detector (a port visit corroborates nothing).
+    matched_events: dict[str, set[tuple[str, str]]] = {}
+    for match, event in session.execute(
+        select(EventTrackMatch, ExternalEvent)
+        .join(ExternalEvent, ExternalEvent.event_id == EventTrackMatch.event_id)
+        .where(
+            EventTrackMatch.track_id.isnot(None),
+            EventTrackMatch.status.in_(("matched", "ambiguous")),
+        )
+    ).tuples():
+        if match.track_id is not None:
+            matched_events.setdefault(match.track_id, set()).add(
+                (event.source_confidence, event.event_type)
             )
-        ).all()
-    )
     reviews = {
         review.track_id: review
         for review in session.scalars(
@@ -353,12 +368,22 @@ def _incidents(session: Session, settings: Settings, now: datetime) -> dict[str,
             )
         )
     }
+    incident_tracks = {
+        incident.incident_id: track_id
+        for incident, track_id in incident_track_pairs(session, settings.collector_region)
+    }
     output: list[dict[str, Any]] = []
     for incident in incidents:
-        review = reviews.get(incident.track_id or "")
+        track_id = incident_tracks.get(incident.incident_id, "")
+        review = reviews.get(track_id)
+        corroborating = matched_events.get(track_id, set())
+        corroborated = any(
+            confidence == "official" or event_type == incident.detector
+            for confidence, event_type in corroborating
+        )
         if review:
             state = "unresolved" if review.label == "uncertain" else "reviewed"
-        elif incident.track_id in matched_tracks:
+        elif corroborated:
             state = "corroborated"
         else:
             state = "candidate"

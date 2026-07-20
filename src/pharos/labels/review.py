@@ -21,8 +21,9 @@ from sqlalchemy.orm import Session
 
 from pharos.config import Settings, get_settings
 from pharos.db.base import init_sqlite_schema, session_scope
-from pharos.db.models import EventTrackMatch, Incident, Track, TrackReview
+from pharos.db.models import EventTrackMatch, Track, TrackReview
 from pharos.detect.seq_anomaly import SequenceAnomalyModel, model_artifact_path
+from pharos.labels.alerts import incident_track_pairs
 from pharos.logging import configure_logging
 
 QUEUE_VERSION = "queue-v1"
@@ -61,10 +62,14 @@ def _strata(session: Session, settings: Settings) -> tuple[dict[str, list[str]],
         query = query.where(Track.end_ts >= settings.pilot_start_at)
     tracks = session.scalars(query.order_by(Track.track_id)).all()
     by_id = {track.track_id: track for track in tracks}
-    incidents = session.scalars(
-        select(Incident).where(Incident.track_id.in_(list(by_id))).order_by(Incident.incident_id)
-    ).all()
-    incident_ids = {incident.track_id for incident in incidents if incident.track_id}
+    # Deterministic detectors emit incidents without a track_id, so alert strata must use the
+    # shared incident→track attribution or the pilot's headline stratum would be empty.
+    pairs = [
+        (incident, track_id)
+        for incident, track_id in incident_track_pairs(session, settings.collector_region)
+        if track_id in by_id
+    ]
+    incident_ids = {track_id for _incident, track_id in pairs}
     external_ids = {
         track_id
         for track_id in session.scalars(
@@ -76,10 +81,9 @@ def _strata(session: Session, settings: Settings) -> tuple[dict[str, list[str]],
         if track_id is not None
     }
     artifact_ids = {
-        incident.track_id
-        for incident in incidents
-        if incident.track_id
-        and (
+        track_id
+        for incident, track_id in pairs
+        if (
             incident.detector == "spoof"
             or "implied_speed_kn" in (incident.evidence or {})
             or "implied_speed" in (incident.evidence or {})
@@ -87,11 +91,8 @@ def _strata(session: Session, settings: Settings) -> tuple[dict[str, list[str]],
     }
     near_ids = _near_threshold_ids(tracks, settings) - incident_ids
     score_by_track: dict[str, float] = defaultdict(float)
-    for incident in incidents:
-        if incident.track_id:
-            score_by_track[incident.track_id] = max(
-                score_by_track[incident.track_id], incident.score
-            )
+    for incident, track_id in pairs:
+        score_by_track[track_id] = max(score_by_track[track_id], incident.score)
 
     assigned: set[str] = set()
 
@@ -170,23 +171,22 @@ def build_review_queue(session: Session, settings: Settings) -> dict[str, Any]:
     pools, _scores = _strata(session, settings)
     rng = random.Random(QUEUE_SEED)
     selected: list[tuple[str, str]] = []
-    selected.extend((track_id, "external-event") for track_id in pools["external-event"])
-    selected.extend(
-        (track_id, "ais-artifact-candidate") for track_id in pools["ais-artifact-candidate"]
-    )
-    alert_target = min(60, len(pools["pharos-alert"]))
-    selected.extend((track_id, "pharos-alert") for track_id in pools["pharos-alert"][:alert_target])
 
-    near_pool = list(pools["near-threshold"])
-    rng.shuffle(near_pool)
-    near_target = min(max(20, settings.review_queue_min // 5), len(near_pool))
-    selected.extend((track_id, "near-threshold") for track_id in near_pool[:near_target])
+    # Seeded caps keep any one stratum (e.g. hundreds of GFW port-visit matches) from crowding
+    # out the rest; a guaranteed random-normal floor keeps the weighted benchmark anchored to
+    # the general population. Sampling within a stratum stays valid for inverse-probability
+    # weighting because the frozen design records each stratum's population and selected count.
+    def sample(name: str, target: int, *, ranked: bool = False) -> None:
+        pool = list(pools[name])
+        if not ranked:
+            rng.shuffle(pool)
+        selected.extend((track_id, name) for track_id in pool[: min(target, len(pool))])
 
-    remaining = settings.review_queue_min - len(selected)
-    normal_pool = list(pools["random-normal"])
-    rng.shuffle(normal_pool)
-    if remaining > 0:
-        selected.extend((track_id, "random-normal") for track_id in normal_pool[:remaining])
+    sample("external-event", 100)
+    sample("ais-artifact-candidate", 40)
+    sample("pharos-alert", 60, ranked=True)  # already ordered by descending composite score
+    sample("near-threshold", max(20, settings.review_queue_min // 5))
+    sample("random-normal", max(settings.review_queue_min - len(selected), 40))
 
     rng.shuffle(selected)
     session.add_all(

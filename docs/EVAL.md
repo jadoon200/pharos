@@ -101,7 +101,7 @@ AUC** (train one waterway, test another) survives the region change, which is th
 AIS and cross-checking against Global Fishing Watch event labels (`make eval-real`).
 
 <!-- AUTO-EVAL:START -->
-_Auto-recorded by `make eval` on 2026-07-15 over 5 seeds (synthetic gold set)._
+_Auto-recorded by `make eval` on 2026-07-20 over 5 seeds (synthetic gold set)._
 
 | Detector | Precision | Recall |
 |---|---|---|
