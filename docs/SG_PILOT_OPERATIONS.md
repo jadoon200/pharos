@@ -109,18 +109,31 @@ duplicated.
 
 ## Phase 3/4 daily cadence
 
-Run the label and health lane outside the collector's scoring path. Empty imports are valid and
-must remain recorded as zero rather than treated as failures:
+The import/match/health lane is **automated** by the `com.pharos.labels` launchd agent
+(`ops/com.pharos.labels.plist` → `scripts/daily_labels.sh`, daily at 09:30 local, run on wake if
+the laptop was asleep, logs to `~/Library/Logs/pharos-labels.log`). Each step is non-fatal and
+idempotent: a GFW/network outage is recorded and simply caught up the next day. Empty imports are
+valid and remain recorded as zero rather than treated as failures. Install/refresh it like the
+collector agent:
+
+```
+cp ops/com.pharos.labels.plist ~/Library/LaunchAgents/
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.pharos.labels.plist
+launchctl kickstart gui/$(id -u)/com.pharos.labels   # optional immediate run
+```
+
+What stays manual, and why:
 
 | Cadence | Command | Purpose |
 |---|---|---|
-| daily | `make labels-import` | Fetch delayed GFW events and validate manual ReCAAP/TSIB YAML |
-| after import | `make labels-match` | Write matched, ambiguous, or explicit unmatched decisions |
-| daily, ~20 items | `make review` | Continue the blinded queue toward 200 tracks / 50 alerts |
+| automated daily | `make labels-import` + `labels-match` + `pilot-health` | Covered by `com.pharos.labels` |
+| daily, ~20 items | `make review` | Blinded review is a *human* label — automating it would destroy the evaluation |
 | after day 3 | `make review-rereview` | Queue the seeded 15% delayed blind re-review sample |
-| daily | `make pilot-health` | Append coverage, backlog, storage, incident, and drift health |
+| mid-pilot, once | first `make review` run | Builds the queue and **freezes the sampling design** — do not build early |
 | checkpoint/close-out | `make eval-pilot` | Record the frozen, observed-time evaluation and JSON export |
-| manual smoke | `make publish-snapshot` | Generate, sanitize, squash, and push delayed snapshots |
+| manual smoke | `make publish-snapshot` | Generate, sanitize, squash, and push delayed snapshots (the collector also publishes every 3 min) |
+
+ReCAAP/TSIB transcription stays manual by design (amendment 3: no APIs, no scraping).
 
 Manual official-label checklist (about five minutes):
 
