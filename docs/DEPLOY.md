@@ -6,8 +6,8 @@ deterministic synthetic gold scenario). No managed database, no live fetch at re
 for a public demo. Mirrors SENTINEL/ARGUS.
 
 This document describes the baked-demo deployment. The active Singapore pilot remains local and
-outbound-only: Phase 4 will publish sanitized, derived snapshots delayed by at least 15 minutes to a
-dedicated `snapshots` branch, then add explicit live/delayed/offline/demo modes to this dashboard.
+outbound-only: Phase 4 publishes sanitized, derived snapshots delayed by at least 15 minutes to a
+dedicated `snapshots` branch and adds explicit live/delayed/offline/demo modes to this dashboard.
 No public listener or tunnel is opened on the collector laptop. See
 [`SG_LIVE_PILOT_PLAN.md`](SG_LIVE_PILOT_PLAN.md).
 
@@ -48,6 +48,31 @@ bounded-concurrency cap protects the box. If memory is a concern, the read-only 
 (`/maritime-picture`, `/incidents`, `/zones`, `/tracks`) serve entirely from the baked seed and
 need no model — only `POST /score-track` and `POST /detect` exercise torch. A torch-free variant
 could drop those two routes and shrink the image; not needed for the current demo.
+
+## Delayed Singapore snapshots
+
+The collector laptop never accepts inbound traffic. `make publish-snapshot` builds six fail-closed
+files (`status`, `stats`, `tracks`, `incidents`, `evaluations`, and `model`) in an ignored detached
+worktree, creates one orphan commit, and force-pushes only that commit to `snapshots`. Public tracks
+end at least 15 minutes before generation; geometry/counts are bounded; coordinates are rounded;
+the sanitizer rejects configured secrets, bearer/key-shaped text, local paths, raw AIS envelopes,
+tracebacks, database URLs, and SQLite/SQLAlchemy metadata.
+
+The frontend defaults to:
+
+```text
+https://raw.githubusercontent.com/jadoon200/pharos/snapshots/
+```
+
+Override it at build time with `VITE_SNAPSHOT_URL` for fixture/browser drills or an alternative
+host. Confirm `gh repo view jadoon200/pharos --json visibility -q .visibility` returns `PUBLIC`
+before relying on raw GitHub delivery. For a private repository, use a public GitHub Pages snapshot
+branch or make an explicit visibility decision; never put a token in frontend code.
+
+Every view carries a snapshot-age banner. Fresh snapshots render `live`; 10–30 minutes renders
+`delayed`; older than 30 minutes renders `collector offline`; unreachable or invalid snapshots
+render `demo fallback — synthetic data`. The existing baked API remains unchanged and the Pilot
+view never substitutes demo metrics for missing pilot evaluation.
 
 ## Infra-level (owned at deploy time)
 

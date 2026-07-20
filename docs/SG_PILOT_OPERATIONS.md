@@ -106,3 +106,36 @@ launchctl kickstart -k gui/$(id -u)/com.pharos.collector
 If the process was killed abruptly, the next start marks the orphaned run `interrupted` at its last
 valid report time. Idempotent `(mmsi, timestamp)` persistence prevents the replayed tail from being
 duplicated.
+
+## Phase 3/4 daily cadence
+
+Run the label and health lane outside the collector's scoring path. Empty imports are valid and
+must remain recorded as zero rather than treated as failures:
+
+| Cadence | Command | Purpose |
+|---|---|---|
+| daily | `make labels-import` | Fetch delayed GFW events and validate manual ReCAAP/TSIB YAML |
+| after import | `make labels-match` | Write matched, ambiguous, or explicit unmatched decisions |
+| daily, ~20 items | `make review` | Continue the blinded queue toward 200 tracks / 50 alerts |
+| after day 3 | `make review-rereview` | Queue the seeded 15% delayed blind re-review sample |
+| daily | `make pilot-health` | Append coverage, backlog, storage, incident, and drift health |
+| checkpoint/close-out | `make eval-pilot` | Record the frozen, observed-time evaluation and JSON export |
+| manual smoke | `make publish-snapshot` | Generate, sanitize, squash, and push delayed snapshots |
+
+Manual official-label checklist (about five minutes):
+
+1. Check the ReCAAP incident/weekly map and Singapore TSIB reports page.
+2. For an in-window Singapore Strait event, create one minimal file under
+   `data/labels/recaap/` or `data/labels/tsib/` using the schema in
+   `docs/PHASE_3_4_PLAN.md`. Include the source URL and retrieval date; copy no report prose and
+   keep `notes` at or below 300 characters.
+3. Run `make labels-import` and `make labels-match`. A hard validation error means the source file
+   must be corrected; no event may be silently skipped.
+4. Spot-check retrieval provenance during the re-review window. Never tune the frozen artifact,
+   anomaly threshold, or detector settings from an in-window result.
+
+Before public publication, run `gh auth status` and confirm that the repository is public (raw
+GitHub snapshot URLs do not work for a private repository). The publisher takes an atomic lock,
+uses the ignored `data/snapshots-worktree/`, and force-pushes an orphan `snapshots` commit containing
+only `README.md` plus the six JSON files. A publish failure never blocks collection; the dashboard
+ages into its explicit offline state.

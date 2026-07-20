@@ -3,6 +3,9 @@
 // Same-origin in a production build (FastAPI serves this SPA and the API from one host);
 // localhost:8000 in dev (`make ui` on :5173 talks to `make api` on :8000). VITE_API_URL overrides.
 const BASE = import.meta.env.VITE_API_URL ?? (import.meta.env.PROD ? '' : 'http://localhost:8000')
+export const SNAPSHOT_BASE =
+  import.meta.env.VITE_SNAPSHOT_URL ??
+  'https://raw.githubusercontent.com/jadoon200/pharos/snapshots/'
 
 export interface Health {
   status: string
@@ -94,10 +97,87 @@ export interface ScoreResult {
   error?: string
 }
 
+export interface SnapshotCommon {
+  generated_at: string
+  source: { ais: string; gfw: string }
+  freshness: string
+  human_review_disclaimer: string
+}
+
+export interface SnapshotStatus extends SnapshotCommon {
+  mode: 'live' | 'delayed' | 'collector offline'
+  last_source_report_at: string | null
+  last_processing_at: string | null
+  observed_hours: number
+  calendar_hours: number
+  current_outage: { reason_category: string; age_minutes: number } | null
+  run_count: number
+  frozen_artifact_sha256: string
+}
+
+export interface SnapshotStats extends SnapshotCommon {
+  vessels: number
+  accepted_reports: number
+  tracks: number
+  incidents: number
+  incidents_by_detector: Record<string, number>
+  observed_hours: number
+  observed_vessel_hours: number
+  alert_rate_per_100_observed_vessel_hours: number | null
+  reconnect_count: number
+  outage_count: number
+  outage_hours: number
+  labels_by_source: Record<string, number>
+  review_progress: {
+    tracks: { reviewed: number; target: number }
+    pharos_alerts: { reviewed: number; target: number }
+  }
+}
+
+export interface SnapshotModel extends SnapshotCommon {
+  artifact_source: string
+  sha256: string
+  parameter_count: number
+  hidden_size: number
+  threshold: number | null
+  training_window: string
+  normalization_provenance: string
+  freeze_date: string
+  model_card: string
+}
+
+export interface SnapshotEvaluations extends SnapshotCommon {
+  evaluation: Record<string, unknown>
+}
+
+export interface SnapshotIncidents extends SnapshotCommon {
+  incidents: Array<Record<string, unknown>>
+}
+
+export interface SnapshotTracks extends SnapshotCommon, GeoJSON {
+  delay_floor_minutes: number
+}
+
 async function get<T>(path: string): Promise<T> {
   const res = await fetch(`${BASE}${path}`)
   if (!res.ok) throw new Error(`${path} → ${res.status}`)
   return res.json() as Promise<T>
+}
+
+export async function getSnapshot<T extends SnapshotCommon>(file: string): Promise<T> {
+  const base = SNAPSHOT_BASE.endsWith('/') ? SNAPSHOT_BASE : `${SNAPSHOT_BASE}/`
+  const res = await fetch(`${base}${file}`)
+  if (!res.ok) throw new Error(`${file} → ${res.status}`)
+  const payload = (await res.json()) as Partial<T>
+  if (
+    typeof payload !== 'object' ||
+    typeof payload.generated_at !== 'string' ||
+    typeof payload.freshness !== 'string' ||
+    typeof payload.source !== 'object'
+  ) {
+    throw new Error(`${file} → invalid snapshot envelope`)
+  }
+  return payload as T
 }
 
 export const api = {
@@ -125,6 +205,15 @@ export const api = {
     if (!res.ok) throw new Error(`score-track → ${res.status}`)
     return res.json() as Promise<ScoreResult>
   },
+}
+
+export const snapshotApi = {
+  status: () => getSnapshot<SnapshotStatus>('status.json'),
+  stats: () => getSnapshot<SnapshotStats>('stats.json'),
+  tracks: () => getSnapshot<SnapshotTracks>('tracks.json'),
+  incidents: () => getSnapshot<SnapshotIncidents>('incidents.json'),
+  evaluations: () => getSnapshot<SnapshotEvaluations>('evaluations.json'),
+  model: () => getSnapshot<SnapshotModel>('model.json'),
 }
 
 export const SEVERITY_CLASS: Record<string, string> = {

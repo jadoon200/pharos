@@ -101,7 +101,7 @@ AUC** (train one waterway, test another) survives the region change, which is th
 AIS and cross-checking against Global Fishing Watch event labels (`make eval-real`).
 
 <!-- AUTO-EVAL:START -->
-_Auto-recorded by `make eval` on 2026-07-15 over 5 seeds (synthetic gold set)._
+_Auto-recorded by `make eval` on 2026-07-20 over 5 seeds (synthetic gold set)._
 
 | Detector | Precision | Recall |
 |---|---|---|
@@ -246,6 +246,16 @@ Recorded SHA-256 checksums:
 The NOAA artifacts remain gitignored. The cohort checksum is recorded against GFW's `latest`
 aliases as resolved on 2026-07-15; a future upstream dataset revision may intentionally change the
 labelled-vessel selection.
+
+<!-- AUTO-EVAL-PILOT:START -->
+## SG-PILOT-v0 evaluation
+
+Status: **collecting — no pilot evaluation run recorded yet**. The evaluator asserts the frozen
+artifact SHA, explicit match decisions for every in-coverage external event, and observed-time
+denominators before it writes this block. Short review counts are recorded as preliminary; sparse
+metrics render as `not estimable`, never zero. GFW overlap is labelled agreement rather than
+independent recall.
+<!-- AUTO-EVAL-PILOT:END -->
 
 ## Recorded negatives
 

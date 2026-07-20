@@ -24,8 +24,8 @@ story (M0–M8), with deploy (M9) last and the ARGUS bridge (M10) an explicit ex
 |---|---|
 | 1 — continuous Class A/B collector, coverage ledger, SQLite WAL/index, M3-safe launch agent, frozen model | ✅ collecting; Day 0 = 2026-07-16 |
 | 2 — incremental tracks/scoring, outage-aware gaps, retention/storage caps | ✅ deployed; every 2 min |
-| 3 — external/review labels and frozen evaluation | ⬜ planned |
-| 4 — delayed outbound snapshots and dashboard pilot modes | ⬜ planned |
+| 3 — external/review labels and frozen evaluation | ✅ machinery built; labels/reviews accrue through day 13 |
+| 4 — delayed outbound snapshots and dashboard pilot modes | ✅ built; publication/deploy smoke remains operational |
 | 5 — Day-14 preliminary report / count-based continuation | ⬜ planned |
 
 **Status:** the full system (M0–M10) is built. The whole pipeline
@@ -73,8 +73,8 @@ deployable, and the M10 bridge (originally optional) is done.
 
 ## Next build priorities
 
-1. **Build independent evaluation and the outbound-only showcase.** Persist official/silver events,
-   run blinded review, report observed-time denominators/CIs, and push delayed sanitized snapshots
-   for the Render dashboard.
+1. **Operate the pilot machinery.** Run the daily label import, matching, blinded reviews, health
+   check, and outbound snapshot cadence; complete the four-mode deployment smoke without changing
+   the frozen model or detector thresholds.
 2. **Generate and commit the Linux dependency lock.** CI currently falls back to
    `requirements.txt` until the manual Lock workflow creates `requirements.lock`.

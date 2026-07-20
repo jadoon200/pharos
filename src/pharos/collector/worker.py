@@ -4,13 +4,17 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 import random
 import signal
+import subprocess
+import sys
 import time
 from collections.abc import Callable, Iterator
 from contextlib import AbstractAsyncContextManager, contextmanager, suppress
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
+from pathlib import Path
 from typing import Any, Protocol, cast
 
 from sqlalchemy import func, select
@@ -175,6 +179,8 @@ class CollectorWorker:
         )
         self._seen_mmsis: set[str] = set()
         self._process_task: asyncio.Task[None] | None = None
+        self._publish_task: asyncio.Task[None] | None = None
+        self._next_publish_at = self._monotonic() + self.settings.publish_interval_minutes * 60.0
         self._last_valid_wall: datetime | None = None
         self._connection_healthy = False
         self._storage_level = "normal"
@@ -409,6 +415,7 @@ class CollectorWorker:
         self._process_task = asyncio.create_task(self._run_processing(dirty))
 
     async def _run_processing(self, dirty: set[str]) -> None:
+        started = time.perf_counter()
         try:
             stats = await asyncio.to_thread(self._process_dirty, dirty)
         except Exception as exc:
@@ -421,11 +428,48 @@ class CollectorWorker:
                 dirty_vessels=len(dirty),
             )
         else:
-            log.info("collector_processing_complete", dirty_vessels=len(dirty), stats=stats)
+            log.info(
+                "collector_processing_complete",
+                dirty_vessels=len(dirty),
+                cycle_seconds=round(time.perf_counter() - started, 3),
+                stats=stats,
+            )
         finally:
             self._process_task = None
             self._next_process_at = (
                 self._monotonic() + self.settings.process_interval_minutes * 60.0
+            )
+
+    def _publish_snapshot(self) -> None:
+        repo_root = Path(__file__).resolve().parents[3]
+        subprocess.run(
+            ["bash", str(repo_root / "scripts" / "publish_snapshot.sh")],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=180,
+            cwd=repo_root,
+            # launchd's default PATH has no `python`; hand the script this worker's interpreter.
+            env={**os.environ, "PYTHON": sys.executable},
+        )
+
+    def _maybe_start_publish(self) -> None:
+        """Start outbound publication in the background; collection never awaits git/network."""
+        if self._monotonic() < self._next_publish_at or self._publish_task is not None:
+            return
+        self._publish_task = asyncio.create_task(self._run_publish())
+
+    async def _run_publish(self) -> None:
+        try:
+            await asyncio.to_thread(self._publish_snapshot)
+        except Exception as exc:
+            log.error("collector_publish_failed", error_type=type(exc).__name__)
+        else:
+            log.info("collector_publish_complete")
+        finally:
+            self._publish_task = None
+            self._next_publish_at = (
+                self._monotonic() + self.settings.publish_interval_minutes * 60.0
             )
 
     def _prune(self) -> dict[str, int | float | str]:
@@ -502,6 +546,7 @@ class CollectorWorker:
                     self._flush_or_raise()
                     batch_deadline = self._monotonic() + self.settings.collector_batch_seconds
                     self._maybe_start_processing()
+                    self._maybe_start_publish()
                     await self._maybe_prune()
                     continue
 
@@ -612,6 +657,10 @@ class CollectorWorker:
                         reason=outage_reason,
                         backoff_seconds=round(wait_seconds, 2),
                     )
+                    # A source outage is exactly when the public site must stay honest: keep
+                    # publishing (interval-gated) so status.json shows the ledgered outage
+                    # instead of silently freezing at the last pre-outage snapshot.
+                    self._maybe_start_publish()
                     await self._wait_for_reconnect(wait_seconds)
                     delay = min(self.settings.collector_backoff_max_seconds, delay * 2.0)
             reason = self._stop_reason
@@ -626,6 +675,10 @@ class CollectorWorker:
                 log.info("collector_shutdown_waiting_for_processing")
                 with suppress(Exception):
                     await self._process_task
+            if self._publish_task is not None:
+                log.info("collector_shutdown_waiting_for_publish")
+                with suppress(Exception):
+                    await self._publish_task
             flush_error_type: str | None = None
             try:
                 self._flush()

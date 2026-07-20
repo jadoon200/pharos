@@ -57,6 +57,22 @@ class Settings(BaseSettings):
     gfw_token: str = ""
     gfw_api_url: str = "https://gateway.api.globalfishingwatch.org/v3"
 
+    # --- Independent labels / blinded pilot review ------------------------------------
+    label_match_max_hours: float = 24.0
+    label_match_max_km: float = 25.0
+    label_match_ambiguity_ratio: float = 2.0
+    review_queue_min: int = 220
+    review_rereview_fraction: float = 0.15
+    labels_dir: Path = Path("data/labels")
+
+    # --- Outbound-only delayed publication --------------------------------------------
+    snapshot_delay_minutes: float = 15.0
+    snapshot_track_limit: int = 200
+    snapshot_incident_limit: int = 200
+    snapshot_points_per_track: int = 150
+    snapshot_track_tolerance_km: float = 0.05
+    snapshots_dir: Path = Path("data/snapshots")
+
     # --- Track building ----------------------------------------------------------------
     # A voyage is split when a vessel is silent longer than this (a candidate AIS gap) or
     # its implied jump is physically impossible (see detect/spoof.py).
