@@ -16,6 +16,7 @@ from pharos.db.base import session_scope
 from pharos.db.models import CoverageOutage, Incident, Position, Track
 from pharos.detect.anomaly import normalized_scores
 from pharos.detect.base import make_incident
+from pharos.detect.coverage import CoverageModel
 from pharos.detect.gaps import detect_gaps
 from pharos.detect.loiter import detect_loitering
 from pharos.detect.rendezvous import detect_rendezvous
@@ -161,7 +162,11 @@ def rebuild_dirty_incidents(
     ]
 
     incidents: list[Incident] = []
-    incidents.extend(detect_gaps(dirty_positions, active_settings, outages))
+    # The witness model must see the WHOLE population, not just the dirty subset: coverage is
+    # a statement about who else was audible, so scoring a handful of dirty vessels against
+    # only their own reports would starve the index and call every gap coverage-explained.
+    coverage = CoverageModel.from_positions(all_positions)
+    incidents.extend(detect_gaps(dirty_positions, active_settings, outages, coverage=coverage))
     incidents.extend(detect_loitering(dirty_positions, active_settings))
     incidents.extend(detect_spoofing(dirty_positions, active_settings))
     incidents.extend(detect_rendezvous(all_positions, active_settings, focus_mmsis=dirty_mmsis))

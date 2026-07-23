@@ -17,6 +17,7 @@ from sqlalchemy.orm import Session
 from pharos.config import Settings, get_settings
 from pharos.db.base import session_scope
 from pharos.db.models import CoverageOutage, Incident, Position
+from pharos.detect.coverage import CoverageModel
 from pharos.detect.gaps import CoverageInterval, detect_gaps
 from pharos.detect.loiter import detect_loitering
 from pharos.detect.rendezvous import detect_rendezvous
@@ -33,9 +34,16 @@ def run_detectors(
     settings: Settings,
     coverage_outages: Iterable[CoverageInterval] = (),
 ) -> list[Incident]:
-    """Run the four deterministic detectors and return de-duplicated incidents."""
+    """Run the four deterministic detectors and return de-duplicated incidents.
+
+    Gap calls are graded against a witness model built from this same batch of positions —
+    whether other vessels were demonstrably heard along the corridor while the candidate was
+    silent (`detect/coverage.py`), so the coverage confound is measured per incident rather
+    than absorbed into a constant.
+    """
     incidents: list[Incident] = []
-    incidents.extend(detect_gaps(positions, settings, coverage_outages))
+    coverage = CoverageModel.from_positions(positions)
+    incidents.extend(detect_gaps(positions, settings, coverage_outages, coverage=coverage))
     incidents.extend(detect_rendezvous(positions, settings))
     incidents.extend(detect_loitering(positions, settings))
     incidents.extend(detect_spoofing(positions, settings))

@@ -6,10 +6,14 @@ consecutive reports separated by more than `gap_min_minutes` whose endpoints are
 `gap_min_displacement_km` apart, and scores the gap by its duration, displacement, and zone
 sensitivity.
 
-**The honest limitation, handled not hidden:** an AIS gap is frequently a benign
-receiver-coverage loss, not evasion. So confidence — and therefore the reliability grade — is
-deliberately capped, and Global Fishing Watch's reception-modelled gap events are the eval
-cross-check (`docs/EVAL.md`). Every gap incident is a lead for a human, never a verdict.
+**The honest limitation, now measured rather than only capped:** an AIS gap is frequently a
+benign receiver-coverage loss, not evasion. Confidence stays capped, but when a
+`CoverageModel` is supplied the call is additionally graded by what the corpus itself
+witnessed — whether *other* vessels were being heard along the corridor while this one was
+silent (`pharos.detect.coverage`). That turns the confound from a caveat into a per-incident
+discriminator, which matters because the external GFW gap labels never overlapped NOAA's
+terrestrial footprint and so could not calibrate it (`docs/EVAL.md`). Every gap incident
+remains a lead for a human, never a verdict.
 """
 
 from __future__ import annotations
@@ -21,6 +25,7 @@ from itertools import pairwise
 from pharos.config import Settings
 from pharos.db.models import Incident, Position
 from pharos.detect.base import make_incident, positions_by_vessel
+from pharos.detect.coverage import CONFIDENCE_BY_VERDICT, CoverageModel
 from pharos.geo import haversine_km, implied_speed_kn
 from pharos.timeutil import utc_naive
 from pharos.zones import zone_for
@@ -45,7 +50,11 @@ def detect_gaps(
     positions: list[Position],
     settings: Settings,
     coverage_outages: Iterable[CoverageInterval] = (),
+    coverage: CoverageModel | None = None,
 ) -> list[Incident]:
+    """Find dark-ship candidates. With a `coverage` model, each call is additionally graded
+    by whether the corpus witnessed other vessels along the corridor while this one was
+    silent — a measured coverage discriminator rather than a blanket caveat."""
     outages = list(coverage_outages)
     incidents: list[Incident] = []
     for mmsi, pts in positions_by_vessel(positions).items():
@@ -71,6 +80,22 @@ def detect_gaps(
             score = round(0.4 + 0.3 * dur_factor + 0.3 * disp_factor, 4)
             # Confidence capped — a gap can be a coverage artifact, so never high certainty.
             confidence = 0.35 + (0.15 if zone and zone.sensitive else 0.0)
+            evidence: dict[str, object] = {
+                "gap_minutes": round(gap_min, 1),
+                "displacement_km": round(disp_km, 2),
+                "implied_speed_kn": round(speed, 1),
+                "coverage_caveat": "an AIS gap may be a benign reception gap, not evasion",
+            }
+            if coverage is not None:
+                # Measured coverage discriminator: did the corpus hear anyone else along
+                # the corridor while this vessel was silent?
+                assessment = coverage.assess_gap(
+                    mmsi, prev.lat, prev.lon, cur.lat, cur.lon, prev.ts, cur.ts
+                )
+                evidence.update(assessment.as_evidence())
+                confidence = min(
+                    1.0, confidence * CONFIDENCE_BY_VERDICT.get(assessment.verdict, 1.0)
+                )
             incidents.append(
                 make_incident(
                     detector="gap",
@@ -84,12 +109,7 @@ def detect_gaps(
                     lon=prev.lon,
                     region=prev.region,
                     techniques=["ais-gap", "going-dark"],
-                    evidence={
-                        "gap_minutes": round(gap_min, 1),
-                        "displacement_km": round(disp_km, 2),
-                        "implied_speed_kn": round(speed, 1),
-                        "coverage_caveat": "an AIS gap may be a benign reception gap, not evasion",
-                    },
+                    evidence=evidence,
                 )
             )
     return incidents
