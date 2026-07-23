@@ -4,6 +4,20 @@ set -euo pipefail
 repo_root="$(git rev-parse --show-toplevel)"
 worktree="$repo_root/data/snapshots-worktree"
 lockdir="$repo_root/data/.snapshot-publish.lock"
+# Well above the worker's 180s subprocess timeout, so a genuinely in-flight run is never
+# preempted; well below the 3-minute publish interval's next-cycle retry.
+stale_after_seconds=600
+
+if [[ -d "$lockdir" ]]; then
+  lock_age=$(( $(date +%s) - $(stat -f %m "$lockdir" 2>/dev/null || stat -c %Y "$lockdir") ))
+  if (( lock_age > stale_after_seconds )); then
+    # A hard kill (crash, forced quit, OOM) leaves the lockdir behind forever with no live
+    # process to release it — the guard must expire, or every future publish silently no-ops
+    # and reports success while the public snapshot goes stale indefinitely.
+    echo "reclaiming stale snapshot publish lock (${lock_age}s old)" >&2
+    rmdir "$lockdir" 2>/dev/null || true
+  fi
+fi
 
 if ! mkdir "$lockdir" 2>/dev/null; then
   echo "snapshot publish already in flight" >&2
