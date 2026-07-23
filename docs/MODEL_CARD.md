@@ -59,8 +59,14 @@ reception-modelled gap events rather than assumed away. The first real LA/LB cro
 no candidates. A selected east-Gulf cohort subsequently corroborated 4/34 PHAROS rendezvous and
 65/298 loiter calls at vessel/type/time/place level, but these are not precision estimates because
 the cohort is label-enriched and GFW is incomplete. Its gap label was 169–209 km offshore and had
-no NOAA reappearance report, so gap calibration remains unestimable. Recorded negatives are kept,
-not buried.
+no NOAA reappearance report, so gap calibration is unestimable *from external labels*. That hole is
+now closed from the other side: an empirical witness model asks whether other vessels were
+demonstrably heard along a gap's corridor while the vessel was silent, grading 86/115 real Gulf
+calls vessel-attributed and 10/115 coverage-explained without deleting either, and measuring the
+~13× coast-to-offshore reception falloff that made the external labels incompatible. The dark
+vessel's own path while silent stays unknown, so corridor support is an explicitly charitable
+straight-line assumption and the output is a reception discriminator, never an intent verdict.
+Recorded negatives are kept, not buried.
 
 **Scale validation:** The full 1,982-vessel east-Gulf slice is now tractable. A conservative
 slow-motion space/time index retains 51,570 of 937,765 possible rendezvous pairs (5.50%) before

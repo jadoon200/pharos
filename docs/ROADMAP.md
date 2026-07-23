@@ -63,7 +63,10 @@ deployable, and the M10 bridge (originally optional) is done.
   track-shape descriptors make this a meaningful transfer test.
 - **External-label window:** east Gulf, 2023-07-25 (`27.0–30.5°N, 93.0–88.0°W`). A deterministic
   label-enriched NOAA cohort yields real GFW agreement for rendezvous (4/34) and loiter (65/298).
-  The GFW gap label is offshore beyond NOAA receiver coverage, so gap calibration remains open.
+  The GFW gap label is offshore beyond NOAA receiver coverage, so *external* gap calibration
+  remains blocked — addressed instead by the self-calibrating witness model (`detect/coverage.py`),
+  which grades 86/115 real Gulf gap calls vessel-attributed and 10/115 coverage-explained, and
+  measures the ~13× offshore reception falloff that made those labels unusable ([`EVAL.md`](EVAL.md) §3a).
 - **Reproducible real-data slicing:** `scripts.filter_noaa` streams national NOAA ZIPs by bbox/MMSI;
   `scripts.select_gfw_cohort` retains every matched labelled vessel plus deterministic background.
   Commands and checksums are recorded in [`EVAL.md`](EVAL.md).

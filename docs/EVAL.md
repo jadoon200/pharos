@@ -87,7 +87,68 @@ reliability grade, and GFW's reception-modelled gap events are the real-world cr
 | GFW rendezvous corroboration (full east-Gulf population) | same rule, unbiased background population | 3/186 PHAROS calls (1.6%) |
 | GFW loiter corroboration (east-Gulf cohort) | vessel + type + 25 km + 24 h agreement | 65/298 PHAROS calls (21.8%) |
 | GFW gap corroboration (east-Gulf cohort) | same agreement rule | 0/47; GFW endpoint outside NOAA receiver coverage |
-| Reliability calibration (real data) | do low-reliability incidents concentrate the false alarms? | still needs compatible independent gap labels |
+| **Self-calibrated gap grading (full Gulf population)** | **was the corridor demonstrably audible while the vessel was silent?** | **86/115 vessel-attributed, 10/115 coverage-explained** |
+| Reliability calibration (real data) | do low-reliability incidents concentrate the false alarms? | partially closed by the witness model below; still wants an external gap label |
+
+#### 3a. Closing the gap-calibration hole without an external label
+
+External calibration of the dark-ship detector was blocked, not merely missing: every GFW
+gap label in the Gulf sits 94–209 km offshore, and NOAA Marine Cadastre's **terrestrial**
+feed does not reach there, so a PHAROS gap call and a GFW gap label could never describe the
+same water. Waiting for a compatible label was not a plan.
+
+`pharos/detect/coverage.py` calibrates the confound from the corpus itself. The question a
+coverage artifact and a genuine dark ship answer differently is: *while this vessel was
+silent, was anyone else being heard where it went quiet?* The model indexes
+(0.25° cell × 1 h bucket) → distinct MMSIs heard, then samples the great-circle corridor
+between the vessel's last and next fixes and counts **other** vessels witnessed there during
+the silent window.
+
+On the full east-Gulf population (**1,394,820 reports / 1,982 vessels**, the same corpus as
+the rendezvous benchmark), the 115 gap calls redistribute as:
+
+| Verdict | Meaning | Calls |
+|---|---|---:|
+| vessel-attributed | ≥75% of the corridor demonstrably audible while it was silent | 86 (74.8%) |
+| partial | mixed reception along the corridor | 19 (16.5%) |
+| coverage-explained | <25% of the corridor heard anything at all | 10 (8.7%) |
+
+The **signal is unchanged** — same 115 calls, same scores. What changes is the Admiralty
+grade, which now separates them on measured evidence rather than a constant: B 0→60,
+C 83→14, D 0→26, E 32→14, F 0→1. Nothing is deleted, because the model measures *reception*,
+not intent; a coverage-explained gap survives as a low-grade lead.
+
+**Why the offshore labels could never have worked, measured.** The same index quantifies the
+terrestrial footprint's falloff. Distinct vessels heard per 0.5° latitude band, coast to
+open water, over an essentially constant number of surveyed cells:
+
+| Latitude band | Vessels heard | Cells |
+|---|---:|---:|
+| 30.0°N (coastal) | 616 | 31 |
+| 29.5°N | 903 | 39 |
+| 29.0°N | 534 | 38 |
+| 28.5°N | 283 | 37 |
+| 28.0°N | 175 | 40 |
+| 27.5°N | 108 | 39 |
+| 27.0°N (offshore) | 71 | 37 |
+
+Reception thins ~13× from the coastal peak to the offshore edge while the surveyed area
+stays flat, so the decay is the receiver footprint, not a sampling artifact. The GFW gap
+endpoints at 169–209 km offshore fall in the 27.5–28.0°N bands, where ~8× fewer vessels are
+heard than at the coast — the quantitative version of the qualitative claim this document
+previously made.
+
+**Stated limitation, unchanged and deliberate:** a dark vessel's true path is unknown, so
+corridor support assumes the most charitable straight-line track between its last and next
+fixes. A vessel that detoured was somewhere this model did not test; endpoint support is
+therefore reported separately from corridor support, since endpoints are observed rather
+than assumed. This is a *reception* discriminator and never an intent verdict.
+
+Reproduce:
+
+```bash
+python -m scripts.eval_coverage data/ais/gulf_2023_07_25.csv --profile
+```
 
 ## Auto-recorded results
 
@@ -218,8 +279,11 @@ The gap miss is a measured source-coverage incompatibility. GFW's labelled vesse
 contain its 680 reports up to two minutes before the gap, but no reappearance report—even on the
 GFW endpoint day—because Marine Cadastre's terrestrial feed does not cover that offshore signal.
 A search of all 38 Gulf GFW gaps in 2023 found no clean near-shore substitute: even the closest
-candidate had at least one endpoint 94 km offshore. Gap precision therefore remains uncalibrated;
-the failed overlap is recorded rather than converted into a false negative.
+candidate had at least one endpoint 94 km offshore. The failed overlap is recorded rather than
+converted into a false negative. Gap precision remains uncalibrated *against an external label* —
+but the incompatibility is no longer a dead end: the witness model in §3a calibrates the coverage
+confound from the corpus itself and, with the same index, measures the offshore reception falloff
+that made these labels unusable in the first place.
 
 #### Reproduce the selected corpus
 
