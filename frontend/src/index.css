@@ -37,8 +37,8 @@ a {
 .masthead {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 14px 22px;
+  gap: 18px;
+  padding: 13px 22px;
   border-bottom: 1px solid var(--border);
   background: linear-gradient(180deg, var(--bg-elev), var(--bg));
   position: sticky;
@@ -321,8 +321,12 @@ input {
 
 .pilot-fallback { border-color: #92400e; }
 
-@media (max-width: 1400px) {
-  .masthead { flex-wrap: wrap; }
+/* Keep the masthead a single row across desktop/laptop widths so it reads like the sibling
+   siblings (HORUS / SENTINEL): brand + status at the left, tabs at the right. The snapshot
+   banner is wider than HORUS's freshness pill, so PHAROS wraps a little earlier than they
+   do — but only on genuinely small screens, not at a common 1280 laptop width. */
+@media (max-width: 1024px) {
+  .masthead { flex-wrap: wrap; gap: 10px; }
   .tabs {
     order: 3;
     flex-basis: 100%;
