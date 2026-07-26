@@ -8,6 +8,7 @@ scores the pasted track's shape and never fetches a URL or writes to the DB.
 
 from __future__ import annotations
 
+import math
 import pickle
 from datetime import UTC, datetime
 from pathlib import Path
@@ -101,20 +102,40 @@ def _parse_ts(value: Any, i: int) -> datetime:
     return datetime.fromtimestamp(i * 300.0, tz=UTC)
 
 
+def _coordinate(value: Any, lo: float, hi: float) -> float | None:
+    """A finite, in-range coordinate, or None. Guards inf/NaN (which pass `float()` but score
+    to NaN and would return a misleading "not anomalous") and non-numeric/absent fields."""
+    try:
+        coord = float(value)
+    except (TypeError, ValueError):
+        return None
+    return coord if math.isfinite(coord) and lo <= coord <= hi else None
+
+
 def score_track_points(session: Session, points: list[dict[str, Any]]) -> dict[str, Any]:
     """Score a pasted track's shape. `points` = [{lat, lon, ts?, sog?}, ...] (>= 6 points)."""
     if len(points) < 6:
         return {"error": "need at least 6 points to score a track shape"}
+    # Validate coordinates before scoring. Without this, a missing/non-numeric field raised a
+    # 500, and an inf/NaN coordinate silently scored to NaN and returned is_anomalous=false —
+    # a "not anomalous" verdict on garbage input. Errors match the <6-points shape above.
+    cleaned: list[tuple[float, float, float | None]] = []
+    for i, p in enumerate(points):
+        if not isinstance(p, dict):
+            return {"error": f"point {i} must be an object with lat and lon"}
+        lat = _coordinate(p.get("lat"), -90.0, 90.0)
+        lon = _coordinate(p.get("lon"), -180.0, 180.0)
+        if lat is None or lon is None:
+            return {"error": f"point {i} needs a finite lat in [-90, 90] and lon in [-180, 180]"}
+        sog = p.get("sog")
+        sog_val = _coordinate(sog, -1e6, 1e6) if sog is not None else None
+        if sog is not None and sog_val is None:
+            return {"error": f"point {i} has a non-numeric sog"}
+        cleaned.append((lat, lon, sog_val))
     settings = get_settings()
     positions = [
-        Position(
-            mmsi="query",
-            ts=_parse_ts(p.get("ts"), i),
-            lat=float(p["lat"]),
-            lon=float(p["lon"]),
-            sog=float(p["sog"]) if p.get("sog") is not None else None,
-        )
-        for i, p in enumerate(points)
+        Position(mmsi="query", ts=_parse_ts(p.get("ts"), i), lat=lat, lon=lon, sog=sog)
+        for i, (p, (lat, lon, sog)) in enumerate(zip(points, cleaned, strict=True))
     ]
     positions.sort(key=lambda p: p.ts)
     seq = np.array([track_sequence(positions, settings.anomaly_seq_len)], dtype=np.float64)
