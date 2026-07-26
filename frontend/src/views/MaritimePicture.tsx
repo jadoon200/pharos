@@ -100,7 +100,15 @@ export default function MaritimePicture() {
                   <tr
                     key={t.mmsi}
                     className="clickable"
+                    role="button"
+                    tabIndex={0}
                     onClick={() => setSelected(t)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        setSelected(t)
+                      }
+                    }}
                     style={{ outline: selected?.mmsi === t.mmsi ? '1px solid var(--teal)' : undefined }}
                   >
                     <td>
