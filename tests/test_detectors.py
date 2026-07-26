@@ -167,5 +167,11 @@ def test_ensemble_covers_every_injected_type() -> None:
 def test_grade_and_severity_helpers() -> None:
     assert grade_from_confidence(0.95) == "B"  # never A for AIS
     assert grade_from_confidence(0.1) == "F"
+    # Thresholds match the HORUS air lane; no sensitive-zone bump (that only nudges
+    # reliability), so "critical" reflects the score rather than the location.
     assert severity_from_score(0.9) == "critical"
-    assert severity_from_score(0.5, sensitive_zone=True) == "high"  # bumped one level
+    assert severity_from_score(0.85) == "critical"
+    assert severity_from_score(0.84) == "high"
+    assert severity_from_score(0.65) == "high"
+    assert severity_from_score(0.5) == "moderate"
+    assert severity_from_score(0.3) == "low"

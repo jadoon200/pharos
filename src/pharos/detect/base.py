@@ -33,13 +33,24 @@ def grade_from_confidence(conf: float) -> str:
     return "F"
 
 
-def severity_from_score(score: float, *, sensitive_zone: bool = False) -> str:
-    """Bucket a score [0,1] into a severity, bumped one level inside a sensitive watch zone."""
-    levels = ["low", "moderate", "high", "critical"]
-    idx = 0 if score < 0.4 else 1 if score < 0.6 else 2 if score < 0.8 else 3
-    if sensitive_zone:
-        idx = min(idx + 1, 3)
-    return levels[idx]
+def severity_from_score(score: float) -> str:
+    """Bucket a score [0,1] into a severity.
+
+    Thresholds match the HORUS air lane (`severity_for`) so a severity means the same thing
+    across the portfolio. There is deliberately NO sensitive-zone bump: because the whole
+    Singapore-Strait pilot sits inside a sensitive watch zone, bumping every incident one
+    level pushed them all to "critical", which erased the triage signal and disagreed with
+    the per-vessel severity shown on the map. A sensitive zone instead nudges the incident's
+    RELIABILITY (see `make_incident`), so "critical" stays a statement about the score, not
+    the location.
+    """
+    if score >= 0.85:
+        return "critical"
+    if score >= 0.65:
+        return "high"
+    if score >= 0.4:
+        return "moderate"
+    return "low"
 
 
 def positions_by_vessel(positions: list[Position]) -> dict[str, list[Position]]:
@@ -83,7 +94,7 @@ def make_incident(
         detector=detector,
         incident_type=incident_type,
         score=round(score, 4),
-        severity=severity_from_score(score, sensitive_zone=sensitive),
+        severity=severity_from_score(score),
         reliability=grade_from_confidence(graded_conf),
         ts_start=ts_start,
         ts_end=ts_end,
