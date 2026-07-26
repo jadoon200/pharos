@@ -147,6 +147,35 @@ def test_score_track_needs_enough_points(client: TestClient) -> None:
     assert "error" in r
 
 
+def test_score_track_rejects_invalid_coordinates(client: TestClient) -> None:
+    """Bad coordinates must be reported, never crash (500) or silently score to a misleading
+    'not anomalous'. Before validation, a missing field 500'd and an inf coordinate scored to
+    NaN and returned is_anomalous=false — a verdict on garbage input."""
+    base = [{"lat": 1.1 + 0.1 * k, "lon": 103.1 + 0.1 * k, "ts": k * 60} for k in range(5)]
+
+    # Missing lat used to raise a KeyError -> 500.
+    missing = client.post("/score-track", json={"points": [{"lon": 103.1}, *base]})
+    assert missing.status_code == 200 and "error" in missing.json()
+
+    # Non-numeric lat used to raise a ValueError -> 500.
+    bad = {"points": [{"lat": "north", "lon": 103.1}, *base]}
+    nonnumeric = client.post("/score-track", json=bad)
+    assert nonnumeric.status_code == 200 and "error" in nonnumeric.json()
+
+    # Out-of-range and (via raw body) inf must be rejected, not scored.
+    oob = client.post("/score-track", json={"points": [{"lat": 200.0, "lon": 103.1}, *base]})
+    assert oob.status_code == 200 and "error" in oob.json()
+    inf = client.post(
+        "/score-track",
+        content='{"points":[{"lat":1e999,"lon":103.1},'
+        '{"lat":1.2,"lon":103.2},{"lat":1.3,"lon":103.3},{"lat":1.4,"lon":103.4},'
+        '{"lat":1.5,"lon":103.5},{"lat":1.6,"lon":103.6}]}',
+        headers={"content-type": "application/json"},
+    )
+    body = inf.json()
+    assert "error" in body, f"inf coordinate must be rejected, got {body}"
+
+
 def test_geoint_evidence(client: TestClient) -> None:
     ev = client.get("/geoint/evidence").json()
     assert ev  # non-empty
