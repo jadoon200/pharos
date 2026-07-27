@@ -1,5 +1,7 @@
 # PHAROS
 
+**Live demo:** https://pharos-0y6q.onrender.com (baked synthetic snapshot; run locally for the live Singapore pilot)
+
 **Maritime domain awareness & GEOINT** — turns free vessel-movement data (AIS) into
 source-rated, human-review **maritime incidents**: dark ships, ship-to-ship transfers,
 loitering / zone incursions, AIS spoofing, and trajectory anomalies — fused into a composite
@@ -19,8 +21,8 @@ per-vessel threat picture, the way a maritime fusion cell actually works.
 > 2026-07-16, the low-priority launch agent is collecting Class A/B AIS, and every two minutes the
 > incremental processor rebuilds dirty track tails and scores them with the frozen SHA-pinned GRU.
 > Phase 3 independent labels/evaluation and Phase 4 sanitized delayed snapshots/dashboard modes
-> are next. The separate baked-demo release step remains operational: connect the checked-in
-> free-cloud blueprint to Render and record the public URL (see [`docs/DEPLOY.md`](docs/DEPLOY.md)).
+> are next. The baked-demo release is deployed on Render's free tier at
+> https://pharos-0y6q.onrender.com (see [`docs/DEPLOY.md`](docs/DEPLOY.md)).
 > Progress is tracked honestly in
 > [`docs/ROADMAP.md`](docs/ROADMAP.md); every model/detector claim lands in
 > [`docs/EVAL.md`](docs/EVAL.md) with the number that survives scrutiny.
