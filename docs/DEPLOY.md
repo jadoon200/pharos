@@ -8,8 +8,7 @@ for a public demo. Mirrors SENTINEL/ARGUS.
 This document describes the baked-demo deployment. The active Singapore pilot remains local and
 outbound-only: Phase 4 publishes sanitized, derived snapshots delayed by at least 15 minutes to a
 dedicated `snapshots` branch and adds explicit live/delayed/offline/demo modes to this dashboard.
-No public listener or tunnel is opened on the collector laptop. See
-[`SG_LIVE_PILOT_PLAN.md`](SG_LIVE_PILOT_PLAN.md).
+No public listener or tunnel is opened on the collector laptop.
 
 ## Deploy to the cloud (free, one service)
 
