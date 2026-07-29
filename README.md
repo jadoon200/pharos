@@ -20,8 +20,9 @@ per-vessel threat picture, the way a maritime fusion cell actually works.
 > evidence bridge is also implemented. The Singapore pilot is live: Pilot Day 0 began on
 > 2026-07-16, the low-priority launch agent is collecting Class A/B AIS, and every two minutes the
 > incremental processor rebuilds dirty track tails and scores them with the frozen SHA-pinned GRU.
-> Phase 3 independent labels/evaluation and Phase 4 sanitized delayed snapshots/dashboard modes
-> are next. The baked-demo release is deployed on Render's free tier at
+> Phase 3 (independent labels/evaluation) and Phase 4 (sanitized delayed snapshots / dashboard
+> modes) machinery is built and running; labels and reviews accrue through the pilot window, with
+> the Day-14 preliminary report next. The baked-demo release is deployed on Render's free tier at
 > https://pharos-0y6q.onrender.com (see [`docs/DEPLOY.md`](docs/DEPLOY.md)).
 > Progress is tracked honestly in
 > [`docs/ROADMAP.md`](docs/ROADMAP.md); every model/detector claim lands in
