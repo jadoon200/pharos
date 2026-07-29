@@ -130,11 +130,9 @@ make ui                                             # React map dashboard on :51
 ```
 
 The continuous Singapore pilot collector is micro-batched, Class A/B aware, reconnecting, and
-coverage-accounted for laptop sleep. Its low-priority macOS launch-agent setup and mobility drill
-are documented in [`docs/SG_PILOT_OPERATIONS.md`](docs/SG_PILOT_OPERATIONS.md). The bounded
-`make live` capture remains available for manual checks. The model/threshold freeze is auditable in
-[`docs/SG_PILOT_FREEZE.md`](docs/SG_PILOT_FREEZE.md); the full delivery and evaluation protocol is
-[`docs/SG_LIVE_PILOT_PLAN.md`](docs/SG_LIVE_PILOT_PLAN.md).
+coverage-accounted for laptop sleep, and runs under a low-priority macOS launch agent. The bounded
+`make live` capture remains available for manual checks, and the model/threshold freeze is
+SHA-pinned and auditable.
 
 Every two minutes the live worker rebuilds only dirty vessel track tails, refreshes affected
 detectors, and scores eligible tracks with the SHA-pinned frozen GRU—never request-path training or
