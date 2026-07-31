@@ -197,6 +197,14 @@ def detect_anomalies(
                     "model": "gru-seq-ae",
                     "model_parameters": model.parameter_count,
                     "val_loss": round(model.history.val_loss[history.best_epoch], 5),
+                    # The model scores how far a route shape sits from the pattern of life
+                    # it trained on — which is a statement about rarity, not intent. Fishing
+                    # transits, survey lines, weather routing and tug work are all legitimately
+                    # unlike a lane crossing. The air sibling carries the same caveat.
+                    "caveat": (
+                        "unusual route shape, not a verdict — e.g. fishing, survey or "
+                        "weather routing"
+                    ),
                 },
             )
         )

@@ -175,3 +175,29 @@ def test_grade_and_severity_helpers() -> None:
     assert severity_from_score(0.65) == "high"
     assert severity_from_score(0.5) == "moderate"
     assert severity_from_score(0.3) == "low"
+
+
+def test_every_detector_discloses_its_confound() -> None:
+    """No incident may present itself as more certain than the evidence supports.
+
+    Each of these detectors has a benign population that produces the same signature:
+    an AIS gap can be a reception gap, an impossible jump can be a duplicated MMSI, a
+    close pass can be a lane overtake, holding station can be waiting for a berth, and an
+    unusual route shape can be fishing or survey work. The air sibling states these on
+    every call; a fused all-source view must not read as more certain on the sea side.
+    """
+    from pharos.detect.run import DETERMINISTIC_DETECTORS
+
+    sc = generate_scenario("singapore", seed=0, n_normal=6)
+    incidents = run_detectors(sc.positions, get_settings())
+    by_detector: dict[str, list] = {}  # type: ignore[type-arg]
+    for inc in incidents:
+        by_detector.setdefault(inc.detector, []).append(inc)
+
+    # Every deterministic detector that fired must carry a caveat on every incident.
+    for detector in DETERMINISTIC_DETECTORS:
+        for inc in by_detector.get(detector, []):
+            evidence = inc.evidence or {}
+            assert "caveat" in evidence or "coverage_caveat" in evidence, (
+                f"{detector} incident {inc.incident_id} states a finding with no confound"
+            )
