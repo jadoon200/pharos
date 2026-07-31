@@ -77,6 +77,13 @@ def detect_loitering(positions: list[Position], settings: Settings) -> list[Inci
                             "radius_km": settings.loiter_radius_km,
                             "mean_speed_kn": round(_mean_speed(span), 2),
                             "points": len(span),
+                            # Designated anchorages are already skipped above, but holding
+                            # station outside one is still routinely benign: waiting for a
+                            # berth or pilot, drifting with a fault, bunkering, or fishing.
+                            "caveat": (
+                                "holding station is not intent; waiting for a berth or "
+                                "pilot, drifting and fishing all look alike from AIS"
+                            ),
                         },
                     )
                 )

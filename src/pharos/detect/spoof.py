@@ -51,6 +51,12 @@ def detect_spoofing(positions: list[Position], settings: Settings) -> list[Incid
                         "jump_km": round(disp_km, 1),
                         "interval_s": round(secs, 1),
                         "physical_ceiling_kn": settings.spoof_max_speed_kn,
+                        # An impossible jump says the identity is inconsistent, not that a
+                        # vessel is deceiving anyone: duplicated/mistyped MMSIs and garbled
+                        # AIS messages produce the same arithmetic. The air sibling states
+                        # the equivalent caveat on its ICAO24 spoof calls; a fused view
+                        # should not read as more certain on the sea side than the sky.
+                        "caveat": "may be two vessels sharing an MMSI or a corrupted AIS message",
                     },
                 )
             )

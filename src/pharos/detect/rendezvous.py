@@ -396,6 +396,14 @@ def detect_rendezvous(
                         "duration_minutes": round(c.duration_min, 1),
                         "min_range_km": c.min_range_km,
                         "counterpart": counterpart,
+                        # Co-location is proximity, not cargo. Two vessels holding station
+                        # close together also describes waiting for a pilot, anchoring in
+                        # the same berth cluster, or a slow overtake in a narrow lane — the
+                        # benign pass in the synthetic set is exactly this shape.
+                        "caveat": (
+                            "proximity is not proof of transfer; benign lane passes and "
+                            "shared anchorages look the same from AIS alone"
+                        ),
                     },
                 )
             )
