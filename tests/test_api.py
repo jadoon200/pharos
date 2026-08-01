@@ -130,7 +130,23 @@ def test_score_track_ranks_zigzag_higher(client: TestClient) -> None:
     assert zig["model_source"] in {"trained-artifact", "runtime-fallback"}
 
 
-def test_detect_persists_incidents_and_serves_exact_artifact(client: TestClient) -> None:
+def test_detect_is_disabled_unless_the_deployment_opts_in(client: TestClient) -> None:
+    """Training must not be reachable by default on a public deployment.
+
+    /detect trains the anomaly model. On the free tier that never returned (measured: no
+    response after 180 s) while holding an inference slot the whole time, so a few calls
+    could starve /score-track — the route the dashboard actually uses — into "server busy".
+    """
+    r = client.post("/detect", params={"region": "singapore"})
+    assert r.status_code == 503
+    assert "disabled on this deployment" in r.json()["detail"]
+
+
+def test_detect_persists_incidents_and_serves_exact_artifact(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("PHAROS_API_ENABLE_DETECT", "true")
+    get_settings.cache_clear()
     result = client.post("/detect", params={"region": "singapore"})
     assert result.status_code == 200
     anomaly = result.json()["anomaly"]
