@@ -133,6 +133,13 @@ class Settings(BaseSettings):
     api_trust_forwarded_header: bool = False
     api_inference_concurrency: int = 2
     api_inference_acquire_timeout_seconds: float = 15.0
+    # POST /detect *trains* the anomaly model. On the free public tier that never finishes
+    # (measured: no response after 180 s) while holding an inference slot the whole time, so
+    # a handful of calls can starve /score-track — the route the dashboard actually uses —
+    # into "server busy". It also earns nothing there: the deployed image ships a seed whose
+    # anomaly lane is already populated. Off by default, like the air sibling's calibration
+    # lab; set it locally where training is wanted. `make detect` is unaffected.
+    api_enable_detect: bool = False
 
 
 @lru_cache

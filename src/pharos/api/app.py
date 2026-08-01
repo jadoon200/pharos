@@ -256,9 +256,22 @@ def run_detection(
 ) -> dict[str, Any]:
     """Rebuild the anomaly incidents on demand (the deterministic ones are rebuilt by the CLI).
 
-    Guarded like the inference route — it trains the model. Included so a fresh deploy can
-    populate the anomaly lane from the dashboard without the CLI. Not destructive to positions.
+    This *trains* the model, so it is off unless `PHAROS_API_ENABLE_DETECT` says otherwise.
+    On the free public tier the training never returned (measured: no response after 180 s)
+    while holding an inference slot throughout, which lets a few calls starve `/score-track`
+    — the route the dashboard actually uses — into "server busy". Not destructive to
+    positions, and `make detect` is unaffected.
     """
+    if not get_settings().api_enable_detect:
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "on-demand detection is disabled on this deployment: it trains the anomaly "
+                "model, which the free tier cannot finish. The served seed already carries "
+                "its anomaly lane. Run PHAROS locally with PHAROS_API_ENABLE_DETECT=true, "
+                "or use `make detect`."
+            ),
+        )
     if not _rate_limiter.allow(request):
         raise HTTPException(status_code=429, detail="rate limit exceeded")
     try:
