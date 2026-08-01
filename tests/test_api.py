@@ -130,23 +130,30 @@ def test_score_track_ranks_zigzag_higher(client: TestClient) -> None:
     assert zig["model_source"] in {"trained-artifact", "runtime-fallback"}
 
 
-def test_detect_is_disabled_unless_the_deployment_opts_in(client: TestClient) -> None:
-    """Training must not be reachable by default on a public deployment.
-
-    /detect trains the anomaly model. On the free tier that never returned (measured: no
-    response after 180 s) while holding an inference slot the whole time, so a few calls
-    could starve /score-track — the route the dashboard actually uses — into "server busy".
-    """
-    r = client.post("/detect", params={"region": "singapore"})
-    assert r.status_code == 503
-    assert "disabled on this deployment" in r.json()["detail"]
-
-
-def test_detect_persists_incidents_and_serves_exact_artifact(
+def test_detect_is_refused_only_where_the_host_opts_out(
     client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setenv("PHAROS_API_ENABLE_DETECT", "true")
+    """Trim the host, not the model: training stays on locally and is switched off in
+    `render.yaml`.
+
+    /detect trains the anomaly model. The free tier never returned (measured: no response
+    after 180 s) while holding an inference slot the whole time, so a few calls could starve
+    /score-track — the route the dashboard actually uses — into "server busy". That is a
+    property of that host, so the deploy opts out rather than the default being weakened.
+    """
+    monkeypatch.setenv("PHAROS_API_ENABLE_DETECT", "false")
     get_settings.cache_clear()
+    try:
+        r = client.post("/detect", params={"region": "singapore"})
+        assert r.status_code == 503
+        assert "disabled on this deployment" in r.json()["detail"]
+    finally:
+        monkeypatch.delenv("PHAROS_API_ENABLE_DETECT", raising=False)
+        get_settings.cache_clear()
+
+
+def test_detect_persists_incidents_and_serves_exact_artifact(client: TestClient) -> None:
+    # No opt-in needed: a local run trains at full strength by default.
     result = client.post("/detect", params={"region": "singapore"})
     assert result.status_code == 200
     anomaly = result.json()["anomaly"]

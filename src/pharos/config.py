@@ -133,13 +133,14 @@ class Settings(BaseSettings):
     api_trust_forwarded_header: bool = False
     api_inference_concurrency: int = 2
     api_inference_acquire_timeout_seconds: float = 15.0
-    # POST /detect *trains* the anomaly model. On the free public tier that never finishes
-    # (measured: no response after 180 s) while holding an inference slot the whole time, so
-    # a handful of calls can starve /score-track — the route the dashboard actually uses —
-    # into "server busy". It also earns nothing there: the deployed image ships a seed whose
-    # anomaly lane is already populated. Off by default, like the air sibling's calibration
-    # lab; set it locally where training is wanted. `make detect` is unaffected.
-    api_enable_detect: bool = False
+    # POST /detect *trains* the anomaly model. Full strength locally — that is where the
+    # model is meant to be exercised — and turned OFF for the public deploy in `render.yaml`,
+    # because the free tier cannot finish the training (measured: no response after 180 s)
+    # and holds an inference slot throughout, letting a few calls starve /score-track, the
+    # route the dashboard actually uses. It also earns nothing there: the served seed already
+    # carries its anomaly lane. So the capability is trimmed for the host, never for the
+    # local system. `make detect` is unaffected either way.
+    api_enable_detect: bool = True
 
 
 @lru_cache

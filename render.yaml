@@ -18,3 +18,10 @@ services:
       # Render terminates TLS and sets X-Forwarded-For, so rate-limit per real client IP.
       - key: PHAROS_API_TRUST_FORWARDED_HEADER
         value: "true"
+      # Trim the HOST, not the model: /detect trains the anomaly model, which runs at full
+      # strength locally but cannot finish on this tier (measured: no response after 180 s)
+      # and holds an inference slot meanwhile, so a few calls would starve /score-track — the
+      # route the dashboard actually uses. The baked seed already carries its anomaly lane,
+      # so nothing here needs to train.
+      - key: PHAROS_API_ENABLE_DETECT
+        value: "false"
