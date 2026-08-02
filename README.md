@@ -7,10 +7,14 @@ source-rated, human-review **maritime incidents**: dark ships, ship-to-ship tran
 loitering / zone incursions, AIS spoofing, and trajectory anomalies — fused into a composite
 per-vessel threat picture, the way a maritime fusion cell actually works.
 
-> **The GEOINT lane of the portfolio.** Sibling to [SENTINEL](../sentinel) (cyber threat
-> intelligence) and [ARGUS](../argus) (all-source / information defence). Those fuse the
-> *cyber* and *cognitive* pictures; PHAROS fuses the **spatiotemporal** one — where and when,
-> on the water. Named for the lighthouse of Alexandria: a watcher over the sea.
+> **The maritime lane of the portfolio.** Sibling to [HORUS](../horus) (air / GNSS
+> interference), [SENTINEL](../sentinel) (cyber threat intelligence) and
+> [ARGUS](../argus) (all-source / information defence). Those fuse the *air*, *cyber* and
+> *cognitive* pictures; PHAROS fuses the **spatiotemporal** one — where and when, on the
+> water. HORUS watches the sky above the same strait, a deliberate pair: together they give
+> a joint air + sea picture over the world's busiest waterway, and ARGUS consumes both
+> read-only as its Ocean and Sky lanes. Named for the lighthouse of Alexandria: a watcher
+> over the sea.
 
 > **Status:** the full standalone system runs end-to-end. Collection (NOAA bulk AIS loader +
 > AISStream live client + Global Fishing Watch labels + a deterministic labelled synthetic
