@@ -80,10 +80,16 @@ def fuse_incidents(mmsi: str, incidents: list[Incident], vessel: Vessel | None) 
     sensitive = any(z and z.sensitive for zid in zone_ids if (z := zone_by_id(zid)))
 
     # Transparent composite: severity x corroboration x reliability, +sensitive-zone bump.
-    risk = max_score * (0.7 + 0.3 * diversity) * (0.6 + 0.4 * best_rel)
-    if sensitive:
-        risk = min(1.0, risk + 0.1)
-    risk = round(min(1.0, risk), 4)
+    # The two multipliers are floored so corroboration and reliability *temper* the headline
+    # score rather than replacing it: a lone D-grade detector still keeps 42% of its score.
+    corroboration_factor = 0.7 + 0.3 * diversity
+    reliability_factor = 0.6 + 0.4 * best_rel
+    base = max_score * corroboration_factor * reliability_factor
+    # Report the bump that was actually applied, not the nominal 0.1 — the cap can swallow
+    # part of it, and a breakdown that does not add up is not a breakdown.
+    risk_uncapped = base + 0.1 if sensitive else base
+    risk = round(min(1.0, risk_uncapped), 4)
+    sensitive_bonus = round(min(1.0, risk_uncapped) - base, 4) if sensitive else 0.0
 
     # Representative point: the highest-scoring incident with a location.
     located = sorted(
@@ -110,12 +116,21 @@ def fuse_incidents(mmsi: str, incidents: list[Incident], vessel: Vessel | None) 
         lon=rep.lon,
         first_ts=min(i.ts_start for i in incidents).isoformat(),
         last_ts=max((i.ts_end or i.ts_start) for i in incidents).isoformat(),
+        # The inputs AND the factors they become. Publishing only the raw inputs made the
+        # panel's "severity x corroboration x reliability" read as a literal product of the
+        # numbers on screen — 1.00 x 0.333 x B, which is nowhere near the 0.84 above it. A
+        # composite a reviewer cannot re-derive is one they cannot challenge, so the terms
+        # that actually multiply are exposed too and the arithmetic closes.
         components={
             "max_score": round(max_score, 4),
             "detector_count": len(detectors),
             "diversity": round(diversity, 3),
+            "corroboration_factor": round(corroboration_factor, 4),
             "best_reliability": best_grade,
+            "reliability_weight": round(best_rel, 4),
+            "reliability_factor": round(reliability_factor, 4),
             "sensitive_zone": sensitive,
+            "sensitive_bonus": sensitive_bonus,
         },
     )
 
