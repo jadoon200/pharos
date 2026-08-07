@@ -304,13 +304,50 @@ def build_rereview_queue(
     return count
 
 
+class ReviewerQuit(Exception):
+    """The reviewer asked to stop. Everything already labelled is committed."""
+
+
 def _prompt_choice(prompt: str, choices: tuple[str, ...]) -> str:
     for index, value in enumerate(choices, start=1):
         print(f"  {index}. {value}")
     while True:
-        value = input(f"{prompt}: ").strip()
+        try:
+            value = input(f"{prompt} (q to stop): ").strip()
+        except EOFError as exc:  # piped stdin ran out — same as asking to stop
+            raise ReviewerQuit from exc
+        if value.lower() == "q":
+            raise ReviewerQuit
         if value.isdigit() and 1 <= int(value) <= len(choices):
             return choices[int(value) - 1]
+
+
+def _prompt_text(prompt: str, limit: int) -> str | None:
+    try:
+        return input(f"{prompt}: ").strip()[:limit] or None
+    except EOFError as exc:
+        raise ReviewerQuit from exc
+
+
+def review_progress(session: Session, reviewer_id: str) -> tuple[int, int]:
+    """(reviewed, queued) for this reviewer — the number the pilot page reports."""
+    queued = (
+        session.scalar(
+            select(func.count())
+            .select_from(TrackReview)
+            .where(TrackReview.reviewer_id == reviewer_id)
+        )
+        or 0
+    )
+    done = (
+        session.scalar(
+            select(func.count())
+            .select_from(TrackReview)
+            .where(TrackReview.reviewer_id == reviewer_id, TrackReview.reviewed_at.isnot(None))
+        )
+        or 0
+    )
+    return done, queued
 
 
 def review_next(session: Session, *, reviewer_id: str = "primary", open_file: bool = True) -> bool:
@@ -331,12 +368,39 @@ def review_next(session: Session, *, reviewer_id: str = "primary", open_file: bo
     if open_file:
         subprocess.run(["open", str(path)], check=False)
     review.label = _prompt_choice("label", LABELS)
-    review.subtype = input("short subtype (optional): ").strip()[:128] or None
+    review.subtype = _prompt_text("short subtype (optional)", 128)
     review.confidence = _prompt_choice("confidence", CONFIDENCES)
-    review.reason = input("one-line reason (optional): ").strip()[:500] or None
+    review.reason = _prompt_text("one-line reason (optional)", 500)
     review.reviewed_at = datetime.now(UTC)
     session.commit()
     return True
+
+
+def review_session(
+    session: Session, *, reviewer_id: str = "primary", open_file: bool = True, count: int | None
+) -> int:
+    """Review until the queue empties, `count` is reached, or the reviewer stops.
+
+    One invocation used to grade exactly one track, so filling a 220-item queue meant running
+    the command 220 times. The queue is the gate on every pilot number the dashboard reports
+    as 0/200, and nothing but a human sitting down can move it — the least this can do is not
+    charge a process start per judgement. Each review commits as it is made, so stopping
+    (`q`, EOF, or Ctrl-C) never costs completed work.
+    """
+    graded = 0
+    try:
+        while count is None or graded < count:
+            if not review_next(session, reviewer_id=reviewer_id, open_file=open_file):
+                print("review queue complete")
+                break
+            graded += 1
+            done, queued = review_progress(session, reviewer_id)
+            print(f"  ✓ {done}/{queued} reviewed this queue ({graded} this sitting)\n")
+    except (ReviewerQuit, KeyboardInterrupt):
+        print()
+    done, queued = review_progress(session, reviewer_id)
+    print(f"stopped at {done}/{queued} reviewed ({graded} this sitting)")
+    return graded
 
 
 def adjudicate(session: Session) -> int:
@@ -369,6 +433,12 @@ def main() -> None:
     parser.add_argument("--rereview", action="store_true")
     parser.add_argument("--adjudicate", action="store_true")
     parser.add_argument("--no-open", action="store_true")
+    parser.add_argument(
+        "--count",
+        type=int,
+        default=None,
+        help="stop after this many reviews (default: until the queue empties or you press q)",
+    )
     args = parser.parse_args()
     configure_logging()
     init_sqlite_schema()
@@ -382,8 +452,12 @@ def main() -> None:
         if args.rereview:
             build_rereview_queue(session, settings)
             reviewer_id = "primary-rereview"
-        if not review_next(session, reviewer_id=reviewer_id, open_file=not args.no_open):
-            print("review queue complete")
+        review_session(
+            session,
+            reviewer_id=reviewer_id,
+            open_file=not args.no_open,
+            count=args.count,
+        )
 
 
 if __name__ == "__main__":
