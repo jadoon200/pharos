@@ -104,7 +104,19 @@ class SequenceAnomalyModel:
         # influence these statistics leaks information into the early-stopping signal.
         flat_train = x[train_indices].reshape(-1, self.n_features)
         self._mean = flat_train.mean(axis=0)
-        self._std = flat_train.std(axis=0) + 1e-6
+        # A channel with no training spread carries no information, and this scaler is
+        # *persisted* — /score-track applies it to pasted tracks the training population
+        # never contained. An epsilon divisor does not neutralise such a channel, it turns
+        # it into a ~1e6 amplifier for any scored track that does vary there. The air
+        # sibling HORUS shipped exactly that: its synthetic population held altitude
+        # constant, so an ordinary 2,000 ft descent scored 1.9e8 against a threshold of 13.
+        # All four channels here are geometric and none has ever been degenerate, so this is
+        # a guard rather than a fix — but the guard belongs next to the hazard.
+        # Healthy channels keep their existing `std + 1e-6` exactly, so the frozen
+        # SG-PILOT-v0 artifact and its published SHA stay valid; only a dead channel's
+        # divisor changes.
+        train_std = flat_train.std(axis=0)
+        self._std = np.where(train_std < 1e-6, 1.0, train_std + 1e-6)
         xs = torch.tensor(self._standardize(x), dtype=torch.float32)
 
         val_idx = torch.tensor(idx[:n_val])

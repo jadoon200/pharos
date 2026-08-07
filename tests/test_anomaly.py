@@ -152,3 +152,34 @@ def test_detect_anomalies_writes_incidents(session: Session, tmp_path) -> None: 
         select(func.count()).select_from(Incident).where(Incident.detector == "anomaly")
     )
     assert n == stats["flagged"]
+
+
+def test_dead_channel_gets_unit_scale_not_an_epsilon_divisor() -> None:
+    """A channel with no training spread must be neutral, not a ~1e6 amplifier.
+
+    The scaler is persisted and served: /score-track applies it to pasted tracks the
+    training population never contained. The air sibling HORUS shipped the epsilon version
+    of this and scored an ordinary 2,000 ft descent at 1.9e8 against a threshold of 13.
+    Healthy channels must keep their existing `std + 1e-6` untouched, so the frozen
+    SG-PILOT-v0 artifact and its published SHA stay valid.
+    """
+    import numpy as np
+
+    from pharos.detect.seq_anomaly import SequenceAnomalyModel
+
+    rng = np.random.default_rng(0)
+    n, length = 12, 8
+    seqs = rng.normal(size=(n, length, 4))
+    seqs[:, :, 3] = 0.0  # a dead fourth channel
+
+    model = SequenceAnomalyModel(seed=0)
+    model.fit(seqs, epochs=5, patience=3)
+
+    std = model._std
+    assert std[3] == 1.0, "a dead channel takes unit scale"
+    assert all(s > 1e-6 for s in std[:3]), "live channels keep a real scale"
+
+    # A scored track that DOES vary on the dead channel must not explode.
+    varying = seqs[:1].copy()
+    varying[:, :, 3] = np.linspace(0.0, 0.05, length)
+    assert float(model.score(varying)[0]) < 1e3, "a dead channel must not amplify"
