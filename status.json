@@ -1,0 +1,20 @@
+{
+  "calendar_hours": 549.775,
+  "current_outage": {
+    "age_minutes": 3541.3,
+    "reason_category": "source-connectivity"
+  },
+  "freshness": "Generated from the local ledger; public track geometry is delayed \u226515 min.",
+  "frozen_artifact_sha256": "01faa27e17dd194b8913a439034a5f71d56f48ebb291ddb073e6c9b0ee7788fb",
+  "generated_at": "2026-08-08T00:34:20.938468+00:00",
+  "human_review_disclaimer": "Candidates for human review, never automated verdicts.",
+  "last_processing_at": "2026-08-06T16:53:05.544188+00:00",
+  "last_source_report_at": "2026-08-05T13:31:28+00:00",
+  "mode": "collector offline",
+  "observed_hours": 266.691,
+  "run_count": 10,
+  "source": {
+    "ais": "AISStream.io beta feed; no service-level agreement",
+    "gfw": "Global Fishing Watch data \u2014 https://globalfishingwatch.org"
+  }
+}

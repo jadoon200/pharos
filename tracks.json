@@ -1,0 +1,7985 @@
+{
+  "delay_floor_minutes": 15.0,
+  "features": [
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8796,
+            1.2706
+          ],
+          [
+            103.8827,
+            1.2713
+          ],
+          [
+            103.8979,
+            1.2707
+          ],
+          [
+            103.8972,
+            1.2703
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 2.12,
+        "duration_minutes": 15.6,
+        "end_ts": "2026-08-05T13:31:28+00:00",
+        "point_count": 4,
+        "public_track_id": "7c8f63aa834e"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8014,
+            1.2736
+          ],
+          [
+            103.8014,
+            1.2735
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.02,
+        "duration_minutes": 109.0,
+        "end_ts": "2026-08-05T13:30:35+00:00",
+        "point_count": 2,
+        "public_track_id": "ad75fcf93537"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7898,
+            1.2238
+          ],
+          [
+            103.7994,
+            1.2118
+          ],
+          [
+            103.8098,
+            1.2022
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 3.28,
+        "duration_minutes": 12.5,
+        "end_ts": "2026-08-05T13:30:29+00:00",
+        "point_count": 3,
+        "public_track_id": "529189d8665b"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8711,
+            1.2197
+          ],
+          [
+            103.8136,
+            1.2097
+          ],
+          [
+            103.8084,
+            1.2115
+          ],
+          [
+            103.7914,
+            1.2443
+          ],
+          [
+            103.7919,
+            1.252
+          ],
+          [
+            103.7905,
+            1.2564
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 12.58,
+        "duration_minutes": 110.8,
+        "end_ts": "2026-08-05T13:30:05+00:00",
+        "point_count": 6,
+        "public_track_id": "98828ed5a65b"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8211,
+            1.1695
+          ],
+          [
+            103.8997,
+            1.2018
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 9.45,
+        "duration_minutes": 25.4,
+        "end_ts": "2026-08-05T13:30:05+00:00",
+        "point_count": 2,
+        "public_track_id": "46914bc77fde"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7885,
+            1.2467
+          ],
+          [
+            103.7929,
+            1.2619
+          ],
+          [
+            103.7921,
+            1.2652
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 2.14,
+        "duration_minutes": 49.7,
+        "end_ts": "2026-08-05T13:30:03+00:00",
+        "point_count": 3,
+        "public_track_id": "53a72e2b426a"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8443,
+            1.2034
+          ],
+          [
+            103.8352,
+            1.2081
+          ],
+          [
+            103.8269,
+            1.2098
+          ],
+          [
+            103.7976,
+            1.2191
+          ],
+          [
+            103.7888,
+            1.231
+          ],
+          [
+            103.7858,
+            1.2415
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 8.36,
+        "duration_minutes": 64.0,
+        "end_ts": "2026-08-05T13:30:00+00:00",
+        "point_count": 6,
+        "public_track_id": "cab15b8e78b5"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.913,
+            1.2243
+          ],
+          [
+            103.9032,
+            1.2207
+          ],
+          [
+            103.8816,
+            1.2106
+          ],
+          [
+            103.8469,
+            1.1915
+          ],
+          [
+            103.8274,
+            1.1835
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 10.55,
+        "duration_minutes": 57.5,
+        "end_ts": "2026-08-05T13:29:51+00:00",
+        "point_count": 5,
+        "public_track_id": "e5d6b34a3682"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8419,
+            1.2574
+          ],
+          [
+            103.8419,
+            1.2574
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.01,
+        "duration_minutes": 45.5,
+        "end_ts": "2026-08-05T13:29:51+00:00",
+        "point_count": 2,
+        "public_track_id": "2c012fb4d073"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.821,
+            1.2365
+          ],
+          [
+            103.7897,
+            1.2302
+          ],
+          [
+            103.7887,
+            1.2334
+          ],
+          [
+            103.7919,
+            1.2497
+          ],
+          [
+            103.7908,
+            1.2564
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 6.54,
+        "duration_minutes": 64.0,
+        "end_ts": "2026-08-05T13:29:06+00:00",
+        "point_count": 5,
+        "public_track_id": "7d2faeddec41"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8465,
+            1.2628
+          ],
+          [
+            103.8465,
+            1.2628
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.02,
+        "duration_minutes": 58.5,
+        "end_ts": "2026-08-05T13:28:56+00:00",
+        "point_count": 2,
+        "public_track_id": "e403acd8f63e"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7893,
+            1.2535
+          ],
+          [
+            103.7806,
+            1.2468
+          ],
+          [
+            103.7808,
+            1.241
+          ],
+          [
+            103.7818,
+            1.2386
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 2.15,
+        "duration_minutes": 23.2,
+        "end_ts": "2026-08-05T13:28:52+00:00",
+        "point_count": 4,
+        "public_track_id": "42e6a944987a"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9145,
+            1.2287
+          ],
+          [
+            103.8592,
+            1.2044
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 6.71,
+        "duration_minutes": 22.5,
+        "end_ts": "2026-08-05T13:28:50+00:00",
+        "point_count": 2,
+        "public_track_id": "2826031397e2"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8653,
+            1.1952
+          ],
+          [
+            103.9531,
+            1.2493
+          ],
+          [
+            103.9195,
+            1.2679
+          ],
+          [
+            103.9062,
+            1.2726
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 17.31,
+        "duration_minutes": 108.3,
+        "end_ts": "2026-08-05T13:27:33+00:00",
+        "point_count": 4,
+        "public_track_id": "3754e4f9a4c8"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8245,
+            1.2362
+          ],
+          [
+            103.7957,
+            1.2262
+          ],
+          [
+            103.7896,
+            1.2352
+          ],
+          [
+            103.7926,
+            1.2465
+          ],
+          [
+            103.7926,
+            1.2543
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 6.76,
+        "duration_minutes": 62.5,
+        "end_ts": "2026-08-05T13:27:27+00:00",
+        "point_count": 5,
+        "public_track_id": "fff00f0c800a"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8994,
+            1.2623
+          ],
+          [
+            103.8994,
+            1.2622
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.04,
+        "duration_minutes": 105.0,
+        "end_ts": "2026-08-05T13:26:37+00:00",
+        "point_count": 2,
+        "public_track_id": "3f3dca738dd9"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8863,
+            1.2276
+          ],
+          [
+            103.8785,
+            1.2532
+          ],
+          [
+            103.8847,
+            1.2614
+          ],
+          [
+            103.8867,
+            1.268
+          ],
+          [
+            103.8795,
+            1.2694
+          ],
+          [
+            103.8701,
+            1.2621
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 7.02,
+        "duration_minutes": 75.8,
+        "end_ts": "2026-08-05T13:26:23+00:00",
+        "point_count": 6,
+        "public_track_id": "5011e59aa657"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7875,
+            1.2277
+          ],
+          [
+            103.8225,
+            1.1957
+          ],
+          [
+            103.839,
+            1.1868
+          ],
+          [
+            103.8809,
+            1.2038
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 12.39,
+        "duration_minutes": 50.3,
+        "end_ts": "2026-08-05T13:24:42+00:00",
+        "point_count": 4,
+        "public_track_id": "e9c3b2394415"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8209,
+            1.2628
+          ],
+          [
+            103.8235,
+            1.2402
+          ],
+          [
+            103.8264,
+            1.2368
+          ],
+          [
+            103.8312,
+            1.2345
+          ],
+          [
+            103.8539,
+            1.2432
+          ],
+          [
+            103.857,
+            1.2404
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 6.79,
+        "duration_minutes": 32.3,
+        "end_ts": "2026-08-05T12:42:50+00:00",
+        "point_count": 6,
+        "public_track_id": "155b87878f12"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7474,
+            1.1094
+          ],
+          [
+            103.7674,
+            1.1321
+          ],
+          [
+            103.7762,
+            1.1384
+          ],
+          [
+            103.7937,
+            1.1526
+          ],
+          [
+            103.8121,
+            1.1688
+          ],
+          [
+            103.8164,
+            1.1738
+          ],
+          [
+            103.8357,
+            1.1836
+          ],
+          [
+            103.847,
+            1.1884
+          ],
+          [
+            103.8751,
+            1.2175
+          ],
+          [
+            103.8789,
+            1.2187
+          ],
+          [
+            103.8803,
+            1.2287
+          ],
+          [
+            103.8775,
+            1.235
+          ],
+          [
+            103.8606,
+            1.2493
+          ],
+          [
+            103.8564,
+            1.2558
+          ],
+          [
+            103.8464,
+            1.259
+          ],
+          [
+            103.84,
+            1.2638
+          ],
+          [
+            103.8356,
+            1.2639
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 27.09,
+        "duration_minutes": 331.4,
+        "end_ts": "2026-08-05T10:34:41+00:00",
+        "point_count": 17,
+        "public_track_id": "9dc139291767"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8417,
+            1.2573
+          ],
+          [
+            103.8417,
+            1.2574
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.08,
+        "duration_minutes": 385.3,
+        "end_ts": "2026-08-05T10:34:40+00:00",
+        "point_count": 2,
+        "public_track_id": "57368773d20a"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7671,
+            1.2437
+          ],
+          [
+            103.7826,
+            1.2307
+          ],
+          [
+            103.8026,
+            1.2107
+          ],
+          [
+            103.8163,
+            1.2052
+          ],
+          [
+            103.8395,
+            1.2032
+          ],
+          [
+            103.8634,
+            1.2094
+          ],
+          [
+            103.8769,
+            1.2474
+          ],
+          [
+            103.8821,
+            1.2563
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 18.0,
+        "duration_minutes": 102.2,
+        "end_ts": "2026-08-05T10:34:40+00:00",
+        "point_count": 8,
+        "public_track_id": "4d2afb001a14"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8263,
+            1.2615
+          ],
+          [
+            103.8263,
+            1.2615
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.01,
+        "duration_minutes": 135.1,
+        "end_ts": "2026-08-05T10:34:25+00:00",
+        "point_count": 2,
+        "public_track_id": "ccd2b690a758"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.778,
+            1.2283
+          ],
+          [
+            103.7783,
+            1.2282
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.19,
+        "duration_minutes": 448.8,
+        "end_ts": "2026-08-05T10:34:16+00:00",
+        "point_count": 2,
+        "public_track_id": "e4e06f5c45cd"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7731,
+            1.2172
+          ],
+          [
+            103.7722,
+            1.2171
+          ],
+          [
+            103.7734,
+            1.2191
+          ],
+          [
+            103.7751,
+            1.2187
+          ],
+          [
+            103.7746,
+            1.2177
+          ],
+          [
+            103.7755,
+            1.2182
+          ],
+          [
+            103.7757,
+            1.2174
+          ],
+          [
+            103.7733,
+            1.2172
+          ],
+          [
+            103.7711,
+            1.2191
+          ],
+          [
+            103.7727,
+            1.2191
+          ],
+          [
+            103.7758,
+            1.2176
+          ],
+          [
+            103.7741,
+            1.218
+          ],
+          [
+            103.7779,
+            1.2181
+          ],
+          [
+            103.7832,
+            1.2167
+          ],
+          [
+            103.7809,
+            1.2169
+          ],
+          [
+            103.7801,
+            1.2179
+          ],
+          [
+            103.7782,
+            1.217
+          ],
+          [
+            103.7782,
+            1.2184
+          ],
+          [
+            103.7759,
+            1.217
+          ],
+          [
+            103.7753,
+            1.2132
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 4.97,
+        "duration_minutes": 443.3,
+        "end_ts": "2026-08-05T10:34:06+00:00",
+        "point_count": 20,
+        "public_track_id": "23a0e47110e9"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            104.0804,
+            1.2931
+          ],
+          [
+            104.0059,
+            1.2573
+          ],
+          [
+            103.964,
+            1.2445
+          ],
+          [
+            103.9203,
+            1.2283
+          ],
+          [
+            103.8542,
+            1.197
+          ],
+          [
+            103.812,
+            1.1803
+          ],
+          [
+            103.742,
+            1.1437
+          ],
+          [
+            103.7392,
+            1.1431
+          ],
+          [
+            103.7134,
+            1.1478
+          ],
+          [
+            103.6629,
+            1.1845
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 51.38,
+        "duration_minutes": 172.7,
+        "end_ts": "2026-08-05T10:33:54+00:00",
+        "point_count": 10,
+        "public_track_id": "7d5768314513"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7942,
+            1.2359
+          ],
+          [
+            103.7958,
+            1.2369
+          ],
+          [
+            103.7968,
+            1.2363
+          ],
+          [
+            103.797,
+            1.2352
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.8,
+        "duration_minutes": 460.5,
+        "end_ts": "2026-08-05T10:33:53+00:00",
+        "point_count": 4,
+        "public_track_id": "ef6fae038d13"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.788,
+            1.2579
+          ],
+          [
+            103.7897,
+            1.2597
+          ],
+          [
+            103.7912,
+            1.2595
+          ],
+          [
+            103.7838,
+            1.2413
+          ],
+          [
+            103.7861,
+            1.2316
+          ],
+          [
+            103.7887,
+            1.2266
+          ],
+          [
+            103.8028,
+            1.208
+          ],
+          [
+            103.8103,
+            1.2007
+          ],
+          [
+            103.8116,
+            1.1982
+          ],
+          [
+            103.7485,
+            1.1948
+          ],
+          [
+            103.7414,
+            1.1984
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 16.39,
+        "duration_minutes": 137.0,
+        "end_ts": "2026-08-05T10:33:53+00:00",
+        "point_count": 11,
+        "public_track_id": "1a439c840e72"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7261,
+            1.2939
+          ],
+          [
+            103.7301,
+            1.2918
+          ],
+          [
+            103.7594,
+            1.2646
+          ],
+          [
+            103.7862,
+            1.2268
+          ],
+          [
+            103.8032,
+            1.2103
+          ],
+          [
+            103.8143,
+            1.2018
+          ],
+          [
+            103.8335,
+            1.1903
+          ],
+          [
+            103.8439,
+            1.1876
+          ],
+          [
+            103.8992,
+            1.2097
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 24.61,
+        "duration_minutes": 78.3,
+        "end_ts": "2026-08-05T10:33:46+00:00",
+        "point_count": 9,
+        "public_track_id": "b6c92bb190f3"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7843,
+            1.2506
+          ],
+          [
+            103.7906,
+            1.2575
+          ],
+          [
+            103.7931,
+            1.2671
+          ],
+          [
+            103.7924,
+            1.2636
+          ],
+          [
+            103.7938,
+            1.2515
+          ],
+          [
+            103.8223,
+            1.2402
+          ],
+          [
+            103.8243,
+            1.2388
+          ],
+          [
+            103.8496,
+            1.2532
+          ],
+          [
+            103.8451,
+            1.2567
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 11.44,
+        "duration_minutes": 146.6,
+        "end_ts": "2026-08-05T10:33:35+00:00",
+        "point_count": 9,
+        "public_track_id": "d8bb1a5ba0c0"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9782,
+            1.2588
+          ],
+          [
+            103.9348,
+            1.2402
+          ],
+          [
+            103.8906,
+            1.2224
+          ],
+          [
+            103.8549,
+            1.2102
+          ],
+          [
+            103.848,
+            1.2084
+          ],
+          [
+            103.8337,
+            1.2073
+          ],
+          [
+            103.8162,
+            1.21
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 19.1,
+        "duration_minutes": 76.3,
+        "end_ts": "2026-08-05T10:33:24+00:00",
+        "point_count": 7,
+        "public_track_id": "8c1ad3bd2fe9"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            104.0099,
+            1.2596
+          ],
+          [
+            103.9953,
+            1.2576
+          ],
+          [
+            103.9492,
+            1.2452
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 6.95,
+        "duration_minutes": 43.7,
+        "end_ts": "2026-08-05T10:33:04+00:00",
+        "point_count": 3,
+        "public_track_id": "31e7aef5e47b"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7972,
+            1.233
+          ],
+          [
+            103.7986,
+            1.2337
+          ],
+          [
+            103.7997,
+            1.2323
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.71,
+        "duration_minutes": 441.0,
+        "end_ts": "2026-08-05T10:33:01+00:00",
+        "point_count": 3,
+        "public_track_id": "1acbbc3c8fe9"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8888,
+            1.2653
+          ],
+          [
+            103.8535,
+            1.2371
+          ],
+          [
+            103.8515,
+            1.2363
+          ],
+          [
+            103.8488,
+            1.2227
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 6.86,
+        "duration_minutes": 104.3,
+        "end_ts": "2026-08-05T10:33:00+00:00",
+        "point_count": 4,
+        "public_track_id": "ade495aa8672"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9689,
+            1.253
+          ],
+          [
+            103.9424,
+            1.2389
+          ],
+          [
+            103.8953,
+            1.2169
+          ],
+          [
+            103.8247,
+            1.1856
+          ],
+          [
+            103.782,
+            1.1643
+          ],
+          [
+            103.7479,
+            1.1455
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 27.34,
+        "duration_minutes": 84.4,
+        "end_ts": "2026-08-05T10:32:54+00:00",
+        "point_count": 6,
+        "public_track_id": "3deebc0660dd"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7605,
+            1.179
+          ],
+          [
+            103.7622,
+            1.1776
+          ],
+          [
+            103.7637,
+            1.1797
+          ],
+          [
+            103.7639,
+            1.179
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.68,
+        "duration_minutes": 207.0,
+        "end_ts": "2026-08-05T10:32:38+00:00",
+        "point_count": 4,
+        "public_track_id": "d41634f14240"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9592,
+            1.2528
+          ],
+          [
+            103.9308,
+            1.2342
+          ],
+          [
+            103.9224,
+            1.2298
+          ],
+          [
+            103.8909,
+            1.2162
+          ],
+          [
+            103.8551,
+            1.1984
+          ],
+          [
+            103.8147,
+            1.1811
+          ],
+          [
+            103.7984,
+            1.173
+          ],
+          [
+            103.7692,
+            1.1558
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 23.76,
+        "duration_minutes": 76.0,
+        "end_ts": "2026-08-05T10:32:36+00:00",
+        "point_count": 8,
+        "public_track_id": "752f6eedd255"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9992,
+            1.2567
+          ],
+          [
+            103.9152,
+            1.229
+          ],
+          [
+            103.8818,
+            1.2329
+          ],
+          [
+            103.8517,
+            1.2558
+          ],
+          [
+            103.8407,
+            1.2625
+          ],
+          [
+            103.8387,
+            1.263
+          ],
+          [
+            103.8381,
+            1.2623
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 19.59,
+        "duration_minutes": 241.7,
+        "end_ts": "2026-08-05T10:32:19+00:00",
+        "point_count": 7,
+        "public_track_id": "0134fdb4d263"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7828,
+            1.2666
+          ],
+          [
+            103.7828,
+            1.2666
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.03,
+        "duration_minutes": 132.0,
+        "end_ts": "2026-08-05T10:32:13+00:00",
+        "point_count": 2,
+        "public_track_id": "eb6da041335f"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7408,
+            1.1047
+          ],
+          [
+            103.7583,
+            1.1247
+          ],
+          [
+            103.7688,
+            1.1355
+          ],
+          [
+            103.7874,
+            1.1519
+          ],
+          [
+            103.7955,
+            1.1575
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 8.48,
+        "duration_minutes": 44.0,
+        "end_ts": "2026-08-05T10:32:13+00:00",
+        "point_count": 5,
+        "public_track_id": "1da5d9bb15bf"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.87,
+            1.2143
+          ],
+          [
+            103.8086,
+            1.2611
+          ],
+          [
+            103.8202,
+            1.2627
+          ],
+          [
+            103.8162,
+            1.2615
+          ],
+          [
+            103.8065,
+            1.2617
+          ],
+          [
+            103.805,
+            1.261
+          ],
+          [
+            103.7824,
+            1.2333
+          ],
+          [
+            103.7804,
+            1.2292
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 16.1,
+        "duration_minutes": 100.4,
+        "end_ts": "2026-08-05T10:32:11+00:00",
+        "point_count": 8,
+        "public_track_id": "eeedadba157d"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9422,
+            1.2634
+          ],
+          [
+            103.9363,
+            1.2641
+          ],
+          [
+            103.9253,
+            1.2709
+          ],
+          [
+            103.9232,
+            1.275
+          ],
+          [
+            103.9248,
+            1.2776
+          ],
+          [
+            103.9281,
+            1.2797
+          ],
+          [
+            103.9284,
+            1.2793
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 3.49,
+        "duration_minutes": 101.7,
+        "end_ts": "2026-08-05T10:31:55+00:00",
+        "point_count": 7,
+        "public_track_id": "4e5b2c39623b"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8161,
+            1.2419
+          ],
+          [
+            103.8159,
+            1.2415
+          ],
+          [
+            103.8165,
+            1.2423
+          ],
+          [
+            103.8177,
+            1.2422
+          ],
+          [
+            103.8183,
+            1.2411
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.69,
+        "duration_minutes": 455.5,
+        "end_ts": "2026-08-05T10:31:52+00:00",
+        "point_count": 5,
+        "public_track_id": "c3905fcdb928"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7825,
+            1.2174
+          ],
+          [
+            103.7811,
+            1.2177
+          ],
+          [
+            103.7832,
+            1.2175
+          ],
+          [
+            103.7842,
+            1.2166
+          ],
+          [
+            103.7832,
+            1.2162
+          ],
+          [
+            103.7843,
+            1.2154
+          ],
+          [
+            103.7838,
+            1.2153
+          ],
+          [
+            103.7835,
+            1.2165
+          ],
+          [
+            103.776,
+            1.2191
+          ],
+          [
+            103.7817,
+            1.2175
+          ],
+          [
+            103.7834,
+            1.2181
+          ],
+          [
+            103.7826,
+            1.2173
+          ],
+          [
+            103.7826,
+            1.2179
+          ],
+          [
+            103.782,
+            1.2174
+          ],
+          [
+            103.783,
+            1.2185
+          ],
+          [
+            103.7826,
+            1.2174
+          ],
+          [
+            103.7842,
+            1.2184
+          ],
+          [
+            103.7823,
+            1.2178
+          ],
+          [
+            103.7835,
+            1.2196
+          ],
+          [
+            103.7855,
+            1.2199
+          ],
+          [
+            103.7847,
+            1.2177
+          ],
+          [
+            103.782,
+            1.2178
+          ],
+          [
+            103.7847,
+            1.2192
+          ],
+          [
+            103.7847,
+            1.2159
+          ],
+          [
+            103.7827,
+            1.217
+          ],
+          [
+            103.7833,
+            1.2172
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 6.37,
+        "duration_minutes": 452.0,
+        "end_ts": "2026-08-05T10:31:45+00:00",
+        "point_count": 26,
+        "public_track_id": "989db7d70f4d"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8807,
+            1.2085
+          ],
+          [
+            103.8422,
+            1.2208
+          ],
+          [
+            103.8059,
+            1.2607
+          ],
+          [
+            103.8194,
+            1.2631
+          ],
+          [
+            103.8177,
+            1.2619
+          ],
+          [
+            103.8201,
+            1.2623
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 12.52,
+        "duration_minutes": 111.1,
+        "end_ts": "2026-08-05T10:31:40+00:00",
+        "point_count": 6,
+        "public_track_id": "53b27080d6b2"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.916,
+            1.2902
+          ],
+          [
+            103.9111,
+            1.2884
+          ],
+          [
+            103.9018,
+            1.2816
+          ],
+          [
+            103.8937,
+            1.2786
+          ],
+          [
+            103.8862,
+            1.2729
+          ],
+          [
+            103.8755,
+            1.2631
+          ],
+          [
+            103.867,
+            1.2593
+          ],
+          [
+            103.8598,
+            1.2577
+          ],
+          [
+            103.8523,
+            1.2582
+          ],
+          [
+            103.8451,
+            1.2609
+          ],
+          [
+            103.8418,
+            1.2639
+          ],
+          [
+            103.8365,
+            1.2651
+          ],
+          [
+            103.8334,
+            1.2642
+          ],
+          [
+            103.8368,
+            1.2648
+          ],
+          [
+            103.841,
+            1.2616
+          ],
+          [
+            103.8478,
+            1.256
+          ],
+          [
+            103.8506,
+            1.2506
+          ],
+          [
+            103.8497,
+            1.2485
+          ],
+          [
+            103.8269,
+            1.2381
+          ],
+          [
+            103.8167,
+            1.2428
+          ],
+          [
+            103.79,
+            1.2489
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 20.69,
+        "duration_minutes": 428.1,
+        "end_ts": "2026-08-05T10:31:14+00:00",
+        "point_count": 21,
+        "public_track_id": "0e9a2b8d3d86"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9514,
+            1.2695
+          ],
+          [
+            103.9529,
+            1.2715
+          ],
+          [
+            103.9545,
+            1.2718
+          ],
+          [
+            103.9535,
+            1.2716
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.58,
+        "duration_minutes": 177.0,
+        "end_ts": "2026-08-05T10:31:06+00:00",
+        "point_count": 4,
+        "public_track_id": "6993c0b2740f"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8898,
+            1.2463
+          ],
+          [
+            103.89,
+            1.2456
+          ],
+          [
+            103.8906,
+            1.2482
+          ],
+          [
+            103.8931,
+            1.2491
+          ],
+          [
+            103.8923,
+            1.2492
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.81,
+        "duration_minutes": 303.0,
+        "end_ts": "2026-08-05T10:31:03+00:00",
+        "point_count": 5,
+        "public_track_id": "6723a4e6e103"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7825,
+            1.2115
+          ],
+          [
+            103.7819,
+            1.2118
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.15,
+        "duration_minutes": 245.7,
+        "end_ts": "2026-08-05T10:30:47+00:00",
+        "point_count": 2,
+        "public_track_id": "1a4b3ca3326d"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7745,
+            1.2405
+          ],
+          [
+            103.7801,
+            1.2323
+          ],
+          [
+            103.7869,
+            1.2242
+          ],
+          [
+            103.7982,
+            1.2147
+          ],
+          [
+            103.8132,
+            1.2055
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 5.88,
+        "duration_minutes": 47.5,
+        "end_ts": "2026-08-05T10:30:34+00:00",
+        "point_count": 5,
+        "public_track_id": "8ae2ed6cf9c0"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8773,
+            1.2733
+          ],
+          [
+            103.8782,
+            1.2743
+          ],
+          [
+            103.879,
+            1.2742
+          ],
+          [
+            103.8775,
+            1.2739
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.69,
+        "duration_minutes": 453.0,
+        "end_ts": "2026-08-05T10:30:28+00:00",
+        "point_count": 4,
+        "public_track_id": "bcca49c4505f"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9557,
+            1.2808
+          ],
+          [
+            103.9565,
+            1.2768
+          ],
+          [
+            103.9545,
+            1.2548
+          ],
+          [
+            103.953,
+            1.2531
+          ],
+          [
+            103.9267,
+            1.2334
+          ],
+          [
+            103.893,
+            1.2168
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 10.99,
+        "duration_minutes": 60.8,
+        "end_ts": "2026-08-05T10:30:19+00:00",
+        "point_count": 6,
+        "public_track_id": "581e5184b55e"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7933,
+            1.2522
+          ],
+          [
+            103.8367,
+            1.2645
+          ],
+          [
+            103.8248,
+            1.2606
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 6.43,
+        "duration_minutes": 71.5,
+        "end_ts": "2026-08-05T10:30:17+00:00",
+        "point_count": 3,
+        "public_track_id": "7d6800fbcfbb"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8778,
+            1.2463
+          ],
+          [
+            103.8784,
+            1.2458
+          ],
+          [
+            103.88,
+            1.2465
+          ],
+          [
+            103.8804,
+            1.2473
+          ],
+          [
+            103.8797,
+            1.2483
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.61,
+        "duration_minutes": 282.0,
+        "end_ts": "2026-08-05T10:30:12+00:00",
+        "point_count": 5,
+        "public_track_id": "f40d31f8a610"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8335,
+            1.2638
+          ],
+          [
+            103.8338,
+            1.2649
+          ],
+          [
+            103.8371,
+            1.2658
+          ],
+          [
+            103.849,
+            1.2571
+          ],
+          [
+            103.8529,
+            1.2528
+          ],
+          [
+            103.8585,
+            1.2436
+          ],
+          [
+            103.8634,
+            1.2371
+          ],
+          [
+            103.8679,
+            1.2337
+          ],
+          [
+            103.8724,
+            1.2271
+          ],
+          [
+            103.8694,
+            1.22
+          ],
+          [
+            103.8476,
+            1.2002
+          ],
+          [
+            103.8447,
+            1.1987
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 11.1,
+        "duration_minutes": 448.5,
+        "end_ts": "2026-08-05T10:29:58+00:00",
+        "point_count": 12,
+        "public_track_id": "a4b1c417bada"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7451,
+            1.1545
+          ],
+          [
+            103.8088,
+            1.1893
+          ],
+          [
+            103.8224,
+            1.1956
+          ],
+          [
+            103.8437,
+            1.2032
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 12.25,
+        "duration_minutes": 72.8,
+        "end_ts": "2026-08-05T10:29:47+00:00",
+        "point_count": 4,
+        "public_track_id": "8b91922ded4f"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8337,
+            1.2294
+          ],
+          [
+            103.8273,
+            1.237
+          ],
+          [
+            103.818,
+            1.2629
+          ],
+          [
+            103.8194,
+            1.2629
+          ],
+          [
+            103.8168,
+            1.2623
+          ],
+          [
+            103.8179,
+            1.2619
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 4.77,
+        "duration_minutes": 46.5,
+        "end_ts": "2026-08-05T10:29:31+00:00",
+        "point_count": 6,
+        "public_track_id": "79399a6c9326"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9024,
+            1.2731
+          ],
+          [
+            103.8671,
+            1.2215
+          ],
+          [
+            103.8345,
+            1.198
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 11.42,
+        "duration_minutes": 60.0,
+        "end_ts": "2026-08-05T10:29:18+00:00",
+        "point_count": 3,
+        "public_track_id": "f8972aa82849"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9621,
+            1.2452
+          ],
+          [
+            103.9486,
+            1.2414
+          ],
+          [
+            103.917,
+            1.2291
+          ],
+          [
+            103.8855,
+            1.2139
+          ],
+          [
+            103.8592,
+            1.2001
+          ],
+          [
+            103.8338,
+            1.1893
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 15.59,
+        "duration_minutes": 67.5,
+        "end_ts": "2026-08-05T10:29:16+00:00",
+        "point_count": 6,
+        "public_track_id": "28860c02f0ff"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8067,
+            1.2394
+          ],
+          [
+            103.8062,
+            1.2396
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.07,
+        "duration_minutes": 246.0,
+        "end_ts": "2026-08-05T10:29:14+00:00",
+        "point_count": 2,
+        "public_track_id": "84f6beabade1"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8115,
+            1.2239
+          ],
+          [
+            103.8117,
+            1.2235
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.15,
+        "duration_minutes": 69.1,
+        "end_ts": "2026-08-05T10:29:04+00:00",
+        "point_count": 2,
+        "public_track_id": "9acd9e73063d"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8014,
+            1.2295
+          ],
+          [
+            103.8016,
+            1.229
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.24,
+        "duration_minutes": 153.0,
+        "end_ts": "2026-08-05T10:28:55+00:00",
+        "point_count": 2,
+        "public_track_id": "c95de86abaac"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.6727,
+            1.2922
+          ],
+          [
+            103.6727,
+            1.2921
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.11,
+        "duration_minutes": 215.9,
+        "end_ts": "2026-08-05T10:28:07+00:00",
+        "point_count": 2,
+        "public_track_id": "ba1556956297"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.731,
+            1.2858
+          ],
+          [
+            103.7904,
+            1.2246
+          ],
+          [
+            103.8159,
+            1.2047
+          ],
+          [
+            103.8327,
+            1.2041
+          ],
+          [
+            103.8555,
+            1.2081
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 17.52,
+        "duration_minutes": 67.7,
+        "end_ts": "2026-08-05T10:28:05+00:00",
+        "point_count": 5,
+        "public_track_id": "cb0eb2b191c1"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7512,
+            1.129
+          ],
+          [
+            103.7995,
+            1.1707
+          ],
+          [
+            103.8226,
+            1.1788
+          ],
+          [
+            103.8454,
+            1.1887
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 12.58,
+        "duration_minutes": 56.0,
+        "end_ts": "2026-08-05T10:27:30+00:00",
+        "point_count": 4,
+        "public_track_id": "8bad46753db0"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.881,
+            1.2792
+          ],
+          [
+            103.8808,
+            1.2792
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.08,
+        "duration_minutes": 159.0,
+        "end_ts": "2026-08-05T10:27:05+00:00",
+        "point_count": 2,
+        "public_track_id": "16045cbf0e56"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8415,
+            1.2591
+          ],
+          [
+            103.8415,
+            1.2591
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.15,
+        "duration_minutes": 444.0,
+        "end_ts": "2026-08-05T10:27:00+00:00",
+        "point_count": 2,
+        "public_track_id": "54c23cd939b7"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            104.0362,
+            1.2713
+          ],
+          [
+            104.0124,
+            1.2641
+          ],
+          [
+            103.9627,
+            1.251
+          ],
+          [
+            103.9328,
+            1.2394
+          ],
+          [
+            103.9055,
+            1.2319
+          ],
+          [
+            103.8931,
+            1.2333
+          ],
+          [
+            103.8672,
+            1.2428
+          ],
+          [
+            103.853,
+            1.2564
+          ],
+          [
+            103.8443,
+            1.2599
+          ],
+          [
+            103.8355,
+            1.2653
+          ],
+          [
+            103.8336,
+            1.264
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 24.31,
+        "duration_minutes": 155.2,
+        "end_ts": "2026-08-05T10:26:38+00:00",
+        "point_count": 11,
+        "public_track_id": "27cb71733609"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8405,
+            1.2453
+          ],
+          [
+            103.8405,
+            1.2453
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.01,
+        "duration_minutes": 321.1,
+        "end_ts": "2026-08-05T10:26:32+00:00",
+        "point_count": 2,
+        "public_track_id": "1066e43a15aa"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9746,
+            1.2527
+          ],
+          [
+            103.9404,
+            1.2426
+          ],
+          [
+            103.9173,
+            1.2348
+          ],
+          [
+            103.8481,
+            1.209
+          ],
+          [
+            103.8393,
+            1.2074
+          ],
+          [
+            103.8291,
+            1.2079
+          ],
+          [
+            103.7935,
+            1.2242
+          ],
+          [
+            103.771,
+            1.2534
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 25.48,
+        "duration_minutes": 86.2,
+        "end_ts": "2026-08-05T10:26:29+00:00",
+        "point_count": 8,
+        "public_track_id": "b8dda229b74b"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.856,
+            1.213
+          ],
+          [
+            103.8194,
+            1.2443
+          ],
+          [
+            103.8057,
+            1.2573
+          ],
+          [
+            103.8201,
+            1.2623
+          ],
+          [
+            103.8149,
+            1.2616
+          ],
+          [
+            103.8095,
+            1.262
+          ],
+          [
+            103.805,
+            1.2607
+          ],
+          [
+            103.8086,
+            1.2531
+          ],
+          [
+            103.8216,
+            1.2403
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 13.83,
+        "duration_minutes": 101.5,
+        "end_ts": "2026-08-05T10:26:29+00:00",
+        "point_count": 9,
+        "public_track_id": "3faa74a58db7"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9168,
+            1.2652
+          ],
+          [
+            103.8995,
+            1.2481
+          ],
+          [
+            103.8736,
+            1.2368
+          ],
+          [
+            103.8674,
+            1.228
+          ],
+          [
+            103.8666,
+            1.2249
+          ],
+          [
+            103.8525,
+            1.2106
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 9.63,
+        "duration_minutes": 54.0,
+        "end_ts": "2026-08-05T10:26:23+00:00",
+        "point_count": 6,
+        "public_track_id": "3834e04c70cf"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8458,
+            1.2616
+          ],
+          [
+            103.8578,
+            1.2564
+          ],
+          [
+            103.8592,
+            1.2542
+          ],
+          [
+            103.8455,
+            1.26
+          ],
+          [
+            103.8396,
+            1.2649
+          ],
+          [
+            103.8356,
+            1.2643
+          ],
+          [
+            103.8429,
+            1.2578
+          ],
+          [
+            103.8515,
+            1.2609
+          ],
+          [
+            103.8343,
+            1.2651
+          ],
+          [
+            103.8323,
+            1.264
+          ],
+          [
+            103.8324,
+            1.2651
+          ],
+          [
+            103.8371,
+            1.2648
+          ],
+          [
+            103.8374,
+            1.2641
+          ],
+          [
+            103.8376,
+            1.2648
+          ],
+          [
+            103.8548,
+            1.2563
+          ],
+          [
+            103.8449,
+            1.26
+          ],
+          [
+            103.837,
+            1.2657
+          ],
+          [
+            103.8346,
+            1.2655
+          ],
+          [
+            103.8338,
+            1.2644
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 14.78,
+        "duration_minutes": 453.5,
+        "end_ts": "2026-08-05T10:26:18+00:00",
+        "point_count": 19,
+        "public_track_id": "8695c09e7a03"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8014,
+            1.2736
+          ],
+          [
+            103.8014,
+            1.2736
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.2,
+        "duration_minutes": 444.7,
+        "end_ts": "2026-08-05T10:26:14+00:00",
+        "point_count": 2,
+        "public_track_id": "7e40c08ac185"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7786,
+            1.2256
+          ],
+          [
+            103.7863,
+            1.2422
+          ],
+          [
+            103.7907,
+            1.2479
+          ],
+          [
+            103.7935,
+            1.2531
+          ],
+          [
+            103.7956,
+            1.2677
+          ],
+          [
+            103.7973,
+            1.2641
+          ],
+          [
+            103.7968,
+            1.2608
+          ],
+          [
+            103.7843,
+            1.2408
+          ],
+          [
+            103.7819,
+            1.236
+          ],
+          [
+            103.7786,
+            1.2256
+          ],
+          [
+            103.7805,
+            1.2262
+          ],
+          [
+            103.7869,
+            1.2408
+          ],
+          [
+            103.7952,
+            1.2687
+          ],
+          [
+            103.7844,
+            1.244
+          ],
+          [
+            103.7786,
+            1.2256
+          ],
+          [
+            103.7833,
+            1.2328
+          ],
+          [
+            103.7786,
+            1.2256
+          ],
+          [
+            103.7818,
+            1.23
+          ],
+          [
+            103.7972,
+            1.2609
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 27.12,
+        "duration_minutes": 183.0,
+        "end_ts": "2026-08-05T10:26:13+00:00",
+        "point_count": 19,
+        "public_track_id": "a820dc01ce3d"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8644,
+            1.213
+          ],
+          [
+            103.8315,
+            1.2307
+          ],
+          [
+            103.8149,
+            1.2479
+          ],
+          [
+            103.813,
+            1.2612
+          ],
+          [
+            103.8194,
+            1.263
+          ],
+          [
+            103.8101,
+            1.2619
+          ],
+          [
+            103.8283,
+            1.2364
+          ],
+          [
+            103.8594,
+            1.2381
+          ],
+          [
+            103.8705,
+            1.2246
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 19.02,
+        "duration_minutes": 140.3,
+        "end_ts": "2026-08-05T10:26:05+00:00",
+        "point_count": 9,
+        "public_track_id": "7f6c5d17069b"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.6928,
+            1.219
+          ],
+          [
+            103.7167,
+            1.24
+          ],
+          [
+            103.7764,
+            1.2622
+          ],
+          [
+            103.7806,
+            1.2701
+          ],
+          [
+            103.7797,
+            1.2746
+          ],
+          [
+            103.78,
+            1.2764
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 12.38,
+        "duration_minutes": 248.1,
+        "end_ts": "2026-08-05T10:22:00+00:00",
+        "point_count": 6,
+        "public_track_id": "1e8c3b3a0b73"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8419,
+            1.2574
+          ],
+          [
+            103.8419,
+            1.2574
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.11,
+        "duration_minutes": 447.4,
+        "end_ts": "2026-08-05T10:21:00+00:00",
+        "point_count": 2,
+        "public_track_id": "6b62b60c1567"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.826,
+            1.2216
+          ],
+          [
+            103.8264,
+            1.2226
+          ],
+          [
+            103.8268,
+            1.2206
+          ],
+          [
+            103.828,
+            1.2207
+          ],
+          [
+            103.8284,
+            1.2217
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.73,
+        "duration_minutes": 447.0,
+        "end_ts": "2026-08-05T10:19:49+00:00",
+        "point_count": 5,
+        "public_track_id": "9b99ce7c72e8"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.6638,
+            1.049
+          ],
+          [
+            103.707,
+            1.0747
+          ],
+          [
+            103.7476,
+            1.1113
+          ],
+          [
+            103.7744,
+            1.138
+          ],
+          [
+            103.8085,
+            1.163
+          ],
+          [
+            103.8829,
+            1.199
+          ],
+          [
+            103.9111,
+            1.2111
+          ],
+          [
+            103.9571,
+            1.224
+          ],
+          [
+            103.9874,
+            1.2294
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 41.9,
+        "duration_minutes": 105.2,
+        "end_ts": "2026-08-05T10:19:29+00:00",
+        "point_count": 9,
+        "public_track_id": "ac11de54956d"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8754,
+            1.235
+          ],
+          [
+            103.8035,
+            1.2183
+          ],
+          [
+            103.7982,
+            1.2234
+          ],
+          [
+            103.7833,
+            1.2417
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 11.65,
+        "duration_minutes": 66.0,
+        "end_ts": "2026-08-05T10:19:03+00:00",
+        "point_count": 4,
+        "public_track_id": "ca6becb7ee73"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8518,
+            1.2667
+          ],
+          [
+            103.8518,
+            1.2667
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.01,
+        "duration_minutes": 150.0,
+        "end_ts": "2026-08-05T10:18:40+00:00",
+        "point_count": 2,
+        "public_track_id": "74f5b3376421"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.888,
+            1.2623
+          ],
+          [
+            103.8881,
+            1.2623
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.04,
+        "duration_minutes": 90.0,
+        "end_ts": "2026-08-05T10:18:39+00:00",
+        "point_count": 2,
+        "public_track_id": "84216d53ae1c"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7951,
+            1.2665
+          ],
+          [
+            103.7666,
+            1.28
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 3.53,
+        "duration_minutes": 163.3,
+        "end_ts": "2026-08-05T10:18:15+00:00",
+        "point_count": 2,
+        "public_track_id": "ca18652bd07e"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8764,
+            1.205
+          ],
+          [
+            103.829,
+            1.2364
+          ],
+          [
+            103.8069,
+            1.2613
+          ],
+          [
+            103.8121,
+            1.2615
+          ],
+          [
+            103.8194,
+            1.2631
+          ],
+          [
+            103.8067,
+            1.262
+          ],
+          [
+            103.8441,
+            1.2412
+          ],
+          [
+            103.8658,
+            1.2338
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 20.14,
+        "duration_minutes": 87.7,
+        "end_ts": "2026-08-05T10:18:08+00:00",
+        "point_count": 8,
+        "public_track_id": "fd50e1934b33"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8847,
+            1.2691
+          ],
+          [
+            103.8854,
+            1.2691
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.16,
+        "duration_minutes": 99.0,
+        "end_ts": "2026-08-05T10:17:35+00:00",
+        "point_count": 2,
+        "public_track_id": "37641932c318"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9159,
+            1.2265
+          ],
+          [
+            103.8913,
+            1.2158
+          ],
+          [
+            103.841,
+            1.1901
+          ],
+          [
+            103.7624,
+            1.1562
+          ],
+          [
+            103.7361,
+            1.1412
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 22.15,
+        "duration_minutes": 70.2,
+        "end_ts": "2026-08-05T10:17:05+00:00",
+        "point_count": 5,
+        "public_track_id": "676eda232e1a"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9903,
+            1.266
+          ],
+          [
+            103.9416,
+            1.2633
+          ],
+          [
+            103.9202,
+            1.2731
+          ],
+          [
+            103.906,
+            1.2743
+          ],
+          [
+            103.9007,
+            1.2752
+          ],
+          [
+            103.9012,
+            1.2754
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 10.31,
+        "duration_minutes": 191.4,
+        "end_ts": "2026-08-05T10:16:43+00:00",
+        "point_count": 6,
+        "public_track_id": "08dca98020c5"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8262,
+            1.238
+          ],
+          [
+            103.8496,
+            1.2496
+          ],
+          [
+            103.8469,
+            1.2596
+          ],
+          [
+            103.8458,
+            1.2616
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 4.32,
+        "duration_minutes": 12.9,
+        "end_ts": "2026-08-05T10:16:20+00:00",
+        "point_count": 4,
+        "public_track_id": "87583c93d309"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9254,
+            1.2681
+          ],
+          [
+            103.9348,
+            1.2584
+          ],
+          [
+            103.934,
+            1.2472
+          ],
+          [
+            103.9143,
+            1.2355
+          ],
+          [
+            103.8994,
+            1.2283
+          ],
+          [
+            103.8567,
+            1.2126
+          ],
+          [
+            103.8267,
+            1.2079
+          ],
+          [
+            103.8093,
+            1.2127
+          ],
+          [
+            103.7868,
+            1.23
+          ],
+          [
+            103.7797,
+            1.2385
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 21.96,
+        "duration_minutes": 68.2,
+        "end_ts": "2026-08-05T10:15:31+00:00",
+        "point_count": 10,
+        "public_track_id": "c827b2c927d6"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7784,
+            1.2384
+          ],
+          [
+            103.7923,
+            1.2239
+          ],
+          [
+            103.8096,
+            1.1973
+          ],
+          [
+            103.7648,
+            1.1872
+          ],
+          [
+            103.7487,
+            1.1989
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 13.06,
+        "duration_minutes": 70.7,
+        "end_ts": "2026-08-05T10:15:24+00:00",
+        "point_count": 5,
+        "public_track_id": "8c89e5ceae0c"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7991,
+            1.225
+          ],
+          [
+            103.8002,
+            1.224
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.29,
+        "duration_minutes": 126.0,
+        "end_ts": "2026-08-05T10:15:04+00:00",
+        "point_count": 2,
+        "public_track_id": "be352a019a4f"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8735,
+            1.2249
+          ],
+          [
+            103.8304,
+            1.2082
+          ],
+          [
+            103.8029,
+            1.2163
+          ],
+          [
+            103.7978,
+            1.2218
+          ],
+          [
+            103.7844,
+            1.2429
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 11.93,
+        "duration_minutes": 46.1,
+        "end_ts": "2026-08-05T10:14:29+00:00",
+        "point_count": 5,
+        "public_track_id": "76e2f0211389"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8619,
+            1.2558
+          ],
+          [
+            103.8637,
+            1.2557
+          ],
+          [
+            103.8628,
+            1.2562
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.32,
+        "duration_minutes": 144.0,
+        "end_ts": "2026-08-05T10:14:25+00:00",
+        "point_count": 3,
+        "public_track_id": "1afb3a1b3a97"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7915,
+            1.2649
+          ],
+          [
+            103.792,
+            1.2648
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.07,
+        "duration_minutes": 117.0,
+        "end_ts": "2026-08-05T10:13:33+00:00",
+        "point_count": 2,
+        "public_track_id": "26c7e61212a2"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9374,
+            1.271
+          ],
+          [
+            103.9441,
+            1.265
+          ],
+          [
+            103.9434,
+            1.2567
+          ],
+          [
+            103.9322,
+            1.2402
+          ],
+          [
+            103.9021,
+            1.2221
+          ],
+          [
+            103.8717,
+            1.2072
+          ],
+          [
+            103.8122,
+            1.1813
+          ],
+          [
+            103.7953,
+            1.1729
+          ],
+          [
+            103.7918,
+            1.1703
+          ],
+          [
+            103.7316,
+            1.1463
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 28.84,
+        "duration_minutes": 158.7,
+        "end_ts": "2026-08-05T10:13:26+00:00",
+        "point_count": 10,
+        "public_track_id": "b123e79980b4"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7898,
+            1.2619
+          ],
+          [
+            103.7899,
+            1.2619
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.2,
+        "duration_minutes": 429.0,
+        "end_ts": "2026-08-05T10:13:14+00:00",
+        "point_count": 2,
+        "public_track_id": "ddbd9e97d78e"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7138,
+            1.2973
+          ],
+          [
+            103.7217,
+            1.2959
+          ],
+          [
+            103.7753,
+            1.2467
+          ],
+          [
+            103.7953,
+            1.2196
+          ],
+          [
+            103.8063,
+            1.207
+          ],
+          [
+            103.8225,
+            1.2014
+          ],
+          [
+            103.8698,
+            1.1995
+          ],
+          [
+            103.9132,
+            1.2153
+          ],
+          [
+            103.9496,
+            1.2308
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 31.3,
+        "duration_minutes": 125.8,
+        "end_ts": "2026-08-05T10:12:56+00:00",
+        "point_count": 9,
+        "public_track_id": "7cd8a1e8cdca"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9875,
+            1.2677
+          ],
+          [
+            103.9271,
+            1.2406
+          ],
+          [
+            103.9174,
+            1.2372
+          ],
+          [
+            103.8532,
+            1.2105
+          ],
+          [
+            103.843,
+            1.2079
+          ],
+          [
+            103.8235,
+            1.2092
+          ],
+          [
+            103.8169,
+            1.2123
+          ],
+          [
+            103.8081,
+            1.2183
+          ],
+          [
+            103.8088,
+            1.2256
+          ],
+          [
+            103.8106,
+            1.228
+          ],
+          [
+            103.812,
+            1.229
+          ],
+          [
+            103.8124,
+            1.2286
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 23.09,
+        "duration_minutes": 242.5,
+        "end_ts": "2026-08-05T10:12:26+00:00",
+        "point_count": 12,
+        "public_track_id": "e71e2f0eaaaa"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7798,
+            1.247
+          ],
+          [
+            103.7979,
+            1.2436
+          ],
+          [
+            103.7992,
+            1.2402
+          ],
+          [
+            103.7996,
+            1.2409
+          ],
+          [
+            103.7997,
+            1.2405
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 2.6,
+        "duration_minutes": 100.4,
+        "end_ts": "2026-08-05T10:11:23+00:00",
+        "point_count": 5,
+        "public_track_id": "83071a42f3cb"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.825,
+            1.2159
+          ],
+          [
+            103.8242,
+            1.2133
+          ],
+          [
+            103.8256,
+            1.2145
+          ],
+          [
+            103.8255,
+            1.2157
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.7,
+        "duration_minutes": 255.1,
+        "end_ts": "2026-08-05T10:05:16+00:00",
+        "point_count": 4,
+        "public_track_id": "1e87c0e42fce"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8858,
+            1.2552
+          ],
+          [
+            103.886,
+            1.2552
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.09,
+        "duration_minutes": 146.9,
+        "end_ts": "2026-08-05T10:05:00+00:00",
+        "point_count": 2,
+        "public_track_id": "181ec22a7a35"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7495,
+            1.1224
+          ],
+          [
+            103.7842,
+            1.159
+          ],
+          [
+            103.8087,
+            1.173
+          ],
+          [
+            103.8226,
+            1.1796
+          ],
+          [
+            103.8222,
+            1.1869
+          ],
+          [
+            103.8193,
+            1.1866
+          ],
+          [
+            103.7921,
+            1.178
+          ],
+          [
+            103.7752,
+            1.1795
+          ],
+          [
+            103.7773,
+            1.181
+          ],
+          [
+            103.7767,
+            1.1811
+          ],
+          [
+            103.7773,
+            1.1819
+          ],
+          [
+            103.7806,
+            1.1818
+          ],
+          [
+            103.7835,
+            1.1784
+          ],
+          [
+            103.7835,
+            1.1769
+          ],
+          [
+            103.7857,
+            1.1707
+          ],
+          [
+            103.8081,
+            1.1729
+          ],
+          [
+            103.8408,
+            1.1865
+          ],
+          [
+            103.8651,
+            1.198
+          ],
+          [
+            103.8846,
+            1.2057
+          ],
+          [
+            103.9193,
+            1.2189
+          ],
+          [
+            103.9393,
+            1.2248
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 37.13,
+        "duration_minutes": 287.9,
+        "end_ts": "2026-08-05T10:04:29+00:00",
+        "point_count": 21,
+        "public_track_id": "aa4e16c7f81e"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8189,
+            1.2614
+          ],
+          [
+            103.8542,
+            1.2433
+          ],
+          [
+            103.8616,
+            1.236
+          ],
+          [
+            103.8737,
+            1.2212
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 7.7,
+        "duration_minutes": 30.6,
+        "end_ts": "2026-08-05T10:04:25+00:00",
+        "point_count": 4,
+        "public_track_id": "3e54355c880a"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9736,
+            1.2536
+          ],
+          [
+            103.9572,
+            1.2464
+          ],
+          [
+            103.9343,
+            1.2348
+          ],
+          [
+            103.9052,
+            1.2244
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 8.27,
+        "duration_minutes": 43.5,
+        "end_ts": "2026-08-05T10:04:07+00:00",
+        "point_count": 4,
+        "public_track_id": "1a5ed570ad5c"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9558,
+            1.2441
+          ],
+          [
+            103.9253,
+            1.232
+          ],
+          [
+            103.8872,
+            1.2154
+          ],
+          [
+            103.8399,
+            1.1912
+          ],
+          [
+            103.8127,
+            1.183
+          ],
+          [
+            103.801,
+            1.182
+          ],
+          [
+            103.7885,
+            1.1766
+          ],
+          [
+            103.7792,
+            1.1711
+          ],
+          [
+            103.775,
+            1.1707
+          ],
+          [
+            103.7587,
+            1.1795
+          ],
+          [
+            103.7561,
+            1.1794
+          ],
+          [
+            103.7528,
+            1.1772
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 24.64,
+        "duration_minutes": 157.0,
+        "end_ts": "2026-08-05T10:04:01+00:00",
+        "point_count": 12,
+        "public_track_id": "801ea4308967"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.74,
+            1.2937
+          ],
+          [
+            103.74,
+            1.2937
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.01,
+        "duration_minutes": 261.0,
+        "end_ts": "2026-08-05T10:03:23+00:00",
+        "point_count": 2,
+        "public_track_id": "5dd7772a1fc0"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8037,
+            1.2265
+          ],
+          [
+            103.8058,
+            1.227
+          ],
+          [
+            103.8064,
+            1.2258
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.51,
+        "duration_minutes": 345.0,
+        "end_ts": "2026-08-05T10:02:07+00:00",
+        "point_count": 3,
+        "public_track_id": "992008661ee8"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7953,
+            1.231
+          ],
+          [
+            103.7961,
+            1.2288
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.28,
+        "duration_minutes": 161.9,
+        "end_ts": "2026-08-05T10:02:07+00:00",
+        "point_count": 2,
+        "public_track_id": "e4fb4058e0b7"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9132,
+            1.2577
+          ],
+          [
+            103.9129,
+            1.2601
+          ],
+          [
+            103.9143,
+            1.261
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.47,
+        "duration_minutes": 156.0,
+        "end_ts": "2026-08-05T10:00:51+00:00",
+        "point_count": 3,
+        "public_track_id": "04f04e3fe18e"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8149,
+            1.2446
+          ],
+          [
+            103.8152,
+            1.2442
+          ],
+          [
+            103.8046,
+            1.2306
+          ],
+          [
+            103.8027,
+            1.225
+          ],
+          [
+            103.8126,
+            1.1999
+          ],
+          [
+            103.8895,
+            1.2018
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 14.2,
+        "duration_minutes": 123.8,
+        "end_ts": "2026-08-05T10:00:04+00:00",
+        "point_count": 6,
+        "public_track_id": "04e445953a8a"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.6844,
+            1.0726
+          ],
+          [
+            103.7178,
+            1.0922
+          ],
+          [
+            103.7533,
+            1.1285
+          ],
+          [
+            103.7892,
+            1.1595
+          ],
+          [
+            103.8198,
+            1.1778
+          ],
+          [
+            103.8435,
+            1.1882
+          ],
+          [
+            103.8958,
+            1.2136
+          ],
+          [
+            103.929,
+            1.227
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 32.5,
+        "duration_minutes": 95.4,
+        "end_ts": "2026-08-05T09:58:16+00:00",
+        "point_count": 8,
+        "public_track_id": "a1e890520cb3"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7612,
+            1.2832
+          ],
+          [
+            103.748,
+            1.2482
+          ],
+          [
+            103.7598,
+            1.2508
+          ],
+          [
+            103.7777,
+            1.266
+          ],
+          [
+            103.7724,
+            1.2682
+          ],
+          [
+            103.7706,
+            1.2683
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 8.96,
+        "duration_minutes": 257.7,
+        "end_ts": "2026-08-05T09:51:32+00:00",
+        "point_count": 6,
+        "public_track_id": "d30a1c464320"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7649,
+            1.2813
+          ],
+          [
+            103.7649,
+            1.2812
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.05,
+        "duration_minutes": 255.1,
+        "end_ts": "2026-08-05T09:50:06+00:00",
+        "point_count": 2,
+        "public_track_id": "fc2577dd5f88"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9093,
+            1.2838
+          ],
+          [
+            103.9096,
+            1.2851
+          ],
+          [
+            103.9112,
+            1.2857
+          ],
+          [
+            103.9107,
+            1.2858
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.59,
+        "duration_minutes": 324.0,
+        "end_ts": "2026-08-05T09:48:29+00:00",
+        "point_count": 4,
+        "public_track_id": "f338434af1a1"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9299,
+            1.2537
+          ],
+          [
+            103.9273,
+            1.2536
+          ],
+          [
+            103.8756,
+            1.2287
+          ],
+          [
+            103.8649,
+            1.2182
+          ],
+          [
+            103.8563,
+            1.2121
+          ],
+          [
+            103.8228,
+            1.1987
+          ],
+          [
+            103.8173,
+            1.1956
+          ],
+          [
+            103.763,
+            1.1839
+          ],
+          [
+            103.7542,
+            1.1896
+          ],
+          [
+            103.75,
+            1.1913
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 22.08,
+        "duration_minutes": 103.8,
+        "end_ts": "2026-08-05T09:47:58+00:00",
+        "point_count": 10,
+        "public_track_id": "9ddb94d64e9d"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8514,
+            1.2547
+          ],
+          [
+            103.8547,
+            1.2513
+          ],
+          [
+            103.8577,
+            1.2516
+          ],
+          [
+            103.8553,
+            1.2587
+          ],
+          [
+            103.8367,
+            1.2649
+          ],
+          [
+            103.8357,
+            1.2643
+          ],
+          [
+            103.8374,
+            1.2662
+          ],
+          [
+            103.8458,
+            1.2617
+          ],
+          [
+            103.8553,
+            1.2533
+          ],
+          [
+            103.8435,
+            1.2614
+          ],
+          [
+            103.8411,
+            1.2625
+          ],
+          [
+            103.839,
+            1.2628
+          ],
+          [
+            103.8386,
+            1.2621
+          ],
+          [
+            103.8338,
+            1.2642
+          ],
+          [
+            103.8338,
+            1.2651
+          ],
+          [
+            103.8374,
+            1.2665
+          ],
+          [
+            103.8362,
+            1.2659
+          ],
+          [
+            103.8467,
+            1.2577
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 11.93,
+        "duration_minutes": 412.2,
+        "end_ts": "2026-08-05T09:47:18+00:00",
+        "point_count": 18,
+        "public_track_id": "8848ddd83e13"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8145,
+            1.2303
+          ],
+          [
+            103.8148,
+            1.2312
+          ],
+          [
+            103.8147,
+            1.2295
+          ],
+          [
+            103.8164,
+            1.2298
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.77,
+        "duration_minutes": 402.0,
+        "end_ts": "2026-08-05T09:47:00+00:00",
+        "point_count": 4,
+        "public_track_id": "dfbb686f98d2"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8026,
+            1.2419
+          ],
+          [
+            103.8027,
+            1.2415
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.1,
+        "duration_minutes": 126.0,
+        "end_ts": "2026-08-05T09:46:15+00:00",
+        "point_count": 2,
+        "public_track_id": "4f9237bf1348"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.884,
+            1.2784
+          ],
+          [
+            103.8849,
+            1.2787
+          ],
+          [
+            103.8844,
+            1.2787
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.19,
+        "duration_minutes": 72.0,
+        "end_ts": "2026-08-05T09:46:00+00:00",
+        "point_count": 3,
+        "public_track_id": "54126b6e51fc"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8824,
+            1.2078
+          ],
+          [
+            103.8374,
+            1.2257
+          ],
+          [
+            103.8097,
+            1.2528
+          ],
+          [
+            103.8065,
+            1.2613
+          ],
+          [
+            103.8176,
+            1.2629
+          ],
+          [
+            103.8205,
+            1.2616
+          ],
+          [
+            103.8198,
+            1.2616
+          ],
+          [
+            103.8157,
+            1.2471
+          ],
+          [
+            103.8463,
+            1.2428
+          ],
+          [
+            103.8501,
+            1.2453
+          ],
+          [
+            103.8563,
+            1.2433
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 18.71,
+        "duration_minutes": 127.8,
+        "end_ts": "2026-08-05T09:45:17+00:00",
+        "point_count": 11,
+        "public_track_id": "bd0a92f9c533"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9238,
+            1.2828
+          ],
+          [
+            103.9247,
+            1.2848
+          ],
+          [
+            103.9258,
+            1.2848
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.4,
+        "duration_minutes": 222.0,
+        "end_ts": "2026-08-05T09:44:21+00:00",
+        "point_count": 3,
+        "public_track_id": "4b9cf266f82d"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8097,
+            1.2367
+          ],
+          [
+            103.8102,
+            1.2358
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.27,
+        "duration_minutes": 168.1,
+        "end_ts": "2026-08-05T09:43:56+00:00",
+        "point_count": 2,
+        "public_track_id": "2c5e01e29d35"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8553,
+            1.2066
+          ],
+          [
+            103.8442,
+            1.2176
+          ],
+          [
+            103.8055,
+            1.2601
+          ],
+          [
+            103.8089,
+            1.2612
+          ],
+          [
+            103.8127,
+            1.2612
+          ],
+          [
+            103.8208,
+            1.2628
+          ],
+          [
+            103.8212,
+            1.2617
+          ],
+          [
+            103.8201,
+            1.2623
+          ],
+          [
+            103.8206,
+            1.2623
+          ],
+          [
+            103.8197,
+            1.2615
+          ],
+          [
+            103.8093,
+            1.2624
+          ],
+          [
+            103.805,
+            1.2603
+          ],
+          [
+            103.8213,
+            1.2426
+          ],
+          [
+            103.8486,
+            1.2447
+          ],
+          [
+            103.8653,
+            1.2353
+          ],
+          [
+            103.8722,
+            1.2271
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 21.09,
+        "duration_minutes": 151.2,
+        "end_ts": "2026-08-05T09:37:05+00:00",
+        "point_count": 16,
+        "public_track_id": "edab0de07b93"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7772,
+            1.2695
+          ],
+          [
+            103.7879,
+            1.2422
+          ],
+          [
+            103.7964,
+            1.2326
+          ],
+          [
+            103.8003,
+            1.2311
+          ],
+          [
+            103.8062,
+            1.2266
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 6.11,
+        "duration_minutes": 150.8,
+        "end_ts": "2026-08-05T09:36:57+00:00",
+        "point_count": 5,
+        "public_track_id": "9043323c5845"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.803,
+            1.2476
+          ],
+          [
+            103.8415,
+            1.2397
+          ],
+          [
+            103.8499,
+            1.2509
+          ],
+          [
+            103.8461,
+            1.2635
+          ],
+          [
+            103.8467,
+            1.2645
+          ],
+          [
+            103.849,
+            1.2604
+          ],
+          [
+            103.8511,
+            1.2608
+          ],
+          [
+            103.8484,
+            1.2607
+          ],
+          [
+            103.8409,
+            1.2635
+          ],
+          [
+            103.842,
+            1.2621
+          ],
+          [
+            103.8307,
+            1.2367
+          ],
+          [
+            103.8008,
+            1.2486
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 16.35,
+        "duration_minutes": 216.5,
+        "end_ts": "2026-08-05T09:35:39+00:00",
+        "point_count": 12,
+        "public_track_id": "d68e7a258052"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8024,
+            1.2391
+          ],
+          [
+            103.8031,
+            1.2389
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.11,
+        "duration_minutes": 215.4,
+        "end_ts": "2026-08-05T09:35:06+00:00",
+        "point_count": 2,
+        "public_track_id": "bc1a07307c14"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9149,
+            1.2881
+          ],
+          [
+            103.9147,
+            1.2871
+          ],
+          [
+            103.915,
+            1.2882
+          ],
+          [
+            103.9146,
+            1.2875
+          ],
+          [
+            103.9161,
+            1.2888
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.68,
+        "duration_minutes": 399.0,
+        "end_ts": "2026-08-05T09:34:07+00:00",
+        "point_count": 5,
+        "public_track_id": "006d600cd0e4"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7595,
+            1.2844
+          ],
+          [
+            103.7596,
+            1.2843
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.09,
+        "duration_minutes": 207.0,
+        "end_ts": "2026-08-05T09:30:37+00:00",
+        "point_count": 2,
+        "public_track_id": "9184d26f89dc"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7943,
+            1.2402
+          ],
+          [
+            103.7948,
+            1.2399
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.17,
+        "duration_minutes": 177.5,
+        "end_ts": "2026-08-05T09:29:05+00:00",
+        "point_count": 2,
+        "public_track_id": "220d7454a16f"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7401,
+            1.1013
+          ],
+          [
+            103.771,
+            1.1372
+          ],
+          [
+            103.8036,
+            1.1592
+          ],
+          [
+            103.8306,
+            1.173
+          ],
+          [
+            103.8831,
+            1.196
+          ],
+          [
+            103.9003,
+            1.2079
+          ],
+          [
+            103.9268,
+            1.2221
+          ],
+          [
+            103.9425,
+            1.2287
+          ],
+          [
+            103.9834,
+            1.2383
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 31.61,
+        "duration_minutes": 93.7,
+        "end_ts": "2026-08-05T09:27:37+00:00",
+        "point_count": 9,
+        "public_track_id": "10a13a174e78"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7389,
+            1.2009
+          ],
+          [
+            103.7605,
+            1.1864
+          ],
+          [
+            103.7628,
+            1.1857
+          ],
+          [
+            103.7824,
+            1.184
+          ],
+          [
+            103.8071,
+            1.1899
+          ],
+          [
+            103.8311,
+            1.1981
+          ],
+          [
+            103.8341,
+            1.1986
+          ],
+          [
+            103.8441,
+            1.2026
+          ],
+          [
+            103.865,
+            1.2146
+          ],
+          [
+            103.8791,
+            1.2299
+          ],
+          [
+            103.8767,
+            1.2375
+          ],
+          [
+            103.8687,
+            1.2422
+          ],
+          [
+            103.8624,
+            1.2474
+          ],
+          [
+            103.8594,
+            1.2523
+          ],
+          [
+            103.8586,
+            1.2576
+          ],
+          [
+            103.8542,
+            1.2584
+          ],
+          [
+            103.8484,
+            1.258
+          ],
+          [
+            103.8384,
+            1.2624
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 24.03,
+        "duration_minutes": 218.7,
+        "end_ts": "2026-08-05T09:21:25+00:00",
+        "point_count": 18,
+        "public_track_id": "cef86db9b965"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8912,
+            1.2014
+          ],
+          [
+            103.8316,
+            1.2322
+          ],
+          [
+            103.8113,
+            1.2508
+          ],
+          [
+            103.8179,
+            1.2611
+          ],
+          [
+            103.8201,
+            1.2627
+          ],
+          [
+            103.8082,
+            1.262
+          ],
+          [
+            103.8058,
+            1.2548
+          ],
+          [
+            103.8086,
+            1.2522
+          ],
+          [
+            103.8403,
+            1.2376
+          ],
+          [
+            103.8475,
+            1.2438
+          ],
+          [
+            103.8553,
+            1.2442
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 20.6,
+        "duration_minutes": 103.5,
+        "end_ts": "2026-08-05T09:20:26+00:00",
+        "point_count": 11,
+        "public_track_id": "1c0968ec08e9"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8982,
+            1.246
+          ],
+          [
+            103.8877,
+            1.2388
+          ],
+          [
+            103.8544,
+            1.2122
+          ],
+          [
+            103.8347,
+            1.2085
+          ],
+          [
+            103.8269,
+            1.2089
+          ],
+          [
+            103.8181,
+            1.2109
+          ],
+          [
+            103.8011,
+            1.2197
+          ],
+          [
+            103.7939,
+            1.2282
+          ],
+          [
+            103.7768,
+            1.2519
+          ],
+          [
+            103.7647,
+            1.2621
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 18.63,
+        "duration_minutes": 60.8,
+        "end_ts": "2026-08-05T09:19:46+00:00",
+        "point_count": 10,
+        "public_track_id": "310a75a4de4e"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.6904,
+            1.2187
+          ],
+          [
+            103.7236,
+            1.1711
+          ],
+          [
+            103.74,
+            1.156
+          ],
+          [
+            103.7454,
+            1.1581
+          ],
+          [
+            103.7498,
+            1.195
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 13.7,
+        "duration_minutes": 93.0,
+        "end_ts": "2026-08-05T09:19:06+00:00",
+        "point_count": 5,
+        "public_track_id": "9ef5a1256e5b"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7365,
+            1.2431
+          ],
+          [
+            103.7468,
+            1.2451
+          ],
+          [
+            103.7793,
+            1.2339
+          ],
+          [
+            103.7892,
+            1.2238
+          ],
+          [
+            103.8065,
+            1.208
+          ],
+          [
+            103.8583,
+            1.2109
+          ],
+          [
+            103.8646,
+            1.2155
+          ],
+          [
+            103.8723,
+            1.2239
+          ],
+          [
+            103.9084,
+            1.272
+          ],
+          [
+            103.9254,
+            1.2872
+          ],
+          [
+            103.9354,
+            1.2935
+          ],
+          [
+            103.9408,
+            1.2957
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 28.25,
+        "duration_minutes": 207.2,
+        "end_ts": "2026-08-05T09:16:49+00:00",
+        "point_count": 12,
+        "public_track_id": "a69910936a27"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9478,
+            1.2389
+          ],
+          [
+            103.8616,
+            1.2004
+          ],
+          [
+            103.8168,
+            1.1813
+          ],
+          [
+            103.7729,
+            1.1587
+          ],
+          [
+            103.7212,
+            1.1437
+          ],
+          [
+            103.6943,
+            1.1643
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 31.16,
+        "duration_minutes": 82.7,
+        "end_ts": "2026-08-05T09:16:37+00:00",
+        "point_count": 6,
+        "public_track_id": "da2aa1efbb14"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9811,
+            1.2533
+          ],
+          [
+            103.9499,
+            1.2433
+          ],
+          [
+            103.8894,
+            1.2157
+          ],
+          [
+            103.8344,
+            1.1878
+          ],
+          [
+            103.8029,
+            1.1763
+          ],
+          [
+            103.7826,
+            1.1662
+          ],
+          [
+            103.77,
+            1.1591
+          ],
+          [
+            103.7619,
+            1.1534
+          ],
+          [
+            103.744,
+            1.1379
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 29.48,
+        "duration_minutes": 87.0,
+        "end_ts": "2026-08-05T09:15:14+00:00",
+        "point_count": 9,
+        "public_track_id": "35eadfeffcac"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9285,
+            1.1077
+          ],
+          [
+            103.9285,
+            1.1077
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.0,
+        "duration_minutes": 99.0,
+        "end_ts": "2026-08-05T09:15:10+00:00",
+        "point_count": 2,
+        "public_track_id": "bb794fa71fec"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.815,
+            1.2449
+          ],
+          [
+            103.8156,
+            1.2365
+          ],
+          [
+            103.8236,
+            1.2206
+          ],
+          [
+            103.8429,
+            1.2048
+          ],
+          [
+            103.8679,
+            1.2202
+          ],
+          [
+            103.8663,
+            1.2183
+          ],
+          [
+            103.8236,
+            1.2038
+          ],
+          [
+            103.8007,
+            1.1891
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 17.27,
+        "duration_minutes": 114.9,
+        "end_ts": "2026-08-05T09:15:03+00:00",
+        "point_count": 8,
+        "public_track_id": "dc0517d7f8be"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.883,
+            1.249
+          ],
+          [
+            103.8847,
+            1.2498
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.29,
+        "duration_minutes": 114.0,
+        "end_ts": "2026-08-05T09:14:52+00:00",
+        "point_count": 2,
+        "public_track_id": "4688fb394b9e"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8988,
+            1.2547
+          ],
+          [
+            103.899,
+            1.2537
+          ],
+          [
+            103.8988,
+            1.2548
+          ],
+          [
+            103.9002,
+            1.2564
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.6,
+        "duration_minutes": 348.0,
+        "end_ts": "2026-08-05T09:06:31+00:00",
+        "point_count": 4,
+        "public_track_id": "179944011420"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8467,
+            1.2626
+          ],
+          [
+            103.8467,
+            1.2626
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.11,
+        "duration_minutes": 371.8,
+        "end_ts": "2026-08-05T09:04:44+00:00",
+        "point_count": 2,
+        "public_track_id": "05df50e4e0ae"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.762,
+            1.2544
+          ],
+          [
+            103.7889,
+            1.2233
+          ],
+          [
+            103.8086,
+            1.2051
+          ],
+          [
+            103.8123,
+            1.1994
+          ],
+          [
+            103.8117,
+            1.1946
+          ],
+          [
+            103.7994,
+            1.185
+          ],
+          [
+            103.7929,
+            1.1811
+          ],
+          [
+            103.7856,
+            1.1814
+          ],
+          [
+            103.7568,
+            1.1919
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 15.74,
+        "duration_minutes": 184.3,
+        "end_ts": "2026-08-05T09:03:56+00:00",
+        "point_count": 9,
+        "public_track_id": "61f38e1acf1f"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7808,
+            1.2644
+          ],
+          [
+            103.781,
+            1.2654
+          ],
+          [
+            103.7789,
+            1.2688
+          ],
+          [
+            103.7499,
+            1.2661
+          ],
+          [
+            103.7218,
+            1.2495
+          ],
+          [
+            103.6891,
+            1.2248
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 11.99,
+        "duration_minutes": 55.8,
+        "end_ts": "2026-08-05T09:02:32+00:00",
+        "point_count": 6,
+        "public_track_id": "cefa131d1bb8"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7833,
+            1.2476
+          ],
+          [
+            103.7984,
+            1.2467
+          ],
+          [
+            103.8082,
+            1.2414
+          ],
+          [
+            103.8219,
+            1.2325
+          ],
+          [
+            103.8224,
+            1.2314
+          ],
+          [
+            103.8231,
+            1.2319
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 5.0,
+        "duration_minutes": 122.1,
+        "end_ts": "2026-08-05T09:00:31+00:00",
+        "point_count": 6,
+        "public_track_id": "77bee6b4183e"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8317,
+            1.1919
+          ],
+          [
+            103.836,
+            1.2242
+          ],
+          [
+            103.825,
+            1.2389
+          ],
+          [
+            103.8117,
+            1.2511
+          ],
+          [
+            103.811,
+            1.2612
+          ],
+          [
+            103.8204,
+            1.2614
+          ],
+          [
+            103.8203,
+            1.2624
+          ],
+          [
+            103.8209,
+            1.2625
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 10.03,
+        "duration_minutes": 36.5,
+        "end_ts": "2026-08-05T09:00:30+00:00",
+        "point_count": 8,
+        "public_track_id": "634f024a0ca3"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8787,
+            1.2751
+          ],
+          [
+            103.8992,
+            1.277
+          ],
+          [
+            103.9096,
+            1.2767
+          ],
+          [
+            103.9185,
+            1.2805
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 4.53,
+        "duration_minutes": 23.1,
+        "end_ts": "2026-08-05T08:58:52+00:00",
+        "point_count": 4,
+        "public_track_id": "06ba8a79fa52"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8691,
+            1.1848
+          ],
+          [
+            103.8468,
+            1.172
+          ],
+          [
+            103.815,
+            1.1515
+          ],
+          [
+            103.808,
+            1.1479
+          ],
+          [
+            103.7656,
+            1.1225
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 13.44,
+        "duration_minutes": 37.0,
+        "end_ts": "2026-08-05T08:53:09+00:00",
+        "point_count": 5,
+        "public_track_id": "4a5853338997"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8706,
+            1.2211
+          ],
+          [
+            103.8423,
+            1.2195
+          ],
+          [
+            103.831,
+            1.2322
+          ],
+          [
+            103.8099,
+            1.2525
+          ],
+          [
+            103.8158,
+            1.2612
+          ],
+          [
+            103.8195,
+            1.2612
+          ],
+          [
+            103.8171,
+            1.2616
+          ],
+          [
+            103.8244,
+            1.2391
+          ],
+          [
+            103.832,
+            1.2351
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 13.72,
+        "duration_minutes": 85.5,
+        "end_ts": "2026-08-05T08:52:35+00:00",
+        "point_count": 9,
+        "public_track_id": "c617a3c80f92"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7832,
+            1.1459
+          ],
+          [
+            103.8093,
+            1.1629
+          ],
+          [
+            103.8556,
+            1.1813
+          ],
+          [
+            103.8974,
+            1.2019
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 14.19,
+        "duration_minutes": 58.1,
+        "end_ts": "2026-08-05T08:51:34+00:00",
+        "point_count": 4,
+        "public_track_id": "a87813f41998"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7104,
+            1.1628
+          ],
+          [
+            103.7508,
+            1.1668
+          ],
+          [
+            103.7512,
+            1.1737
+          ],
+          [
+            103.7439,
+            1.1871
+          ],
+          [
+            103.7459,
+            1.1897
+          ],
+          [
+            103.7472,
+            1.1903
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 8.1,
+        "duration_minutes": 320.9,
+        "end_ts": "2026-08-05T08:49:08+00:00",
+        "point_count": 6,
+        "public_track_id": "434ab734fe06"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9832,
+            1.2565
+          ],
+          [
+            103.9594,
+            1.2451
+          ],
+          [
+            103.9027,
+            1.2254
+          ],
+          [
+            103.8833,
+            1.2209
+          ],
+          [
+            103.8744,
+            1.217
+          ],
+          [
+            103.853,
+            1.2053
+          ],
+          [
+            103.8467,
+            1.2032
+          ],
+          [
+            103.8361,
+            1.2042
+          ],
+          [
+            103.8127,
+            1.2106
+          ],
+          [
+            103.8096,
+            1.2123
+          ],
+          [
+            103.7953,
+            1.224
+          ],
+          [
+            103.7913,
+            1.2293
+          ],
+          [
+            103.7808,
+            1.2465
+          ],
+          [
+            103.7708,
+            1.2606
+          ],
+          [
+            103.7596,
+            1.2747
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 29.59,
+        "duration_minutes": 140.7,
+        "end_ts": "2026-08-05T08:49:02+00:00",
+        "point_count": 15,
+        "public_track_id": "ed3ada153a20"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8439,
+            1.2029
+          ],
+          [
+            103.8339,
+            1.2067
+          ],
+          [
+            103.8132,
+            1.2128
+          ],
+          [
+            103.8044,
+            1.2172
+          ],
+          [
+            103.7946,
+            1.2267
+          ],
+          [
+            103.7858,
+            1.2398
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 7.95,
+        "duration_minutes": 57.5,
+        "end_ts": "2026-08-05T08:47:31+00:00",
+        "point_count": 6,
+        "public_track_id": "07410a8c23f9"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7662,
+            1.239
+          ],
+          [
+            103.7662,
+            1.239
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.05,
+        "duration_minutes": 321.0,
+        "end_ts": "2026-08-05T08:47:03+00:00",
+        "point_count": 2,
+        "public_track_id": "7f37e784fd8c"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7671,
+            1.1767
+          ],
+          [
+            103.7706,
+            1.1784
+          ],
+          [
+            103.771,
+            1.178
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.62,
+        "duration_minutes": 168.0,
+        "end_ts": "2026-08-05T08:45:46+00:00",
+        "point_count": 3,
+        "public_track_id": "64f75fb91994"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7542,
+            1.1661
+          ],
+          [
+            103.7556,
+            1.1682
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.38,
+        "duration_minutes": 297.0,
+        "end_ts": "2026-08-05T08:40:25+00:00",
+        "point_count": 2,
+        "public_track_id": "777f19e75b63"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.6901,
+            1.0656
+          ],
+          [
+            103.7936,
+            1.1556
+          ],
+          [
+            103.8155,
+            1.1677
+          ],
+          [
+            103.8298,
+            1.1743
+          ],
+          [
+            103.8703,
+            1.1908
+          ],
+          [
+            103.9025,
+            1.2107
+          ],
+          [
+            103.9472,
+            1.2345
+          ],
+          [
+            103.9479,
+            1.2362
+          ],
+          [
+            103.9448,
+            1.2545
+          ],
+          [
+            103.9362,
+            1.2671
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 38.45,
+        "duration_minutes": 143.3,
+        "end_ts": "2026-08-05T08:40:24+00:00",
+        "point_count": 10,
+        "public_track_id": "0432b449461e"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7983,
+            1.1846
+          ],
+          [
+            103.8059,
+            1.1896
+          ],
+          [
+            103.8703,
+            1.2184
+          ],
+          [
+            103.8984,
+            1.2477
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 13.37,
+        "duration_minutes": 59.0,
+        "end_ts": "2026-08-05T08:40:11+00:00",
+        "point_count": 4,
+        "public_track_id": "4d88aad527fd"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9379,
+            1.2338
+          ],
+          [
+            103.9251,
+            1.2292
+          ],
+          [
+            103.9018,
+            1.2193
+          ],
+          [
+            103.8594,
+            1.1991
+          ],
+          [
+            103.8239,
+            1.1845
+          ],
+          [
+            103.8038,
+            1.1782
+          ],
+          [
+            103.7637,
+            1.1569
+          ],
+          [
+            103.75,
+            1.1489
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 22.97,
+        "duration_minutes": 77.2,
+        "end_ts": "2026-08-05T08:38:14+00:00",
+        "point_count": 8,
+        "public_track_id": "a4e00b76aed9"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8608,
+            1.2492
+          ],
+          [
+            103.8406,
+            1.2629
+          ],
+          [
+            103.8378,
+            1.2638
+          ],
+          [
+            103.8372,
+            1.2633
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 3.13,
+        "duration_minutes": 51.8,
+        "end_ts": "2026-08-05T08:37:53+00:00",
+        "point_count": 4,
+        "public_track_id": "7435b05e2ebb"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7863,
+            1.256
+          ],
+          [
+            103.7862,
+            1.256
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.09,
+        "duration_minutes": 315.0,
+        "end_ts": "2026-08-05T08:37:23+00:00",
+        "point_count": 2,
+        "public_track_id": "85743ea56940"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7749,
+            1.2382
+          ],
+          [
+            103.8022,
+            1.2112
+          ],
+          [
+            103.8074,
+            1.2072
+          ],
+          [
+            103.8151,
+            1.2039
+          ],
+          [
+            103.8323,
+            1.1986
+          ],
+          [
+            103.8546,
+            1.2079
+          ],
+          [
+            103.87,
+            1.2196
+          ],
+          [
+            103.8986,
+            1.2467
+          ],
+          [
+            103.9164,
+            1.2668
+          ],
+          [
+            103.9268,
+            1.2946
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 23.43,
+        "duration_minutes": 92.0,
+        "end_ts": "2026-08-05T08:37:09+00:00",
+        "point_count": 10,
+        "public_track_id": "f8a0504d1592"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9682,
+            1.298
+          ],
+          [
+            103.8646,
+            1.2198
+          ],
+          [
+            103.8441,
+            1.2087
+          ],
+          [
+            103.8305,
+            1.2059
+          ],
+          [
+            103.8232,
+            1.2069
+          ],
+          [
+            103.8151,
+            1.2096
+          ],
+          [
+            103.798,
+            1.221
+          ],
+          [
+            103.7919,
+            1.2276
+          ],
+          [
+            103.7815,
+            1.2411
+          ],
+          [
+            103.7787,
+            1.249
+          ],
+          [
+            103.7717,
+            1.2582
+          ],
+          [
+            103.7642,
+            1.2647
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 28.84,
+        "duration_minutes": 129.1,
+        "end_ts": "2026-08-05T08:36:53+00:00",
+        "point_count": 12,
+        "public_track_id": "aa79f3f9fc19"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8034,
+            1.2345
+          ],
+          [
+            103.8042,
+            1.234
+          ],
+          [
+            103.7975,
+            1.22
+          ],
+          [
+            103.7991,
+            1.2159
+          ],
+          [
+            103.8204,
+            1.1961
+          ],
+          [
+            103.8342,
+            1.188
+          ],
+          [
+            103.875,
+            1.199
+          ],
+          [
+            103.8947,
+            1.2069
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 14.38,
+        "duration_minutes": 119.4,
+        "end_ts": "2026-08-05T08:36:52+00:00",
+        "point_count": 8,
+        "public_track_id": "2b95eded9a0c"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8444,
+            1.2169
+          ],
+          [
+            103.8309,
+            1.2323
+          ],
+          [
+            103.8054,
+            1.2579
+          ],
+          [
+            103.806,
+            1.2609
+          ],
+          [
+            103.8085,
+            1.2615
+          ],
+          [
+            103.8209,
+            1.261
+          ],
+          [
+            103.8201,
+            1.2625
+          ],
+          [
+            103.8179,
+            1.2619
+          ],
+          [
+            103.8206,
+            1.2615
+          ],
+          [
+            103.8216,
+            1.262
+          ],
+          [
+            103.8203,
+            1.2627
+          ],
+          [
+            103.8083,
+            1.2619
+          ],
+          [
+            103.8053,
+            1.2579
+          ],
+          [
+            103.8475,
+            1.2441
+          ],
+          [
+            103.8523,
+            1.2446
+          ],
+          [
+            103.8562,
+            1.2433
+          ],
+          [
+            103.8668,
+            1.2342
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 18.73,
+        "duration_minutes": 130.1,
+        "end_ts": "2026-08-05T08:36:41+00:00",
+        "point_count": 17,
+        "public_track_id": "ca67b54030d5"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8562,
+            1.2091
+          ],
+          [
+            103.8446,
+            1.2167
+          ],
+          [
+            103.8061,
+            1.2566
+          ],
+          [
+            103.8053,
+            1.2581
+          ],
+          [
+            103.8056,
+            1.2603
+          ],
+          [
+            103.82,
+            1.2613
+          ],
+          [
+            103.8207,
+            1.2625
+          ],
+          [
+            103.8167,
+            1.262
+          ],
+          [
+            103.8207,
+            1.2614
+          ],
+          [
+            103.8201,
+            1.2625
+          ],
+          [
+            103.8073,
+            1.2618
+          ],
+          [
+            103.8287,
+            1.2369
+          ],
+          [
+            103.841,
+            1.2379
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 17.44,
+        "duration_minutes": 159.8,
+        "end_ts": "2026-08-05T08:36:24+00:00",
+        "point_count": 13,
+        "public_track_id": "f4e4f84e2089"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.994,
+            1.2532
+          ],
+          [
+            103.9683,
+            1.2459
+          ],
+          [
+            103.8784,
+            1.2083
+          ],
+          [
+            103.8427,
+            1.1894
+          ],
+          [
+            103.822,
+            1.1806
+          ],
+          [
+            103.8132,
+            1.1776
+          ],
+          [
+            103.7728,
+            1.1582
+          ],
+          [
+            103.7654,
+            1.1531
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 27.81,
+        "duration_minutes": 75.0,
+        "end_ts": "2026-08-05T08:35:49+00:00",
+        "point_count": 8,
+        "public_track_id": "19770368ab9c"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.751,
+            1.1135
+          ],
+          [
+            103.7912,
+            1.1555
+          ],
+          [
+            103.8223,
+            1.1699
+          ],
+          [
+            103.8787,
+            1.1936
+          ],
+          [
+            103.8934,
+            1.2091
+          ],
+          [
+            103.9123,
+            1.2197
+          ],
+          [
+            103.945,
+            1.2321
+          ],
+          [
+            103.9536,
+            1.2385
+          ],
+          [
+            103.9498,
+            1.2453
+          ],
+          [
+            103.947,
+            1.2568
+          ],
+          [
+            103.9717,
+            1.2831
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 33.12,
+        "duration_minutes": 195.0,
+        "end_ts": "2026-08-05T08:34:41+00:00",
+        "point_count": 11,
+        "public_track_id": "ac19cf447c14"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7045,
+            1.2277
+          ],
+          [
+            103.7295,
+            1.2456
+          ],
+          [
+            103.7447,
+            1.2458
+          ],
+          [
+            103.7822,
+            1.2494
+          ],
+          [
+            103.7933,
+            1.2623
+          ],
+          [
+            103.7935,
+            1.2677
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 11.81,
+        "duration_minutes": 71.5,
+        "end_ts": "2026-08-05T08:34:22+00:00",
+        "point_count": 6,
+        "public_track_id": "f69d985ad518"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9093,
+            1.2623
+          ],
+          [
+            103.9173,
+            1.2633
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 1.11,
+        "duration_minutes": 194.8,
+        "end_ts": "2026-08-05T08:34:19+00:00",
+        "point_count": 2,
+        "public_track_id": "8c6eefba7ec5"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7169,
+            1.2296
+          ],
+          [
+            103.7824,
+            1.2292
+          ],
+          [
+            103.806,
+            1.2099
+          ],
+          [
+            103.8295,
+            1.2033
+          ],
+          [
+            103.8363,
+            1.2027
+          ],
+          [
+            103.8726,
+            1.2219
+          ],
+          [
+            103.8773,
+            1.2263
+          ],
+          [
+            103.8959,
+            1.2351
+          ],
+          [
+            103.9255,
+            1.2609
+          ],
+          [
+            103.9507,
+            1.2795
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 29.57,
+        "duration_minutes": 154.2,
+        "end_ts": "2026-08-05T08:33:12+00:00",
+        "point_count": 10,
+        "public_track_id": "10ae25528fee"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7491,
+            1.2377
+          ],
+          [
+            103.7491,
+            1.2377
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.07,
+        "duration_minutes": 339.3,
+        "end_ts": "2026-08-05T08:33:05+00:00",
+        "point_count": 2,
+        "public_track_id": "9d88a7c1ae4d"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7292,
+            1.091
+          ],
+          [
+            103.8182,
+            1.1658
+          ],
+          [
+            103.8332,
+            1.174
+          ],
+          [
+            103.8756,
+            1.1925
+          ],
+          [
+            103.9195,
+            1.2178
+          ],
+          [
+            103.9581,
+            1.2342
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 30.27,
+        "duration_minutes": 83.8,
+        "end_ts": "2026-08-05T08:32:42+00:00",
+        "point_count": 6,
+        "public_track_id": "c08aa23e3fed"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7817,
+            1.2355
+          ],
+          [
+            103.799,
+            1.2163
+          ],
+          [
+            103.8276,
+            1.2016
+          ],
+          [
+            103.8355,
+            1.2009
+          ],
+          [
+            103.8414,
+            1.2013
+          ],
+          [
+            103.8563,
+            1.2086
+          ],
+          [
+            103.8624,
+            1.2129
+          ],
+          [
+            103.8887,
+            1.2749
+          ],
+          [
+            103.9,
+            1.2805
+          ],
+          [
+            103.9031,
+            1.2832
+          ],
+          [
+            103.9051,
+            1.2839
+          ],
+          [
+            103.9126,
+            1.2829
+          ],
+          [
+            103.9176,
+            1.2843
+          ],
+          [
+            103.9527,
+            1.2858
+          ],
+          [
+            103.9618,
+            1.2901
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 26.72,
+        "duration_minutes": 123.9,
+        "end_ts": "2026-08-05T08:30:55+00:00",
+        "point_count": 15,
+        "public_track_id": "b0d333b1178b"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8092,
+            1.2211
+          ],
+          [
+            103.8101,
+            1.2209
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.13,
+        "duration_minutes": 84.0,
+        "end_ts": "2026-08-05T08:30:42+00:00",
+        "point_count": 2,
+        "public_track_id": "5d45263cf982"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9417,
+            1.2402
+          ],
+          [
+            103.8764,
+            1.2095
+          ],
+          [
+            103.8449,
+            1.1938
+          ],
+          [
+            103.8284,
+            1.1868
+          ],
+          [
+            103.7966,
+            1.1754
+          ],
+          [
+            103.7789,
+            1.1667
+          ],
+          [
+            103.7492,
+            1.149
+          ],
+          [
+            103.7285,
+            1.1422
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 26.14,
+        "duration_minutes": 95.7,
+        "end_ts": "2026-08-05T08:30:13+00:00",
+        "point_count": 8,
+        "public_track_id": "96d3f4a137cb"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7854,
+            1.2375
+          ],
+          [
+            103.7805,
+            1.2463
+          ],
+          [
+            103.7675,
+            1.2652
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 3.67,
+        "duration_minutes": 21.5,
+        "end_ts": "2026-08-05T08:24:21+00:00",
+        "point_count": 3,
+        "public_track_id": "eca238f41ae7"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8207,
+            1.2622
+          ],
+          [
+            103.8191,
+            1.2614
+          ],
+          [
+            103.8107,
+            1.2619
+          ],
+          [
+            103.8141,
+            1.2478
+          ],
+          [
+            103.828,
+            1.2369
+          ],
+          [
+            103.8576,
+            1.2405
+          ],
+          [
+            103.8663,
+            1.2302
+          ],
+          [
+            103.8743,
+            1.2191
+          ],
+          [
+            103.8816,
+            1.2113
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 12.35,
+        "duration_minutes": 50.0,
+        "end_ts": "2026-08-05T08:24:17+00:00",
+        "point_count": 9,
+        "public_track_id": "7af2b2bfa277"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9106,
+            1.2817
+          ],
+          [
+            103.8861,
+            1.2654
+          ],
+          [
+            103.8613,
+            1.2507
+          ],
+          [
+            103.8323,
+            1.2357
+          ],
+          [
+            103.8269,
+            1.2384
+          ],
+          [
+            103.8182,
+            1.2402
+          ],
+          [
+            103.8173,
+            1.2396
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 11.94,
+        "duration_minutes": 146.9,
+        "end_ts": "2026-08-05T08:24:08+00:00",
+        "point_count": 7,
+        "public_track_id": "a6d23e63d452"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9129,
+            1.2427
+          ],
+          [
+            103.9128,
+            1.2416
+          ],
+          [
+            103.9138,
+            1.2421
+          ],
+          [
+            103.919,
+            1.2369
+          ],
+          [
+            103.9541,
+            1.2396
+          ],
+          [
+            103.9763,
+            1.2428
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 7.49,
+        "duration_minutes": 71.2,
+        "end_ts": "2026-08-05T08:22:56+00:00",
+        "point_count": 6,
+        "public_track_id": "63515c28f856"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.6438,
+            1.203
+          ],
+          [
+            103.6546,
+            1.2016
+          ],
+          [
+            103.7393,
+            1.246
+          ],
+          [
+            103.7558,
+            1.2485
+          ],
+          [
+            103.768,
+            1.2527
+          ],
+          [
+            103.7745,
+            1.2592
+          ],
+          [
+            103.7803,
+            1.2627
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 16.91,
+        "duration_minutes": 89.5,
+        "end_ts": "2026-08-05T08:21:02+00:00",
+        "point_count": 7,
+        "public_track_id": "205f5d9a725a"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8434,
+            1.2574
+          ],
+          [
+            103.8411,
+            1.2571
+          ],
+          [
+            103.8961,
+            1.2604
+          ],
+          [
+            103.903,
+            1.2615
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 7.2,
+        "duration_minutes": 198.7,
+        "end_ts": "2026-08-05T08:21:00+00:00",
+        "point_count": 4,
+        "public_track_id": "2d2a1934ba03"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7569,
+            1.1737
+          ],
+          [
+            103.7643,
+            1.1786
+          ],
+          [
+            103.7694,
+            1.183
+          ],
+          [
+            103.7692,
+            1.1842
+          ],
+          [
+            103.7712,
+            1.1843
+          ],
+          [
+            103.772,
+            1.1832
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 2.28,
+        "duration_minutes": 111.0,
+        "end_ts": "2026-08-05T08:20:25+00:00",
+        "point_count": 6,
+        "public_track_id": "f474995b2e65"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.921,
+            1.229
+          ],
+          [
+            103.8905,
+            1.215
+          ],
+          [
+            103.86,
+            1.199
+          ],
+          [
+            103.8289,
+            1.1837
+          ],
+          [
+            103.8065,
+            1.1751
+          ],
+          [
+            103.7367,
+            1.1413
+          ],
+          [
+            103.7321,
+            1.1413
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 23.23,
+        "duration_minutes": 66.0,
+        "end_ts": "2026-08-05T08:20:13+00:00",
+        "point_count": 7,
+        "public_track_id": "9674468a17b7"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7588,
+            1.2436
+          ],
+          [
+            103.776,
+            1.2368
+          ],
+          [
+            103.789,
+            1.2234
+          ],
+          [
+            103.8264,
+            1.1888
+          ],
+          [
+            103.8361,
+            1.1835
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 11.02,
+        "duration_minutes": 52.3,
+        "end_ts": "2026-08-05T08:20:07+00:00",
+        "point_count": 5,
+        "public_track_id": "e613214cfb71"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9323,
+            1.2318
+          ],
+          [
+            103.8762,
+            1.2101
+          ],
+          [
+            103.7962,
+            1.1725
+          ],
+          [
+            103.7635,
+            1.1535
+          ],
+          [
+            103.735,
+            1.1421
+          ],
+          [
+            103.7076,
+            1.1558
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 27.55,
+        "duration_minutes": 87.7,
+        "end_ts": "2026-08-05T08:19:25+00:00",
+        "point_count": 6,
+        "public_track_id": "39e92afb94f3"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8714,
+            1.2197
+          ],
+          [
+            103.8353,
+            1.2082
+          ],
+          [
+            103.8247,
+            1.2088
+          ],
+          [
+            103.8071,
+            1.2153
+          ],
+          [
+            103.8003,
+            1.2191
+          ],
+          [
+            103.7833,
+            1.2382
+          ],
+          [
+            103.7694,
+            1.2558
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 13.68,
+        "duration_minutes": 55.0,
+        "end_ts": "2026-08-05T08:18:46+00:00",
+        "point_count": 7,
+        "public_track_id": "9211685f2dfe"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.71,
+            1.0836
+          ],
+          [
+            103.7311,
+            1.1035
+          ],
+          [
+            103.7605,
+            1.1364
+          ],
+          [
+            103.7774,
+            1.1537
+          ],
+          [
+            103.789,
+            1.163
+          ],
+          [
+            103.8036,
+            1.1725
+          ],
+          [
+            103.8455,
+            1.1883
+          ],
+          [
+            103.8786,
+            1.203
+          ],
+          [
+            103.9073,
+            1.2146
+          ],
+          [
+            103.9294,
+            1.2262
+          ],
+          [
+            103.9452,
+            1.2331
+          ],
+          [
+            103.9599,
+            1.2506
+          ],
+          [
+            103.9569,
+            1.2533
+          ],
+          [
+            103.9592,
+            1.2669
+          ],
+          [
+            103.9602,
+            1.2686
+          ],
+          [
+            103.9587,
+            1.2691
+          ],
+          [
+            103.9584,
+            1.2707
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 36.68,
+        "duration_minutes": 221.2,
+        "end_ts": "2026-08-05T08:18:42+00:00",
+        "point_count": 17,
+        "public_track_id": "f9e1f1607412"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7833,
+            1.2746
+          ],
+          [
+            103.7833,
+            1.2746
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.01,
+        "duration_minutes": 177.0,
+        "end_ts": "2026-08-05T08:17:44+00:00",
+        "point_count": 2,
+        "public_track_id": "de110917d49c"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8093,
+            1.2251
+          ],
+          [
+            103.811,
+            1.2251
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.23,
+        "duration_minutes": 162.1,
+        "end_ts": "2026-08-05T08:17:04+00:00",
+        "point_count": 2,
+        "public_track_id": "145bd3b25564"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9476,
+            1.2385
+          ],
+          [
+            103.9259,
+            1.23
+          ],
+          [
+            103.8911,
+            1.2145
+          ],
+          [
+            103.8556,
+            1.1966
+          ],
+          [
+            103.8034,
+            1.1733
+          ],
+          [
+            103.7709,
+            1.1552
+          ],
+          [
+            103.7481,
+            1.1406
+          ],
+          [
+            103.7376,
+            1.136
+          ],
+          [
+            103.7341,
+            1.1354
+          ],
+          [
+            103.7077,
+            1.1491
+          ],
+          [
+            103.6744,
+            1.1702
+          ],
+          [
+            103.6629,
+            1.1762
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 35.55,
+        "duration_minutes": 100.3,
+        "end_ts": "2026-08-05T08:09:44+00:00",
+        "point_count": 12,
+        "public_track_id": "b037967f8536"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.841,
+            1.2433
+          ],
+          [
+            103.841,
+            1.2433
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.02,
+        "duration_minutes": 225.0,
+        "end_ts": "2026-08-05T08:09:10+00:00",
+        "point_count": 2,
+        "public_track_id": "1888553c403e"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9522,
+            1.2382
+          ],
+          [
+            103.8967,
+            1.2163
+          ],
+          [
+            103.7919,
+            1.1695
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 19.39,
+        "duration_minutes": 47.1,
+        "end_ts": "2026-08-05T08:08:42+00:00",
+        "point_count": 3,
+        "public_track_id": "1c18adebaa98"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9556,
+            1.2901
+          ],
+          [
+            103.9555,
+            1.289
+          ],
+          [
+            103.9606,
+            1.2855
+          ],
+          [
+            103.9494,
+            1.2487
+          ],
+          [
+            103.9161,
+            1.2329
+          ],
+          [
+            103.8793,
+            1.213
+          ],
+          [
+            103.8468,
+            1.1969
+          ],
+          [
+            103.8284,
+            1.1885
+          ],
+          [
+            103.8031,
+            1.1786
+          ],
+          [
+            103.7956,
+            1.1749
+          ],
+          [
+            103.7506,
+            1.1499
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 30.0,
+        "duration_minutes": 296.6,
+        "end_ts": "2026-08-05T08:08:21+00:00",
+        "point_count": 11,
+        "public_track_id": "5c0b76bf275c"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9792,
+            1.2494
+          ],
+          [
+            103.9509,
+            1.2402
+          ],
+          [
+            103.8864,
+            1.2106
+          ],
+          [
+            103.8673,
+            1.2031
+          ],
+          [
+            103.8023,
+            1.1742
+          ],
+          [
+            103.7819,
+            1.1629
+          ],
+          [
+            103.7383,
+            1.136
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 29.68,
+        "duration_minutes": 76.2,
+        "end_ts": "2026-08-05T08:07:34+00:00",
+        "point_count": 7,
+        "public_track_id": "c4af2aee2f31"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9216,
+            1.2424
+          ],
+          [
+            103.9219,
+            1.2428
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.06,
+        "duration_minutes": 129.1,
+        "end_ts": "2026-08-05T08:07:28+00:00",
+        "point_count": 2,
+        "public_track_id": "b7a5a0829265"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.9214,
+            1.2327
+          ],
+          [
+            103.8606,
+            1.204
+          ],
+          [
+            103.8282,
+            1.1873
+          ],
+          [
+            103.7866,
+            1.1741
+          ],
+          [
+            103.77,
+            1.1681
+          ],
+          [
+            103.7477,
+            1.1546
+          ],
+          [
+            103.7403,
+            1.1542
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 22.08,
+        "duration_minutes": 97.0,
+        "end_ts": "2026-08-05T08:07:24+00:00",
+        "point_count": 7,
+        "public_track_id": "07e98c858466"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.7886,
+            1.2277
+          ],
+          [
+            103.8206,
+            1.1944
+          ],
+          [
+            103.8328,
+            1.187
+          ],
+          [
+            103.8468,
+            1.1884
+          ],
+          [
+            103.8784,
+            1.2008
+          ],
+          [
+            103.8871,
+            1.2054
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 13.15,
+        "duration_minutes": 45.0,
+        "end_ts": "2026-08-05T08:07:17+00:00",
+        "point_count": 6,
+        "public_track_id": "23af8c74d805"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            103.8411,
+            1.2571
+          ],
+          [
+            103.8412,
+            1.2571
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "distance_km": 0.01,
+        "duration_minutes": 97.3,
+        "end_ts": "2026-08-05T08:05:31+00:00",
+        "point_count": 2,
+        "public_track_id": "24c25deec382"
+      },
+      "type": "Feature"
+    }
+  ],
+  "freshness": "Completed tracks only; end timestamps are at least 15 minutes old.",
+  "generated_at": "2026-08-08T00:34:20.938468+00:00",
+  "human_review_disclaimer": "Candidates for human review, never automated verdicts.",
+  "source": {
+    "ais": "AISStream.io beta feed; no service-level agreement",
+    "gfw": "Global Fishing Watch data \u2014 https://globalfishingwatch.org"
+  },
+  "type": "FeatureCollection"
+}

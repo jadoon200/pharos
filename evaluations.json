@@ -1,0 +1,16 @@
+{
+  "evaluation": {
+    "pilot_status": "collecting \u2014 no pilot evaluation yet",
+    "recorded_real_data_validation": {
+      "limitations": "Synthetic metrics are not substituted for Singapore pilot labels.",
+      "summary": "Gulf/LA real-data validation remains the current non-pilot result."
+    }
+  },
+  "freshness": "Latest recorded evaluation run; no live recomputation in publication.",
+  "generated_at": "2026-08-08T00:34:20.938468+00:00",
+  "human_review_disclaimer": "Candidates for human review, never automated verdicts.",
+  "source": {
+    "ais": "AISStream.io beta feed; no service-level agreement",
+    "gfw": "Global Fishing Watch data \u2014 https://globalfishingwatch.org"
+  }
+}

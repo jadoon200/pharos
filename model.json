@@ -1,0 +1,18 @@
+{
+  "artifact_source": "frozen-artifact",
+  "freeze_date": "2026-07-16",
+  "freshness": "Frozen SG-PILOT-v0 model metadata; not a mutable scoring endpoint.",
+  "generated_at": "2026-08-08T00:34:20.938468+00:00",
+  "hidden_size": 8,
+  "human_review_disclaimer": "Candidates for human review, never automated verdicts.",
+  "model_card": "https://github.com/jadoon200/pharos/blob/main/docs/MODEL_CARD.md",
+  "normalization_provenance": "train-partition-only",
+  "parameter_count": 804,
+  "sha256": "349b69129fdfb9b7b0a70ffd451051a665e0331a47b18512e6d6917faf3e90e1",
+  "source": {
+    "ais": "AISStream.io beta feed; no service-level agreement",
+    "gfw": "Global Fishing Watch data \u2014 https://globalfishingwatch.org"
+  },
+  "threshold": 11.014160938262933,
+  "training_window": "881 real LA and Gulf tracks; frozen before the Singapore window"
+}

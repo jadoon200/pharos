@@ -1,0 +1,2811 @@
+{
+  "freshness": "Recent bounded incident candidates at snapshot generation time.",
+  "generated_at": "2026-08-08T00:34:20.938468+00:00",
+  "human_review_disclaimer": "Candidates for human review, never automated verdicts.",
+  "incidents": [
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 261.7
+      },
+      "lat": 1.1783,
+      "lon": 103.7547,
+      "public_incident_id": "111375bb6083",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-05T09:02:44+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 114.7
+      },
+      "lat": 1.2904,
+      "lon": 103.9465,
+      "public_incident_id": "0d31c1957407",
+      "reliability_grade": "C",
+      "score": 0.7911,
+      "status": "candidate",
+      "ts": "2026-08-05T07:24:26+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 99.7
+      },
+      "lat": 1.1792,
+      "lon": 103.7822,
+      "public_incident_id": "dd9bb5c0628d",
+      "reliability_grade": "C",
+      "score": 0.7661,
+      "status": "candidate",
+      "ts": "2026-08-05T06:53:19+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 259.2
+      },
+      "lat": 1.1797,
+      "lon": 103.7669,
+      "public_incident_id": "0fa65199559f",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-05T04:59:07+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 341.7
+      },
+      "lat": 1.1781,
+      "lon": 103.7573,
+      "public_incident_id": "6ef1e4b99e46",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-05T04:49:27+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 180.9
+      },
+      "lat": 1.2964,
+      "lon": 103.7565,
+      "public_incident_id": "cb6bb8ec368d",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-05T04:19:40+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1162.0
+      },
+      "lat": 1.2834,
+      "lon": 103.9454,
+      "public_incident_id": "021b14dcc658",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-04T10:37:52+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1470.4
+      },
+      "lat": 1.297,
+      "lon": 104.0475,
+      "public_incident_id": "1762ca58399e",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-04T09:29:40+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 111.2
+      },
+      "lat": 1.2831,
+      "lon": 103.9329,
+      "public_incident_id": "8eacd9d439ca",
+      "reliability_grade": "C",
+      "score": 0.7853,
+      "status": "candidate",
+      "ts": "2026-08-04T08:56:18+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 154.6
+      },
+      "lat": 1.2839,
+      "lon": 103.9143,
+      "public_incident_id": "240a0d6dbae8",
+      "reliability_grade": "C",
+      "score": 0.8576,
+      "status": "candidate",
+      "ts": "2026-08-04T07:49:14+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 126.0
+      },
+      "lat": 1.2909,
+      "lon": 103.9356,
+      "public_incident_id": "fd3f9cdcda19",
+      "reliability_grade": "C",
+      "score": 0.81,
+      "status": "candidate",
+      "ts": "2026-08-04T07:47:37+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 116.0
+      },
+      "lat": 1.2827,
+      "lon": 103.7625,
+      "public_incident_id": "9122e01d3b3a",
+      "reliability_grade": "C",
+      "score": 0.7934,
+      "status": "candidate",
+      "ts": "2026-08-04T07:15:32+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 150.4
+      },
+      "lat": 1.1663,
+      "lon": 103.7146,
+      "public_incident_id": "b28697b9690b",
+      "reliability_grade": "C",
+      "score": 0.8507,
+      "status": "candidate",
+      "ts": "2026-08-04T06:53:31+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1357.9
+      },
+      "lat": 1.2936,
+      "lon": 103.9375,
+      "public_incident_id": "247088a17044",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-04T06:49:23+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 216.8
+      },
+      "lat": 1.2806,
+      "lon": 103.9181,
+      "public_incident_id": "2d022d1b59e6",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-04T06:16:25+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 69.7
+      },
+      "lat": 1.2852,
+      "lon": 103.9311,
+      "public_incident_id": "248a109754c9",
+      "reliability_grade": "C",
+      "score": 0.7161,
+      "status": "candidate",
+      "ts": "2026-08-04T05:24:48+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 89.1
+      },
+      "lat": 1.2813,
+      "lon": 103.7662,
+      "public_incident_id": "7bb2e7ec03c5",
+      "reliability_grade": "C",
+      "score": 0.7484,
+      "status": "candidate",
+      "ts": "2026-08-04T05:07:23+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 129.9
+      },
+      "lat": 1.1652,
+      "lon": 103.7635,
+      "public_incident_id": "17316175c968",
+      "reliability_grade": "C",
+      "score": 0.8164,
+      "status": "candidate",
+      "ts": "2026-08-04T05:06:31+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1637.6
+      },
+      "lat": 1.297,
+      "lon": 103.7153,
+      "public_incident_id": "2d308b572e4b",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-04T05:04:34+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 87.1
+      },
+      "lat": 1.161,
+      "lon": 103.7187,
+      "public_incident_id": "7b4dcd3a666b",
+      "reliability_grade": "C",
+      "score": 0.7452,
+      "status": "candidate",
+      "ts": "2026-08-04T04:40:58+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 151.7
+      },
+      "lat": 1.2946,
+      "lon": 103.945,
+      "public_incident_id": "863a5b40a74d",
+      "reliability_grade": "C",
+      "score": 0.8529,
+      "status": "candidate",
+      "ts": "2026-08-04T04:19:29+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 525.2
+      },
+      "lat": 1.2923,
+      "lon": 103.94,
+      "public_incident_id": "f10d53c169fc",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-03T22:33:14+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 71.2
+      },
+      "lat": 1.2821,
+      "lon": 103.7636,
+      "public_incident_id": "00c978bcbd3a",
+      "reliability_grade": "C",
+      "score": 0.7186,
+      "status": "candidate",
+      "ts": "2026-08-03T22:32:04+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1930.8
+      },
+      "lat": 1.2892,
+      "lon": 103.9575,
+      "public_incident_id": "395d17b50af7",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-03T22:19:18+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 806.1
+      },
+      "lat": 1.283,
+      "lon": 103.9131,
+      "public_incident_id": "7688624d75ac",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-03T10:28:42+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 751.5
+      },
+      "lat": 1.2868,
+      "lon": 103.983,
+      "public_incident_id": "05334e70eed6",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-03T10:14:13+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1473.7
+      },
+      "lat": 1.2864,
+      "lon": 103.7515,
+      "public_incident_id": "57e639c90e9c",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-03T10:13:04+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1327.6
+      },
+      "lat": 1.2806,
+      "lon": 103.7667,
+      "public_incident_id": "4fb3643017ad",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-03T09:11:33+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1349.5
+      },
+      "lat": 1.2819,
+      "lon": 103.9437,
+      "public_incident_id": "379eb6c63ec8",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-03T07:47:47+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 900.7
+      },
+      "lat": 1.2938,
+      "lon": 103.9348,
+      "public_incident_id": "3ff83566394a",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-03T07:46:02+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 92.0
+      },
+      "lat": 1.2899,
+      "lon": 103.9576,
+      "public_incident_id": "1f64d40d9699",
+      "reliability_grade": "C",
+      "score": 0.7534,
+      "status": "candidate",
+      "ts": "2026-08-03T07:35:44+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 684.1
+      },
+      "lat": 1.287,
+      "lon": 103.764,
+      "public_incident_id": "c0bde4b31603",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-03T06:31:33+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 2882.0
+      },
+      "lat": 1.2934,
+      "lon": 103.9407,
+      "public_incident_id": "ca6cc6a68fa0",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-03T06:15:23+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 291.1
+      },
+      "lat": 1.2855,
+      "lon": 103.7622,
+      "public_incident_id": "48715c5fff25",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-03T04:46:29+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 272.5
+      },
+      "lat": 1.2891,
+      "lon": 103.9373,
+      "public_incident_id": "303955480f93",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-03T04:34:16+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "rendezvous",
+      "evidence_summary": {
+        "duration_minutes": 515.0
+      },
+      "lat": 1.175,
+      "lon": 103.764,
+      "public_incident_id": "696399590093",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-03T04:07:49+00:00",
+      "type": "ship-to-ship transfer"
+    },
+    {
+      "detector": "rendezvous",
+      "evidence_summary": {
+        "duration_minutes": 515.0
+      },
+      "lat": 1.175,
+      "lon": 103.764,
+      "public_incident_id": "ee9d6cd34d7f",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-03T04:07:49+00:00",
+      "type": "ship-to-ship transfer"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 462.6
+      },
+      "lat": 1.2839,
+      "lon": 103.911,
+      "public_incident_id": "2565d908322c",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T23:51:38+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 2073.7
+      },
+      "lat": 1.1755,
+      "lon": 103.7687,
+      "public_incident_id": "ec6a85423c3a",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T23:38:03+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1975.6
+      },
+      "lat": 1.2826,
+      "lon": 103.9516,
+      "public_incident_id": "142c2d9a1f36",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T23:17:35+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 711.9
+      },
+      "lat": 1.2813,
+      "lon": 103.9199,
+      "public_incident_id": "287385cf2a55",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T23:06:43+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 654.2
+      },
+      "lat": 1.2879,
+      "lon": 103.9547,
+      "public_incident_id": "075fe7765300",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T23:05:53+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 67.2
+      },
+      "lat": 1.2037,
+      "lon": 103.6645,
+      "public_incident_id": "4848af4be2a7",
+      "reliability_grade": "C",
+      "score": 0.7119,
+      "status": "candidate",
+      "ts": "2026-08-02T22:42:03+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 70.2
+      },
+      "lat": 1.2936,
+      "lon": 103.9355,
+      "public_incident_id": "cd4e40442c7c",
+      "reliability_grade": "C",
+      "score": 0.7169,
+      "status": "candidate",
+      "ts": "2026-08-02T22:40:45+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 424.6
+      },
+      "lat": 1.2812,
+      "lon": 103.7655,
+      "public_incident_id": "6f5dfd7885c8",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T22:34:05+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 401.4
+      },
+      "lat": 1.2971,
+      "lon": 103.9574,
+      "public_incident_id": "568f61134840",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T22:04:30+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 766.7
+      },
+      "lat": 1.29,
+      "lon": 103.76,
+      "public_incident_id": "99f942a60982",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T21:01:05+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 504.8
+      },
+      "lat": 1.2925,
+      "lon": 103.9785,
+      "public_incident_id": "7c6805e12b4d",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T20:33:35+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 701.9
+      },
+      "lat": 1.2916,
+      "lon": 103.9354,
+      "public_incident_id": "9b00150a0345",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T19:55:42+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 635.5
+      },
+      "lat": 1.2887,
+      "lon": 103.9479,
+      "public_incident_id": "54b7689e53b4",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T19:17:47+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 653.2
+      },
+      "lat": 1.2958,
+      "lon": 103.9636,
+      "public_incident_id": "4e8f221566d7",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T19:09:58+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 289.5
+      },
+      "lat": 1.1763,
+      "lon": 103.9312,
+      "public_incident_id": "e40af4121ebd",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T18:50:11+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 234.3
+      },
+      "lat": 1.2985,
+      "lon": 103.9523,
+      "public_incident_id": "d02a9f33bbba",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T18:24:30+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 267.6
+      },
+      "lat": 1.2903,
+      "lon": 103.729,
+      "public_incident_id": "cf35fe0d1fd6",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T17:24:32+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 802.9
+      },
+      "lat": 1.2882,
+      "lon": 103.7607,
+      "public_incident_id": "93020fd330b2",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T17:23:51+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 869.9
+      },
+      "lat": 1.2923,
+      "lon": 103.9615,
+      "public_incident_id": "713b7cc2bb44",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T17:22:11+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 63.1
+      },
+      "lat": 1.2883,
+      "lon": 103.9755,
+      "public_incident_id": "f875ca319ca3",
+      "reliability_grade": "C",
+      "score": 0.7051,
+      "status": "candidate",
+      "ts": "2026-08-02T17:21:34+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 441.5
+      },
+      "lat": 1.2833,
+      "lon": 103.7638,
+      "public_incident_id": "6a6b56a43842",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T16:06:38+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 436.5
+      },
+      "lat": 1.1619,
+      "lon": 103.7188,
+      "public_incident_id": "a61e26f33154",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T16:05:54+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 772.4
+      },
+      "lat": 1.2811,
+      "lon": 104.0154,
+      "public_incident_id": "a7c714516d24",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T15:29:52+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 195.9
+      },
+      "lat": 1.2916,
+      "lon": 103.9456,
+      "public_incident_id": "28966a553739",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T14:33:27+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 856.8
+      },
+      "lat": 1.2954,
+      "lon": 103.7541,
+      "public_incident_id": "def3711cc1fb",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T14:30:23+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1063.5
+      },
+      "lat": 1.2992,
+      "lon": 103.9356,
+      "public_incident_id": "bd767fdfbed6",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T13:52:42+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 99.2
+      },
+      "lat": 1.2909,
+      "lon": 103.9223,
+      "public_incident_id": "a2b9b2a39378",
+      "reliability_grade": "C",
+      "score": 0.7654,
+      "status": "candidate",
+      "ts": "2026-08-02T13:51:13+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1128.8
+      },
+      "lat": 1.2829,
+      "lon": 103.7613,
+      "public_incident_id": "c7b2fc83ca9c",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T13:42:19+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 2378.3
+      },
+      "lat": 1.291,
+      "lon": 103.9571,
+      "public_incident_id": "6392ca99d561",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T13:17:02+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 482.8
+      },
+      "lat": 1.2939,
+      "lon": 103.9332,
+      "public_incident_id": "7dc17c1a75f3",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T13:10:59+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 97.0
+      },
+      "lat": 1.2825,
+      "lon": 103.9376,
+      "public_incident_id": "71f7c5eeebdc",
+      "reliability_grade": "C",
+      "score": 0.7617,
+      "status": "candidate",
+      "ts": "2026-08-02T12:04:13+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 704.3
+      },
+      "lat": 1.2897,
+      "lon": 103.943,
+      "public_incident_id": "d00d4fb65dca",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T11:07:38+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 791.1
+      },
+      "lat": 1.2902,
+      "lon": 103.9896,
+      "public_incident_id": "548a974cbc7f",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T09:55:57+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 2938.1
+      },
+      "lat": 1.2958,
+      "lon": 103.9437,
+      "public_incident_id": "30d352331f37",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T09:26:19+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 363.3
+      },
+      "lat": 1.2885,
+      "lon": 103.9399,
+      "public_incident_id": "c75f3ea22fa8",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T08:38:37+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 97.1
+      },
+      "lat": 1.2925,
+      "lon": 103.9403,
+      "public_incident_id": "7cc76b82b8a9",
+      "reliability_grade": "C",
+      "score": 0.7618,
+      "status": "candidate",
+      "ts": "2026-08-02T07:58:57+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 2814.2
+      },
+      "lat": 1.2808,
+      "lon": 103.9634,
+      "public_incident_id": "b12d3622ae08",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T07:55:11+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1269.5
+      },
+      "lat": 1.2836,
+      "lon": 103.9464,
+      "public_incident_id": "a6c70c526545",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T07:24:15+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 240.5
+      },
+      "lat": 1.2829,
+      "lon": 103.7621,
+      "public_incident_id": "e2158250003f",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T07:18:59+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 949.4
+      },
+      "lat": 1.2944,
+      "lon": 103.9374,
+      "public_incident_id": "1e94ee86f879",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T06:55:21+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 499.5
+      },
+      "lat": 1.284,
+      "lon": 103.9099,
+      "public_incident_id": "5ebb069551c6",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T06:31:54+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 384.8
+      },
+      "lat": 1.283,
+      "lon": 103.9668,
+      "public_incident_id": "b7003a50d608",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T06:17:03+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1019.9
+      },
+      "lat": 1.1773,
+      "lon": 103.7516,
+      "public_incident_id": "66f3b4fcaba1",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T06:16:32+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 62.5
+      },
+      "lat": 1.2943,
+      "lon": 103.7202,
+      "public_incident_id": "66a6a37ff6cd",
+      "reliability_grade": "C",
+      "score": 0.7041,
+      "status": "candidate",
+      "ts": "2026-08-02T05:50:53+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1048.8
+      },
+      "lat": 1.2943,
+      "lon": 103.7221,
+      "public_incident_id": "a6b136233a66",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T05:49:07+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 702.3
+      },
+      "lat": 1.2935,
+      "lon": 103.6754,
+      "public_incident_id": "789be7aff491",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T05:31:53+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 197.0
+      },
+      "lat": 1.1799,
+      "lon": 103.7744,
+      "public_incident_id": "df9c184f8fe3",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T04:35:43+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1620.4
+      },
+      "lat": 1.2898,
+      "lon": 103.954,
+      "public_incident_id": "cd9da61f567a",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T04:13:00+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 604.5
+      },
+      "lat": 1.292,
+      "lon": 103.9308,
+      "public_incident_id": "9a93e14d7cc5",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T04:02:12+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 898.7
+      },
+      "lat": 1.2805,
+      "lon": 103.9744,
+      "public_incident_id": "b548375d0d0f",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T03:53:40+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 490.1
+      },
+      "lat": 1.1745,
+      "lon": 103.7715,
+      "public_incident_id": "a5da45da866f",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T03:42:48+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 145.9
+      },
+      "lat": 1.2935,
+      "lon": 103.9433,
+      "public_incident_id": "73430ad400b1",
+      "reliability_grade": "C",
+      "score": 0.8432,
+      "status": "candidate",
+      "ts": "2026-08-02T03:30:53+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 137.0
+      },
+      "lat": 1.2904,
+      "lon": 103.9412,
+      "public_incident_id": "337c2d95ba72",
+      "reliability_grade": "C",
+      "score": 0.8283,
+      "status": "candidate",
+      "ts": "2026-08-02T01:45:51+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 621.2
+      },
+      "lat": 1.2835,
+      "lon": 104.0036,
+      "public_incident_id": "5020c0c1e8df",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T01:37:05+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 307.4
+      },
+      "lat": 1.276,
+      "lon": 104.0033,
+      "public_incident_id": "7ea9707dda81",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T01:02:50+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 3070.4
+      },
+      "lat": 1.1792,
+      "lon": 103.9656,
+      "public_incident_id": "d318c249277e",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T01:02:09+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1683.0
+      },
+      "lat": 1.2916,
+      "lon": 103.727,
+      "public_incident_id": "3701c9b6afbd",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T00:51:58+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 80.4
+      },
+      "lat": 1.2919,
+      "lon": 103.9333,
+      "public_incident_id": "c7e6e3a8568d",
+      "reliability_grade": "C",
+      "score": 0.7341,
+      "status": "candidate",
+      "ts": "2026-08-02T00:49:25+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 471.4
+      },
+      "lat": 1.2967,
+      "lon": 103.9434,
+      "public_incident_id": "8df71396dec1",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T00:46:18+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 608.9
+      },
+      "lat": 1.288,
+      "lon": 103.9452,
+      "public_incident_id": "ca253c91cbed",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-02T00:23:05+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 2023.3
+      },
+      "lat": 1.2904,
+      "lon": 103.7291,
+      "public_incident_id": "bd9620ae6128",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T23:55:13+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 395.4
+      },
+      "lat": 1.2954,
+      "lon": 103.9396,
+      "public_incident_id": "c639172e1dde",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T23:29:35+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 630.2
+      },
+      "lat": 1.2886,
+      "lon": 103.9618,
+      "public_incident_id": "8f070d2b9771",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T23:25:57+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 445.8
+      },
+      "lat": 1.2944,
+      "lon": 103.985,
+      "public_incident_id": "1c5022b47212",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T23:16:27+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 586.4
+      },
+      "lat": 1.2858,
+      "lon": 103.9938,
+      "public_incident_id": "99ea8c841f08",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T23:14:03+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "rendezvous",
+      "evidence_summary": {
+        "duration_minutes": 65.0
+      },
+      "lat": 1.2941,
+      "lon": 103.7201,
+      "public_incident_id": "13b77db77c12",
+      "reliability_grade": "C",
+      "score": 0.8028,
+      "status": "candidate",
+      "ts": "2026-08-01T21:52:08+00:00",
+      "type": "ship-to-ship transfer"
+    },
+    {
+      "detector": "rendezvous",
+      "evidence_summary": {
+        "duration_minutes": 65.0
+      },
+      "lat": 1.2941,
+      "lon": 103.7201,
+      "public_incident_id": "63283e037ce6",
+      "reliability_grade": "C",
+      "score": 0.8028,
+      "status": "candidate",
+      "ts": "2026-08-01T21:52:08+00:00",
+      "type": "ship-to-ship transfer"
+    },
+    {
+      "detector": "rendezvous",
+      "evidence_summary": {
+        "duration_minutes": 710.0
+      },
+      "lat": 1.3014,
+      "lon": 103.7217,
+      "public_incident_id": "36dbb911e4cd",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T21:34:32+00:00",
+      "type": "ship-to-ship transfer"
+    },
+    {
+      "detector": "rendezvous",
+      "evidence_summary": {
+        "duration_minutes": 710.0
+      },
+      "lat": 1.3014,
+      "lon": 103.7217,
+      "public_incident_id": "2b03ef996bb5",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T21:34:32+00:00",
+      "type": "ship-to-ship transfer"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 192.1
+      },
+      "lat": 1.2853,
+      "lon": 103.7662,
+      "public_incident_id": "2dd1f6504a16",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T19:49:44+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 474.6
+      },
+      "lat": 1.2901,
+      "lon": 104.0198,
+      "public_incident_id": "4e12546dbbf7",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T18:16:06+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 878.8
+      },
+      "lat": 1.2811,
+      "lon": 103.9177,
+      "public_incident_id": "3e368cf56bb0",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T15:11:06+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "rendezvous",
+      "evidence_summary": {
+        "duration_minutes": 155.0
+      },
+      "lat": 1.1797,
+      "lon": 103.7757,
+      "public_incident_id": "d59101a98db2",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T14:04:02+00:00",
+      "type": "ship-to-ship transfer"
+    },
+    {
+      "detector": "rendezvous",
+      "evidence_summary": {
+        "duration_minutes": 155.0
+      },
+      "lat": 1.1797,
+      "lon": 103.7757,
+      "public_incident_id": "f6c37f57a4b8",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T14:04:02+00:00",
+      "type": "ship-to-ship transfer"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1240.6
+      },
+      "lat": 1.2873,
+      "lon": 103.9679,
+      "public_incident_id": "01daa63dba07",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T13:42:31+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1441.5
+      },
+      "lat": 1.285,
+      "lon": 103.9283,
+      "public_incident_id": "fa31503e14f8",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T13:41:35+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 795.2
+      },
+      "lat": 1.2926,
+      "lon": 103.935,
+      "public_incident_id": "5544e59a3d0c",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T13:32:06+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 725.0
+      },
+      "lat": 1.1671,
+      "lon": 103.7177,
+      "public_incident_id": "6623bf39b3cb",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T13:17:09+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 717.6
+      },
+      "lat": 1.2854,
+      "lon": 103.922,
+      "public_incident_id": "deec0d56f058",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T12:22:52+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1944.7
+      },
+      "lat": 1.287,
+      "lon": 103.7633,
+      "public_incident_id": "ce23b57cf306",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T11:23:12+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 65.2
+      },
+      "lat": 1.2327,
+      "lon": 103.6627,
+      "public_incident_id": "7583bf3b928b",
+      "reliability_grade": "C",
+      "score": 0.7087,
+      "status": "candidate",
+      "ts": "2026-08-01T11:15:59+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 426.7
+      },
+      "lat": 1.2814,
+      "lon": 103.8991,
+      "public_incident_id": "9d7b0360e216",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T11:15:56+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 745.5
+      },
+      "lat": 1.291,
+      "lon": 103.9348,
+      "public_incident_id": "3922e62e6f2b",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T11:09:15+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "rendezvous",
+      "evidence_summary": {
+        "duration_minutes": 140.0
+      },
+      "lat": 1.178,
+      "lon": 103.7503,
+      "public_incident_id": "8b29fbfd5d5c",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T10:57:36+00:00",
+      "type": "ship-to-ship transfer"
+    },
+    {
+      "detector": "rendezvous",
+      "evidence_summary": {
+        "duration_minutes": 140.0
+      },
+      "lat": 1.178,
+      "lon": 103.7503,
+      "public_incident_id": "caf22c96b175",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T10:57:36+00:00",
+      "type": "ship-to-ship transfer"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 899.2
+      },
+      "lat": 1.2946,
+      "lon": 103.9366,
+      "public_incident_id": "a93f543f830d",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T10:36:23+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1617.8
+      },
+      "lat": 1.1714,
+      "lon": 103.7711,
+      "public_incident_id": "97bedfae8fe7",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T10:10:57+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 106.0
+      },
+      "lat": 1.2919,
+      "lon": 103.9901,
+      "public_incident_id": "4928cb5f8e19",
+      "reliability_grade": "C",
+      "score": 0.7768,
+      "status": "candidate",
+      "ts": "2026-08-01T09:51:39+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 5657.5
+      },
+      "lat": 1.3002,
+      "lon": 103.7267,
+      "public_incident_id": "72e8a12ee130",
+      "reliability_grade": "D",
+      "score": 0.7,
+      "status": "candidate",
+      "ts": "2026-08-01T09:33:19+00:00",
+      "type": "loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 916.4
+      },
+      "lat": 1.2914,
+      "lon": 103.728,
+      "public_incident_id": "cb14e204986a",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T09:32:05+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 526.5
+      },
+      "lat": 1.2835,
+      "lon": 103.9413,
+      "public_incident_id": "012d053547ec",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T09:29:25+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 272.2
+      },
+      "lat": 1.2811,
+      "lon": 103.9074,
+      "public_incident_id": "91ddd5a09822",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T08:38:30+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 2028.3
+      },
+      "lat": 1.2886,
+      "lon": 103.9362,
+      "public_incident_id": "88b870f73b82",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T08:25:36+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 5704.4
+      },
+      "lat": 1.3001,
+      "lon": 103.7236,
+      "public_incident_id": "a7d782f25c86",
+      "reliability_grade": "D",
+      "score": 0.7,
+      "status": "candidate",
+      "ts": "2026-08-01T08:09:32+00:00",
+      "type": "loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1452.0
+      },
+      "lat": 1.1722,
+      "lon": 103.7649,
+      "public_incident_id": "2134cc98fbb4",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T07:53:13+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 234.2
+      },
+      "lat": 1.1735,
+      "lon": 103.7659,
+      "public_incident_id": "ebeb5a1fe3c1",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T07:52:08+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1600.6
+      },
+      "lat": 1.2892,
+      "lon": 103.943,
+      "public_incident_id": "2da439a53130",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T07:41:10+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1060.4
+      },
+      "lat": 1.2955,
+      "lon": 103.9779,
+      "public_incident_id": "6e72d3722f5c",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T07:30:28+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "rendezvous",
+      "evidence_summary": {
+        "duration_minutes": 195.0
+      },
+      "lat": 1.1646,
+      "lon": 103.7205,
+      "public_incident_id": "c0424faf7ab3",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T07:22:47+00:00",
+      "type": "ship-to-ship transfer"
+    },
+    {
+      "detector": "rendezvous",
+      "evidence_summary": {
+        "duration_minutes": 195.0
+      },
+      "lat": 1.1646,
+      "lon": 103.7205,
+      "public_incident_id": "62a0de7e4eb3",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T07:22:47+00:00",
+      "type": "ship-to-ship transfer"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 186.8
+      },
+      "lat": 1.1799,
+      "lon": 103.7629,
+      "public_incident_id": "59343d4115ce",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T07:11:23+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 578.3
+      },
+      "lat": 1.287,
+      "lon": 103.9388,
+      "public_incident_id": "0b0b26c32274",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T06:54:38+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 471.7
+      },
+      "lat": 1.2819,
+      "lon": 103.9159,
+      "public_incident_id": "e8e055cf1926",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T06:52:42+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 3012.9
+      },
+      "lat": 1.2326,
+      "lon": 103.6885,
+      "public_incident_id": "b91def0eef04",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T06:27:11+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1670.9
+      },
+      "lat": 1.1786,
+      "lon": 103.7608,
+      "public_incident_id": "5cfb86bf9d9e",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-08-01T04:48:02+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1006.8
+      },
+      "lat": 1.2817,
+      "lon": 103.7495,
+      "public_incident_id": "5aa0ce54c000",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-31T22:33:07+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "rendezvous",
+      "evidence_summary": {
+        "duration_minutes": 475.0
+      },
+      "lat": 1.307,
+      "lon": 103.7172,
+      "public_incident_id": "557f2909a8ed",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-31T21:33:02+00:00",
+      "type": "ship-to-ship transfer"
+    },
+    {
+      "detector": "rendezvous",
+      "evidence_summary": {
+        "duration_minutes": 475.0
+      },
+      "lat": 1.307,
+      "lon": 103.7172,
+      "public_incident_id": "3f309ddafbf0",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-31T21:33:02+00:00",
+      "type": "ship-to-ship transfer"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1632.6
+      },
+      "lat": 1.2835,
+      "lon": 103.7707,
+      "public_incident_id": "1aedcdbeaf13",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-31T20:21:39+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 391.6
+      },
+      "lat": 1.1788,
+      "lon": 103.7609,
+      "public_incident_id": "614f347e98b0",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-31T19:20:38+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 750.0
+      },
+      "lat": 1.2873,
+      "lon": 103.9677,
+      "public_incident_id": "01f92bd0c947",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-31T18:36:13+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1820.2
+      },
+      "lat": 1.286,
+      "lon": 103.7328,
+      "public_incident_id": "132636ef9178",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-31T18:09:35+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1983.1
+      },
+      "lat": 1.2946,
+      "lon": 103.7201,
+      "public_incident_id": "c2230a850967",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-31T18:03:44+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1164.2
+      },
+      "lat": 1.2909,
+      "lon": 103.9589,
+      "public_incident_id": "806dc8acb3fe",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-31T18:00:42+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1355.5
+      },
+      "lat": 1.1715,
+      "lon": 103.7581,
+      "public_incident_id": "15464baf6c8a",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-31T17:57:29+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 319.5
+      },
+      "lat": 1.1654,
+      "lon": 103.716,
+      "public_incident_id": "9de202e69f21",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-31T17:06:44+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 902.1
+      },
+      "lat": 1.2818,
+      "lon": 103.7616,
+      "public_incident_id": "138274a0baa1",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-31T16:56:56+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 403.1
+      },
+      "lat": 1.1791,
+      "lon": 103.7718,
+      "public_incident_id": "cc7709a21c2e",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-31T15:46:35+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 2684.3
+      },
+      "lat": 1.2562,
+      "lon": 103.6434,
+      "public_incident_id": "d330c57637b6",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-31T15:33:10+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "rendezvous",
+      "evidence_summary": {
+        "duration_minutes": 165.0
+      },
+      "lat": 1.1795,
+      "lon": 103.7092,
+      "public_incident_id": "8f45a37ec837",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-31T12:19:14+00:00",
+      "type": "ship-to-ship transfer"
+    },
+    {
+      "detector": "rendezvous",
+      "evidence_summary": {
+        "duration_minutes": 165.0
+      },
+      "lat": 1.1795,
+      "lon": 103.7092,
+      "public_incident_id": "345748404d1b",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-31T12:19:14+00:00",
+      "type": "ship-to-ship transfer"
+    },
+    {
+      "detector": "rendezvous",
+      "evidence_summary": {
+        "duration_minutes": 220.0
+      },
+      "lat": 1.2542,
+      "lon": 103.6343,
+      "public_incident_id": "b93b0c9a5182",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-31T07:33:10+00:00",
+      "type": "ship-to-ship transfer"
+    },
+    {
+      "detector": "rendezvous",
+      "evidence_summary": {
+        "duration_minutes": 220.0
+      },
+      "lat": 1.2542,
+      "lon": 103.6343,
+      "public_incident_id": "aaad09205ce0",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-31T07:33:10+00:00",
+      "type": "ship-to-ship transfer"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 1864.1
+      },
+      "lat": 1.3053,
+      "lon": 103.7188,
+      "public_incident_id": "4b0042e5865f",
+      "reliability_grade": "D",
+      "score": 0.7,
+      "status": "candidate",
+      "ts": "2026-07-31T07:13:02+00:00",
+      "type": "loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 652.4
+      },
+      "lat": 1.2939,
+      "lon": 103.9652,
+      "public_incident_id": "485feeceaab5",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-31T07:04:46+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 76.2
+      },
+      "lat": 1.2991,
+      "lon": 103.9398,
+      "public_incident_id": "3517d0c3e594",
+      "reliability_grade": "C",
+      "score": 0.7269,
+      "status": "candidate",
+      "ts": "2026-07-31T06:58:00+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 723.4
+      },
+      "lat": 1.2818,
+      "lon": 103.9015,
+      "public_incident_id": "1224e7bd1ed4",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-31T06:56:55+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 102.2
+      },
+      "lat": 1.2914,
+      "lon": 103.9495,
+      "public_incident_id": "a21cbb5f1e27",
+      "reliability_grade": "C",
+      "score": 0.7703,
+      "status": "candidate",
+      "ts": "2026-07-31T06:53:11+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 2472.0
+      },
+      "lat": 1.2812,
+      "lon": 103.9114,
+      "public_incident_id": "09dbe8f4e143",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-31T06:43:35+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 346.4
+      },
+      "lat": 1.1735,
+      "lon": 103.7666,
+      "public_incident_id": "b43ba6cfb752",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-31T06:35:38+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 2440.6
+      },
+      "lat": 1.2823,
+      "lon": 103.9172,
+      "public_incident_id": "d1c7798ec14e",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-30T00:12:45+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 94.6
+      },
+      "lat": 1.2924,
+      "lon": 104.0128,
+      "public_incident_id": "01d9f96ff6fb",
+      "reliability_grade": "C",
+      "score": 0.7577,
+      "status": "candidate",
+      "ts": "2026-07-29T22:34:59+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 88.5
+      },
+      "lat": 1.2958,
+      "lon": 103.9959,
+      "public_incident_id": "70377dce77d9",
+      "reliability_grade": "C",
+      "score": 0.7476,
+      "status": "candidate",
+      "ts": "2026-07-29T22:03:37+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 158.7
+      },
+      "lat": 1.2941,
+      "lon": 103.9374,
+      "public_incident_id": "67e76eb6cc8b",
+      "reliability_grade": "C",
+      "score": 0.8645,
+      "status": "candidate",
+      "ts": "2026-07-29T21:30:24+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 220.0
+      },
+      "lat": 1.2927,
+      "lon": 103.9967,
+      "public_incident_id": "b3984a16a796",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-29T20:25:34+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 568.5
+      },
+      "lat": 1.281,
+      "lon": 103.9937,
+      "public_incident_id": "99e5a9da31b7",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-29T19:26:27+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 247.3
+      },
+      "lat": 1.2948,
+      "lon": 103.9401,
+      "public_incident_id": "1ae2a2d45906",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-29T19:25:35+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 304.3
+      },
+      "lat": 1.2856,
+      "lon": 103.9377,
+      "public_incident_id": "5c4478bfa31f",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-29T19:04:23+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 270.7
+      },
+      "lat": 1.2905,
+      "lon": 103.9431,
+      "public_incident_id": "55e85b803323",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-29T18:42:21+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 250.2
+      },
+      "lat": 1.3035,
+      "lon": 104.0516,
+      "public_incident_id": "43579a516c47",
+      "reliability_grade": "D",
+      "score": 0.7,
+      "status": "candidate",
+      "ts": "2026-07-29T17:58:19+00:00",
+      "type": "loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 354.4
+      },
+      "lat": 1.2892,
+      "lon": 103.964,
+      "public_incident_id": "d2496fce2bc1",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-29T16:54:40+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 453.1
+      },
+      "lat": 1.3019,
+      "lon": 103.9905,
+      "public_incident_id": "e60f664d68db",
+      "reliability_grade": "D",
+      "score": 0.7,
+      "status": "candidate",
+      "ts": "2026-07-29T16:27:17+00:00",
+      "type": "loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 386.8
+      },
+      "lat": 1.2911,
+      "lon": 104.0147,
+      "public_incident_id": "23fedd32e4d7",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-29T15:56:33+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 423.7
+      },
+      "lat": 1.2858,
+      "lon": 103.7597,
+      "public_incident_id": "1c9568b7acef",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-29T15:48:54+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 408.3
+      },
+      "lat": 1.2954,
+      "lon": 103.9918,
+      "public_incident_id": "db7f28889a1c",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-29T15:33:47+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "rendezvous",
+      "evidence_summary": {
+        "duration_minutes": 35.0
+      },
+      "lat": 1.2929,
+      "lon": 103.9962,
+      "public_incident_id": "0b832808701b",
+      "reliability_grade": "C",
+      "score": 0.6861,
+      "status": "candidate",
+      "ts": "2026-07-29T15:30:34+00:00",
+      "type": "ship-to-ship transfer"
+    },
+    {
+      "detector": "rendezvous",
+      "evidence_summary": {
+        "duration_minutes": 35.0
+      },
+      "lat": 1.2929,
+      "lon": 103.9962,
+      "public_incident_id": "a80bfdbcbf5a",
+      "reliability_grade": "C",
+      "score": 0.6861,
+      "status": "candidate",
+      "ts": "2026-07-29T15:30:34+00:00",
+      "type": "ship-to-ship transfer"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 187.3
+      },
+      "lat": 1.2972,
+      "lon": 103.9453,
+      "public_incident_id": "9eddf15df179",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-29T15:19:01+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 388.1
+      },
+      "lat": 1.3043,
+      "lon": 103.9885,
+      "public_incident_id": "be09ca07f277",
+      "reliability_grade": "D",
+      "score": 0.7,
+      "status": "candidate",
+      "ts": "2026-07-29T15:04:13+00:00",
+      "type": "loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 462.1
+      },
+      "lat": 1.2895,
+      "lon": 103.9266,
+      "public_incident_id": "621d37cfa5de",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-29T14:57:24+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 8071.1
+      },
+      "lat": 1.2936,
+      "lon": 103.9529,
+      "public_incident_id": "644f3273d826",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-29T14:55:14+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 361.2
+      },
+      "lat": 1.2951,
+      "lon": 103.9859,
+      "public_incident_id": "11fe782ac533",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-29T14:32:06+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 266.7
+      },
+      "lat": 1.2775,
+      "lon": 104.0078,
+      "public_incident_id": "121345229166",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-29T14:26:50+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 123.7
+      },
+      "lat": 1.2801,
+      "lon": 103.9272,
+      "public_incident_id": "3baada7f1e4b",
+      "reliability_grade": "C",
+      "score": 0.8061,
+      "status": "candidate",
+      "ts": "2026-07-29T14:14:20+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 267.0
+      },
+      "lat": 1.2829,
+      "lon": 103.9296,
+      "public_incident_id": "0b7873bb13dd",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-29T13:35:09+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 192.1
+      },
+      "lat": 1.2955,
+      "lon": 103.9592,
+      "public_incident_id": "f71f5cb030f6",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-29T13:33:06+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "rendezvous",
+      "evidence_summary": {
+        "duration_minutes": 85.0
+      },
+      "lat": 1.2923,
+      "lon": 104.0135,
+      "public_incident_id": "0db8b5687f4f",
+      "reliability_grade": "C",
+      "score": 0.8806,
+      "status": "candidate",
+      "ts": "2026-07-29T13:24:22+00:00",
+      "type": "ship-to-ship transfer"
+    },
+    {
+      "detector": "rendezvous",
+      "evidence_summary": {
+        "duration_minutes": 85.0
+      },
+      "lat": 1.2923,
+      "lon": 104.0135,
+      "public_incident_id": "5cba57565a77",
+      "reliability_grade": "C",
+      "score": 0.8806,
+      "status": "candidate",
+      "ts": "2026-07-29T13:24:22+00:00",
+      "type": "ship-to-ship transfer"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 299.1
+      },
+      "lat": 1.2915,
+      "lon": 103.9618,
+      "public_incident_id": "5cf80e27a026",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-29T13:15:21+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 410.0
+      },
+      "lat": 1.2929,
+      "lon": 103.9395,
+      "public_incident_id": "ce96a089f13a",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-29T13:13:42+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 6906.2
+      },
+      "lat": 1.2969,
+      "lon": 103.9619,
+      "public_incident_id": "b0f84cee2d47",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-29T13:05:53+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 317.1
+      },
+      "lat": 1.1672,
+      "lon": 103.7531,
+      "public_incident_id": "272f2848ecfb",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-29T13:00:29+00:00",
+      "type": "zone incursion / loitering"
+    },
+    {
+      "detector": "loiter",
+      "evidence_summary": {
+        "duration_minutes": 495.4
+      },
+      "lat": 1.2972,
+      "lon": 103.9612,
+      "public_incident_id": "567766e42bbc",
+      "reliability_grade": "C",
+      "score": 0.9,
+      "status": "candidate",
+      "ts": "2026-07-29T12:56:35+00:00",
+      "type": "zone incursion / loitering"
+    }
+  ],
+  "source": {
+    "ais": "AISStream.io beta feed; no service-level agreement",
+    "gfw": "Global Fishing Watch data \u2014 https://globalfishingwatch.org"
+  }
+}

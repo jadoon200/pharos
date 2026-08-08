@@ -1,0 +1,39 @@
+{
+  "accepted_reports": 283620,
+  "alert_rate_per_100_observed_vessel_hours": 3.3192,
+  "freshness": "Counts reflect the snapshot generation time and observed-time ledger.",
+  "generated_at": "2026-08-08T00:34:20.938468+00:00",
+  "human_review_disclaimer": "Candidates for human review, never automated verdicts.",
+  "incidents": 889,
+  "incidents_by_detector": {
+    "gap": 210,
+    "loiter": 592,
+    "rendezvous": 82,
+    "spoof": 5
+  },
+  "labels_by_source": {
+    "gfw-encounter": 52,
+    "gfw-port-visit": 9680
+  },
+  "observed_hours": 266.691,
+  "observed_vessel_hours": 26783.2987,
+  "outage_count": 1091,
+  "outage_hours": 283.0202,
+  "reconnect_count": 9,
+  "review_progress": {
+    "pharos_alerts": {
+      "reviewed": 0,
+      "target": 50
+    },
+    "tracks": {
+      "reviewed": 0,
+      "target": 200
+    }
+  },
+  "source": {
+    "ais": "AISStream.io beta feed; no service-level agreement",
+    "gfw": "Global Fishing Watch data \u2014 https://globalfishingwatch.org"
+  },
+  "tracks": 10687,
+  "vessels": 4801
+}
