@@ -24,12 +24,18 @@ per-vessel threat picture, the way a maritime fusion cell actually works.
 > generator), track building, the five-detector ensemble, the flagship trajectory-anomaly model,
 > the composite maritime-threat rollup, the honest eval harness, a hardened read-only API, and a
 > React/Leaflet map dashboard are all in place and browser-verified. The ARGUS-shaped GEOINT
-> evidence bridge is also implemented. The Singapore pilot is live: Pilot Day 0 began on
-> 2026-07-16, the low-priority launch agent is collecting Class A/B AIS, and every two minutes the
-> incremental processor rebuilds dirty track tails and scores them with the frozen SHA-pinned GRU.
-> Phase 3 (independent labels/evaluation) and Phase 4 (sanitized delayed snapshots / dashboard
-> modes) machinery is built and running; labels and reviews accrue through the pilot window, with
-> the Day-14 preliminary report next. The baked-demo release is deployed on Render's free tier at
+> evidence bridge is also implemented. The Singapore pilot began on 2026-07-16 and has so far
+> observed **266.7 hours** of Class A/B AIS across 4,801 vessels and 10,687 tracks, ingested by a
+> low-priority launch agent while an incremental processor rebuilds dirty track tails every two
+> minutes and scores them with the frozen SHA-pinned GRU. Collection is **not continuous** — the
+> ledger records 1,091 coverage outages, and the upstream AISStream feed has been refusing the
+> websocket handshake since 2026-08-05, so the observed window is what the numbers above count
+> and the wall-clock window is longer. That gap is the reason coverage outages are recorded and
+> reported rather than smoothed over. Phase 3 (independent labels/evaluation) and Phase 4
+> (sanitized delayed snapshots / dashboard modes) machinery is built and running, but **no
+> blinded review has been completed yet** — the queue stands at 0 of 200 tracks and 0 of 50
+> alerts, so there is no pilot evaluation to report and none is claimed. The baked-demo release
+> is deployed on Render's free tier at
 > https://pharos-0y6q.onrender.com (see [`docs/DEPLOY.md`](docs/DEPLOY.md)).
 > Progress is tracked honestly in
 > [`docs/ROADMAP.md`](docs/ROADMAP.md); every model/detector claim lands in
