@@ -7,11 +7,14 @@ source-rated, human-review **maritime incidents**: dark ships, ship-to-ship tran
 loitering / zone incursions, AIS spoofing, and trajectory anomalies — fused into a composite
 per-vessel threat picture, the way a maritime fusion cell actually works.
 
-> **The maritime lane of the portfolio.** Sibling to [HORUS](../horus) (air / GNSS
-> interference), [SENTINEL](../sentinel) (cyber threat intelligence) and
-> [ARGUS](../argus) (all-source / information defence). Those fuse the *air*, *cyber* and
-> *cognitive* pictures; PHAROS fuses the **spatiotemporal** one — where and when, on the
-> water. HORUS watches the sky above the same strait, a deliberate pair: together they give
+> **The maritime lane of the portfolio.** Sibling to
+> [HORUS](https://github.com/jadoon200/horus) (air / GNSS interference),
+> [SENTINEL](https://github.com/jadoon200/sentinel) (cyber threat intelligence),
+> [ARGUS](https://github.com/jadoon200/argus) (all-source / information defence) and
+> [DELPHI](https://github.com/jadoon200/delphi) (infrastructure capacity). The first three
+> fuse the *air*, *cyber* and *cognitive* pictures; PHAROS fuses the **spatiotemporal** one —
+> where and when, on the water. DELPHI is the odd one out by design: a decision system rather
+> than a detection one. HORUS watches the sky above the same strait, a deliberate pair: together they give
 > a joint air + sea picture over the world's busiest waterway, and ARGUS consumes both
 > read-only as its Ocean and Sky lanes. Named for the lighthouse of Alexandria: a watcher
 > over the sea.
@@ -168,8 +171,9 @@ model drift is visible rather than silent. Public-deploy hardening (CORS, per-cl
 
 `GET /geoint/evidence` shapes each maritime incident into an evidence item whose fields match
 ARGUS's `EvidenceItem` (doc_id / title / source / NATO-Admiralty reliability A–F / credibility 1–6
-/ summary / resolvable url) plus geospatial extras. So the sibling **[ARGUS](../argus)** all-source
-analyst — which already fuses **[SENTINEL](../sentinel)**'s cyber campaigns the same read-only way —
+/ summary / resolvable url) plus geospatial extras. So the sibling
+**[ARGUS](https://github.com/jadoon200/argus)** all-source analyst — which already fuses
+**[SENTINEL](https://github.com/jadoon200/sentinel)**'s cyber campaigns the same read-only way —
 can cite PHAROS's maritime picture with no schema translation: one analyst reasoning across the
 cyber, cognitive, *and* geospatial lanes. PHAROS only serves; it never depends on the siblings.
 
