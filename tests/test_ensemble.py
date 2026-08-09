@@ -61,11 +61,42 @@ def test_fuse_exposes_components_and_reliability() -> None:
         "max_score",
         "detector_count",
         "diversity",
+        "corroboration_factor",
         "best_reliability",
+        "reliability_weight",
+        "reliability_factor",
         "sensitive_zone",
+        "sensitive_bonus",
     }
     assert t.name == "X" and t.flag == "SG"
     assert set(t.detectors) == {"spoof", "gap"}
+
+
+def test_published_components_reconstruct_the_headline_risk() -> None:
+    """The breakdown must add up, or a reviewer cannot challenge the ranking.
+
+    Only the raw inputs used to be published, so the panel's
+    "severity x corroboration x reliability" invited multiplying the numbers on screen —
+    max_score x diversity x a letter grade — which lands nowhere near the headline.
+    """
+    for incidents in (
+        [_inc(incident_id="a", detector="spoof", score=0.9, reliability="B")],
+        [
+            _inc(incident_id="a", detector="spoof", score=1.0, reliability="B"),
+            _inc(incident_id="b", detector="gap", score=0.5, reliability="D"),
+        ],
+        [
+            _inc(incident_id=f"i{k}", detector=d, score=1.0, reliability="A")
+            for k, d in enumerate(("spoof", "gap", "loiter", "rendezvous"))
+        ],
+    ):
+        t = fuse_incidents("1", incidents, None)
+        c = t.components
+        rebuilt = (
+            c["max_score"] * c["corroboration_factor"] * c["reliability_factor"]
+            + c["sensitive_bonus"]
+        )
+        assert round(rebuilt, 4) == t.risk, f"{rebuilt} != {t.risk} for {c}"
 
 
 def test_end_to_end_rollups(session: Session, tmp_path) -> None:  # type: ignore[no-untyped-def]

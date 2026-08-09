@@ -59,12 +59,18 @@ export interface Threat {
   lon: number | null
   first_ts: string | null
   last_ts: string | null
+  /** The raw inputs and the factors they become, so the panel's arithmetic closes:
+   *  `max_score × corroboration_factor × reliability_factor + sensitive_bonus = risk`. */
   components: {
     max_score: number
     detector_count: number
     diversity: number
+    corroboration_factor: number
     best_reliability: string
+    reliability_weight: number
+    reliability_factor: number
     sensitive_zone: boolean
+    sensitive_bonus: number
   }
 }
 

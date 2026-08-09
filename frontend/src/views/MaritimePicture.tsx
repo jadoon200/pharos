@@ -184,8 +184,16 @@ function ThreatDetail({ threat: t }: { threat: Threat }) {
       </div>
 
       <div style={{ margin: '12px 0 4px' }}>
+        {/* Spell the arithmetic out with the terms that actually multiply. The old caption
+            named the three ideas but showed only their raw inputs, so multiplying what was
+            on screen (1.00 × 0.333 × a letter grade) came nowhere near the headline. */}
         <div className="muted" style={{ fontSize: 11 }}>
-          Composite risk {t.risk.toFixed(2)} = severity × corroboration × reliability (+sensitive zone)
+          Composite risk = {c.max_score} × {c.corroboration_factor} (corroboration) ×{' '}
+          {c.reliability_factor} (reliability)
+          {c.sensitive_bonus > 0 && <> + {c.sensitive_bonus} (sensitive zone)</>} ={' '}
+          {/* The unrounded value, so the line the reviewer checks is the line that closes —
+              the two-decimal headline elsewhere would not. */}
+          <b>{t.risk}</b>
         </div>
         <div className="risk-bar" style={{ height: 10 }}>
           <span style={{ width: `${t.risk * 100}%` }} />
@@ -195,9 +203,21 @@ function ThreatDetail({ threat: t }: { threat: Threat }) {
         <tbody>
           <tr><td className="muted">max detector score</td><td>{c.max_score}</td></tr>
           <tr><td className="muted">distinct detectors</td><td>{c.detector_count}</td></tr>
-          <tr><td className="muted">corroboration</td><td>{c.diversity}</td></tr>
-          <tr><td className="muted">best reliability</td><td className="grade">{c.best_reliability}</td></tr>
-          <tr><td className="muted">sensitive zone</td><td>{c.sensitive_zone ? 'yes' : 'no'}</td></tr>
+          <tr>
+            <td className="muted">corroboration</td>
+            <td>{c.diversity} → 0.7 + 0.3 × {c.diversity} = {c.corroboration_factor}</td>
+          </tr>
+          <tr>
+            <td className="muted">best reliability</td>
+            <td>
+              <span className="grade">{c.best_reliability}</span> = {c.reliability_weight} → 0.6 +
+              0.4 × {c.reliability_weight} = {c.reliability_factor}
+            </td>
+          </tr>
+          <tr>
+            <td className="muted">sensitive zone</td>
+            <td>{c.sensitive_zone ? `yes → +${c.sensitive_bonus}` : 'no'}</td>
+          </tr>
         </tbody>
       </table>
       <p className="muted" style={{ fontSize: 11, marginBottom: 0 }}>
