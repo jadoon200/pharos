@@ -28,3 +28,6 @@ frontend/dist/
 .vscode/
 
 # Local agent/editor config — keep OUT of the repo (local copies are fine)
+.claude/
+CLAUDE.md
+AGENTS.md
